@@ -1,0 +1,8 @@
+worker_type: docker
+containers:
+  container_a:
+    port: 9001
+    command: docker
+  container_b:
+    port: 9002
+    command: nvidia-docker
