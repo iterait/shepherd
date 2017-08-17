@@ -24,13 +24,15 @@ class ContainerRegistry:
         self.containers = {}
         self.container_config = {}
         self.initialized = False
+        self.registry = ""
 
     def check_initialized(self):
         if not self.initialized:
             raise RuntimeError("The registry was not initialized yet")
 
-    def initialize(self, zmq_context: zmq.Context, container_config: Mapping[str, ContainerConfig]):
+    def initialize(self, zmq_context: zmq.Context, registry: str, container_config: Mapping[str, ContainerConfig]):
         self.container_config = container_config
+        self.registry = registry
 
         for name, config in container_config.items():
             socket = zmq_context.socket(zmq.ROUTER)
@@ -50,11 +52,13 @@ class ContainerRegistry:
         if container.docker_container is not None:
             self.kill_container(id)
 
-        image = DockerImage(model, tag=version, registry="0.0.0.0:6000")  # TODO
+        image = DockerImage(model, tag=version, registry=self.registry)
         image.pull()
+
         container.docker_container = DockerContainer(image.name)
         container.docker_container.add_port_mapping(config.port, WORKER_PROCESS_PORT)
         container.docker_container.start()
+
         container.socket.connect(zmq_address)
 
     def kill_container(self, id: str):

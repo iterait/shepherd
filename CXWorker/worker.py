@@ -22,7 +22,11 @@ class Worker:
         for name, container in config_object.get("containers", {}).items():
             self.config[name] = ContainerConfig(container["port"])
 
-        self.registry.initialize(self.zmq_context, self.config)
+        registry = config_object.get("registry", None)
+        if registry is None:
+            raise RuntimeError("The Docker registry address has to be configured")
+
+        self.registry.initialize(self.zmq_context, registry, self.config)
 
     def run(self, host: str, port: int):
         if self.config is None:

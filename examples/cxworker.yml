@@ -1,4 +1,6 @@
 worker_type: docker
+registry: 0.0.0.0:6000
+
 containers:
   container_a:
     port: 9001
