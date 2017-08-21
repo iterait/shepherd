@@ -89,8 +89,10 @@ class ContainerRegistry:
         container.docker_container.kill()
         container.docker_container = None
 
-    def send_input(self, container_id: str, input: bytes):
-        self.containers[container_id].socket.send_multipart([b"container", input])
+    def send_input(self, container_id: str, request_metadata, input: bytes):
+        container = self.containers[container_id]
+        container.current_request = request_metadata
+        container.socket.send_multipart([b"container", input])
 
     def wait_for_output(self) -> Generator[str, None, None]:
         """
@@ -116,7 +118,7 @@ class ContainerRegistry:
             yield {
                 "name": name,
                 "running": container.docker_container is not None and container.docker_container.running,
-                "request": container.current_request,
+                "request": container.current_request.id,
                 "model_name": container.model_name,
                 "model_version": container.model_version
             }
@@ -125,3 +127,9 @@ class ContainerRegistry:
         for name, container in self.containers.items():
             if container.docker_container is not None:
                 self.kill_container(name)
+
+    def get_current_request(self, container_id):
+        return self.containers[container_id].current_request
+
+    def request_finished(self, container_id):
+        self.containers[container_id].current_request = None

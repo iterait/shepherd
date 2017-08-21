@@ -29,9 +29,9 @@ def create_worker_blueprint(registry: ContainerRegistry, minio: Minio):
         request_data = load_request(StartJobRequestSchema())
         start_job_request = StartJobRequest(**request_data)
 
-        payload = b"nothing"  # TODO download this
+        payload = minio.get_object(start_job_request.id, start_job_request.source_url).read()
 
-        registry.send_input(start_job_request.container_id, payload)
+        registry.send_input(start_job_request.container_id, start_job_request, payload)
 
         return jsonify(StartJobResponse().dump())
 

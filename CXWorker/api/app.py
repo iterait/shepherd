@@ -30,7 +30,7 @@ def error_handler(http_code, error: AppError):
     :return: a Flask response
     """
 
-    response = ErrorResponse(error.message)
+    response = ErrorResponse(str(error))
     return jsonify(response.dump()), http_code
 
 

@@ -9,9 +9,18 @@ class ContainerConfig:
         self.devices = devices
 
 
+class StorageConfig:
+    def __init__(self, url, access_key, secret_key, secure=True):
+        self.url = url
+        self.access_key = access_key
+        self.secret_key = secret_key
+        self.secure = secure
+
+
 class WorkerConfig:
-    def __init__(self, registry: str, containers: Mapping[str, ContainerConfig]):
+    def __init__(self, registry: str, storage: StorageConfig, containers: Mapping[str, ContainerConfig]):
         self.registry = registry
+        self.storage = storage
         self.containers = containers
 
 
@@ -28,4 +37,10 @@ def load_config(config_stream):
     if registry is None:
         raise RuntimeError("The Docker registry address has to be configured")
 
-    return WorkerConfig(registry, containers)
+    storage_config = config_object.get("storage")
+    if storage_config is None:
+        raise RuntimeError("The storage must be configured")
+
+    storage = StorageConfig(**storage_config)
+
+    return WorkerConfig(registry, storage, containers)

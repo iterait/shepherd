@@ -4,8 +4,8 @@ from marshmallow import Schema, fields
 class StartJobRequestSchema(Schema):
     id = fields.String()
     container_id = fields.String()
-    source_url = fields.Url()
-    result_url = fields.Url()
+    source_url = fields.String()
+    result_url = fields.String()
 
 
 class InterruptJobRequestSchema(Schema):
