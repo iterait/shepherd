@@ -1,10 +1,10 @@
 import gevent
 from gevent.wsgi import WSGIServer
 import zmq.green as zmq
-import yaml
 
 from .api import create_app
-from .manager.registry import ContainerRegistry, ContainerConfig
+from .manager.registry import ContainerRegistry
+from .manager.config import ContainerConfig, load_config
 from .manager.output_listener import OutputListener
 
 
@@ -16,19 +16,8 @@ class Worker:
         self.config = None
 
     def load_config(self, config_stream):
-        config_object = yaml.load(config_stream)
-        self.config = {}
-
-        for name, container in config_object.get("containers", {}).items():
-            self.config[name] = ContainerConfig(container.get("port"), container.get("command"))
-            if self.config[name].port is None:
-                raise RuntimeError("Container {} needs to have a port configured")
-
-        registry = config_object.get("registry", None)
-        if registry is None:
-            raise RuntimeError("The Docker registry address has to be configured")
-
-        self.registry.initialize(self.zmq_context, registry, self.config)
+        self.config = load_config(config_stream)
+        self.registry.initialize(self.zmq_context, self.config.registry, self.config.containers)
 
     def run(self, host: str, port: int):
         if self.config is None:

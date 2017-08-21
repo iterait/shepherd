@@ -1,22 +1,21 @@
-from typing import Mapping, Generator
+from typing import Mapping, Generator, Tuple
+
 import zmq.green as zmq
 
 from CXWorker.docker import DockerContainer, DockerImage
+from CXWorker.docker.container import NvidiaDockerContainer
+from .config import ContainerConfig
 
 WORKER_PROCESS_PORT = 9999
 
 
 class Container:
-    def __init__(self, socket: zmq.Socket):
+    def __init__(self, socket: zmq.Socket, docker_container_class: type):
         self.socket = socket
         self.current_request = None
+        self.master = None
+        self.docker_container_class = docker_container_class
         self.docker_container: DockerContainer = None
-
-
-class ContainerConfig:
-    def __init__(self, port: int, command: str):
-        self.port = port
-        self.command = command
 
 
 class ContainerRegistry:
@@ -38,17 +37,33 @@ class ContainerRegistry:
         for name, config in container_config.items():
             socket = zmq_context.socket(zmq.ROUTER)
 
-            self.containers[name] = Container(socket)
+            if config.type == "cpu":
+                container_class = DockerContainer
+            elif config.type == "nvidia":
+                container_class = NvidiaDockerContainer
+            else:
+                raise RuntimeError("Unknown container type: {}".format(config.type))
+
+            self.containers[name] = Container(socket, container_class)
             self.poller.register(socket, zmq.POLLIN)
 
         self.initialized = True
 
-    def start_container(self, id: str, model: str, version: str):
+    def start_container(self, id: str, model: str, version: str, slaves: Tuple[str, ...] = ()):
         self.check_initialized()
+        config = self.container_config[id]
+
+        for slave_id in slaves:
+            slave_config = self.container_config[slave_id]
+            if slave_config.docker_container_class != config.docker_container_class:
+                message = "The type of slave container {slave_id} ({slave_type}) " \
+                          "is different from the type of the master ({master_type})"\
+                    .format(slave_id=slave_id, slave_type=slave_config.docker_container_class,
+                            master_type=config.docker_container_class)
+
+                raise RuntimeError(message)
 
         container = self.containers[id]
-        config = self.container_config[id]
-        zmq_address = "tcp://0.0.0.0:{}".format(config.port)
 
         if container.docker_container is not None:
             self.kill_container(id)
@@ -56,11 +71,22 @@ class ContainerRegistry:
         image = DockerImage(model, tag=version, registry=self.registry)
         image.pull()
 
-        container.docker_container = DockerContainer(image.name, config.command)
+        container.docker_container = container.docker_container_class(image.name)
         container.docker_container.add_port_mapping(config.port, WORKER_PROCESS_PORT)
-        container.docker_container.start()
 
-        container.socket.connect(zmq_address)
+        for slave_id in slaves:
+            slave_config = self.container_config[slave_id]
+            slave_container = self.containers[slave_id]
+            if slave_container.docker_container is not None:
+                self.kill_container(slave_id)
+
+            slave_container.master = container
+
+            for device in slave_config.devices:
+                container.docker_container.add_device(device)
+
+        container.docker_container.start()
+        container.socket.connect("tcp://0.0.0.0:{}".format(config.port))
 
     def kill_container(self, id: str):
         self.check_initialized()

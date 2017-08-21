@@ -1,4 +1,5 @@
 import subprocess
+import requests
 
 from .errors import DockerError
 
@@ -13,6 +14,8 @@ class DockerContainer:
         self.image_name = image_name
         self.command = command
         self.ports = {}
+        self.volumes = []
+        self.devices = []
         self.container_id = None
 
     def add_port_mapping(self, host_port, container_port):
@@ -23,6 +26,12 @@ class DockerContainer:
         """
 
         self.ports[host_port] = container_port
+
+    def add_device(self, name):
+        self.devices.append(name)
+
+    def add_volume(self, volume_spec):
+        self.volumes.append(volume_spec)
 
     def start(self):
         """
@@ -38,6 +47,14 @@ class DockerContainer:
 
         # Remove the container when it exits
         command.append("--rm")
+
+        # Bind volumes
+        for volume_spec in self.volumes:
+            command.append("--volume {}".format(volume_spec))
+
+        # Bind devices
+        for device in self.devices:
+            command.append("--device {}".format(device))
 
         # Positional args - the image of the container
         command.append(self.image_name)
@@ -87,3 +104,17 @@ class DockerContainer:
 
         # If the command output contains more than one line, the container was found (the first line is a header)
         return len(process.stdout.readlines()) > 1
+
+
+class NvidiaDockerContainer(DockerContainer):
+    def __init__(self, image_name: str):
+        super().__init__(image_name, "nvidia-docker")
+
+    def start(self):
+        nvidia_metadata = requests.get('http://localhost:3476/docker/cli/json').json()
+        volumes = nvidia_metadata.get("Volumes", [])
+
+        for volume_spec in volumes:
+            self.add_volume(volume_spec)
+
+        super().start()

@@ -20,3 +20,4 @@ class ModelSchema(Schema):
 class ReconfigureRequestSchema(Schema):
     model = fields.Nested(ModelSchema)
     container_id = fields.String()
+    slave_container_ids = fields.List(fields.String(), required=False)

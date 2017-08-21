@@ -4,7 +4,11 @@ registry: 0.0.0.0:6000
 containers:
   container_a:
     port: 9001
-    command: docker
+    type: nvidia
+    devices:
+      - /dev/nvidia0
   container_b:
     port: 9002
-    command: nvidia-docker
+    type: nvidia
+    devices:
+      - /dev/nvidia1
