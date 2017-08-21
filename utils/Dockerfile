@@ -8,4 +8,4 @@ RUN apt-get update && apt-get install --yes libzmq5 && pip install pyzmq
 
 EXPOSE 9999
 
-CMD python3 runner.py
+CMD python3 -u runner.py
