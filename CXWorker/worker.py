@@ -20,7 +20,9 @@ class Worker:
         self.config = {}
 
         for name, container in config_object.get("containers", {}).items():
-            self.config[name] = ContainerConfig(container["port"])
+            self.config[name] = ContainerConfig(container.get("port"), container.get("command"))
+            if self.config[name].port is None:
+                raise RuntimeError("Container {} needs to have a port configured")
 
         registry = config_object.get("registry", None)
         if registry is None:

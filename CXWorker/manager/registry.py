@@ -14,8 +14,9 @@ class Container:
 
 
 class ContainerConfig:
-    def __init__(self, port: int):
+    def __init__(self, port: int, command: str):
         self.port = port
+        self.command = command
 
 
 class ContainerRegistry:
@@ -55,7 +56,7 @@ class ContainerRegistry:
         image = DockerImage(model, tag=version, registry=self.registry)
         image.pull()
 
-        container.docker_container = DockerContainer(image.name)
+        container.docker_container = DockerContainer(image.name, config.command)
         container.docker_container.add_port_mapping(config.port, WORKER_PROCESS_PORT)
         container.docker_container.start()
 
