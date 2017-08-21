@@ -2,6 +2,8 @@ from flask import Flask, jsonify
 from functools import partial
 import logging
 
+from minio import Minio
+
 from ..manager.registry import ContainerRegistry
 from .errors import ClientActionError, AppError
 from .responses import ErrorResponse
@@ -32,10 +34,8 @@ def error_handler(http_code, error: AppError):
     return jsonify(response.dump()), http_code
 
 
-def create_app(registry: ContainerRegistry):
+def create_app():
     app = Flask(__name__)
-
-    app.register_blueprint(create_worker_blueprint(registry))
 
     app.register_error_handler(ClientActionError, partial(error_handler, 400))
     app.register_error_handler(AppError, partial(error_handler, 500))

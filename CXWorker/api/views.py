@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from minio import Minio
 
 from CXWorker.manager.registry import ContainerRegistry
 from .requests import StartJobRequest, InterruptJobRequest, ReconfigureRequest
@@ -20,7 +21,7 @@ def load_request(schema):
     return result
 
 
-def create_worker_blueprint(registry: ContainerRegistry):
+def create_worker_blueprint(registry: ContainerRegistry, minio: Minio):
     worker = Blueprint('worker', __name__)
 
     @worker.route('/start-job', methods=['POST'])

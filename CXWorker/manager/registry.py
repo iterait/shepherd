@@ -25,18 +25,9 @@ class Container:
 
 
 class ContainerRegistry:
-    def __init__(self):
+    def __init__(self, zmq_context: zmq.Context, registry: str, container_config: Mapping[str, ContainerConfig]):
         self.poller = zmq.Poller()
         self.containers = {}
-        self.container_config = {}
-        self.initialized = False
-        self.registry = ""
-
-    def check_initialized(self):
-        if not self.initialized:
-            raise RuntimeError("The registry was not initialized yet")
-
-    def initialize(self, zmq_context: zmq.Context, registry: str, container_config: Mapping[str, ContainerConfig]):
         self.container_config = container_config
         self.registry = registry
 
@@ -53,23 +44,19 @@ class ContainerRegistry:
             self.containers[name] = Container(socket, container_class)
             self.poller.register(socket, zmq.POLLIN)
 
-        self.initialized = True
-
     def start_container(self, id: str, model: str, version: str, slaves: Tuple[str, ...] = ()):
-        self.check_initialized()
         config = self.container_config[id]
+        container = self.containers[id]
 
         for slave_id in slaves:
-            slave_config = self.container_config[slave_id]
-            if slave_config.docker_container_class != config.docker_container_class:
+            slave_container = self.containers[slave_id]
+            if slave_container.docker_container_class != container.docker_container_class:
                 message = "The type of slave container {slave_id} ({slave_type}) " \
                           "is different from the type of the master ({master_type})"\
-                    .format(slave_id=slave_id, slave_type=slave_config.docker_container_class,
-                            master_type=config.docker_container_class)
+                    .format(slave_id=slave_id, slave_type=slave_container.docker_container_class,
+                            master_type=container.docker_container_class)
 
                 raise RuntimeError(message)
-
-        container = self.containers[id]
 
         if container.docker_container is not None:
             self.kill_container(id)
@@ -96,8 +83,6 @@ class ContainerRegistry:
         container.socket.connect("tcp://0.0.0.0:{}".format(config.port))
 
     def kill_container(self, id: str):
-        self.check_initialized()
-
         container = self.containers[id]
         zmq_address = "tcp://0.0.0.0:{}".format(self.container_config[id].port)
         container.socket.disconnect(zmq_address)
@@ -105,7 +90,6 @@ class ContainerRegistry:
         container.docker_container = None
 
     def send_input(self, container_id: str, input: bytes):
-        self.check_initialized()
         self.containers[container_id].socket.send_multipart([b"container", input])
 
     def wait_for_output(self) -> Generator[str, None, None]:
@@ -114,13 +98,11 @@ class ContainerRegistry:
         :return: a generator of ids of containers from which we received output
         """
 
-        self.check_initialized()
         result = self.poller.poll()
 
         return (id for id, container in self.containers.items() if (container.socket, zmq.POLLIN) in result)
 
     def read_output(self, container_id: str) -> str:
-        self.check_initialized()
         identity, message = self.containers[container_id].socket.recv_multipart()
         return message
 
@@ -129,8 +111,6 @@ class ContainerRegistry:
         Get status information for all containers
         :return: a generator of status information
         """
-
-        self.check_initialized()
 
         for name, container in self.containers.items():
             yield {

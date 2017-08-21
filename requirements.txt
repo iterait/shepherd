@@ -6,3 +6,4 @@ pyzmq
 gevent
 PyYaml
 requests
+minio
