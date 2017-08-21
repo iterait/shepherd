@@ -16,6 +16,12 @@ class Container:
         self.master = None
         self.docker_container_class = docker_container_class
         self.docker_container: DockerContainer = None
+        self.model_name = None
+        self.model_version = None
+
+    def set_model(self, name, version):
+        self.model_name = name
+        self.model_version = version
 
 
 class ContainerRegistry:
@@ -72,6 +78,7 @@ class ContainerRegistry:
         image.pull()
 
         container.docker_container = container.docker_container_class(image.name)
+        container.set_model(model, version)
         container.docker_container.add_port_mapping(config.port, WORKER_PROCESS_PORT)
 
         for slave_id in slaves:
@@ -128,10 +135,10 @@ class ContainerRegistry:
         for name, container in self.containers.items():
             yield {
                 "name": name,
-                "status": container.docker_container is not None and container.docker_container.running,
+                "running": container.docker_container is not None and container.docker_container.running,
                 "request": container.current_request,
-                "model_name": "",
-                "model_version": ""
+                "model_name": container.model_name,
+                "model_version": container.model_version
             }
 
     def kill_all(self):

@@ -95,7 +95,7 @@ class DockerContainer:
         if self.container_id is None:
             raise DockerError('The container was not started yet')
 
-        command = [self.command, 'ps', '--filter', 'id={}'.format(self.container_id)]
+        command = [self.command, 'ps', '--filter', 'id={}'.format(self.container_id.decode())]
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         rc = process.wait()
 
