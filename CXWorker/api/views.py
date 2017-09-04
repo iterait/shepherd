@@ -14,7 +14,11 @@ def load_request(schema):
     This function must be called from a request context.
     """
 
-    result, errors = schema.load(request.get_json())
+    json = request.get_json()
+    if json is None:
+        raise ClientActionError('The body must be a valid JSON document')
+
+    result, errors = schema.load(json)
     if errors:
         raise ClientActionError('Invalid value in fields {}'.format(', '.join(errors.keys())))
 
