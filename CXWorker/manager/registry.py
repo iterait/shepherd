@@ -118,7 +118,7 @@ class ContainerRegistry:
             yield {
                 "name": name,
                 "running": container.docker_container is not None and container.docker_container.running,
-                "request": container.current_request.id,
+                "request": container.current_request.id if container.current_request is not None else None,
                 "model_name": container.model_name,
                 "model_version": container.model_version
             }
