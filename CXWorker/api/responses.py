@@ -25,7 +25,8 @@ class StatusResponse(BaseResponse):
     def dump(self) -> dict:
         return {
             data['name']: {
-                'status': data['status'],
+                'running': data['running'],
+                'request': data['request'],
                 'model': {
                     'name': data['model_name'],
                     'version': data['model_version']
