@@ -1,5 +1,6 @@
-from typing import Mapping, Generator, Tuple
+from typing import Mapping, Generator, Tuple, Dict
 
+import logging
 import zmq.green as zmq
 
 from CXWorker.docker import DockerContainer, DockerImage
@@ -27,12 +28,12 @@ class Container:
 class ContainerRegistry:
     def __init__(self, zmq_context: zmq.Context, registry: str, container_config: Mapping[str, ContainerConfig]):
         self.poller = zmq.Poller()
-        self.containers = {}
+        self.containers: Dict[str, Container] = {}
         self.container_config = container_config
         self.registry = registry
 
         for name, config in container_config.items():
-            socket = zmq_context.socket(zmq.ROUTER)
+            socket = zmq_context.socket(zmq.DEALER)
 
             if config.type == "cpu":
                 container_class = DockerContainer
@@ -92,7 +93,7 @@ class ContainerRegistry:
     def send_input(self, container_id: str, request_metadata, input: bytes):
         container = self.containers[container_id]
         container.current_request = request_metadata
-        container.socket.send_multipart([b"container", input])
+        container.socket.send_multipart([input])
 
     def wait_for_output(self) -> Generator[str, None, None]:
         """
@@ -105,7 +106,7 @@ class ContainerRegistry:
         return (id for id, container in self.containers.items() if (container.socket, zmq.POLLIN) in result)
 
     def read_output(self, container_id: str) -> str:
-        identity, message = self.containers[container_id].socket.recv_multipart()
+        message, *_ = self.containers[container_id].socket.recv_multipart()
         return message
 
     def get_status(self) -> Generator[dict, None, None]:
