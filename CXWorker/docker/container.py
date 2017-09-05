@@ -1,5 +1,6 @@
 import subprocess
 import requests
+import logging
 
 from .errors import DockerError
 
@@ -62,9 +63,12 @@ class DockerContainer:
         # Launch the container and wait until the "run" commands finishes
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         rc = process.wait()
+        stderr = process.stderr.read()
 
+        if len(stderr):
+            logging.warning("Non-empty stderr when starting container: %s", stderr)
         if rc != 0:
-            raise DockerError('Running the container failed', rc, process.stderr.read())
+            raise DockerError('Running the container failed', rc, stderr)
 
         # Read the container ID from the standard output
         self.container_id = process.stdout.read().strip()
@@ -80,9 +84,12 @@ class DockerContainer:
         command = [self.command, 'kill', self.container_id]
         process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
         rc = process.wait()
+        stderr = process.stderr.read()
 
+        if len(stderr):
+            logging.warning("Non-empty stderr when starting container: %s", stderr)
         if rc != 0:
-            raise DockerError('Killing the container failed', rc, process.stderr.read())
+            raise DockerError('Killing the container failed', rc, stderr)
 
         self.container_id = None
 
