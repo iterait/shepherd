@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-StartJobRequest = namedtuple("StartJobRequest", ("id", "container_id", "source_url", "result_url"))
+StartJobRequest = namedtuple("StartJobRequest", ("id", "container_id", "source_url", "result_url", "status_url"))
 
 InterruptJobRequest = namedtuple("InterruptJobRequest", ("container_id", ))
 
