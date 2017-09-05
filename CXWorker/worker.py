@@ -2,6 +2,7 @@ import gevent
 from gevent.wsgi import WSGIServer
 import zmq.green as zmq
 from minio import Minio
+import logging
 
 from .api.views import create_worker_blueprint
 from .api import create_app
@@ -25,6 +26,8 @@ class Worker:
                            self.config.storage.secure)
 
     def run(self, host: str, port: int):
+        logging.basicConfig(level=logging.DEBUG)
+
         if self.config is None:
             raise RuntimeError("Configuration has not been loaded yet")
 
