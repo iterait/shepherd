@@ -6,12 +6,14 @@ from .errors import DockerError
 
 
 class DockerContainer:
-    def __init__(self, image_name: str, command: str = "docker"):
+    def __init__(self, repository_name: str, image_name: str, command: str = "docker"):
         """
+        :param repository_name: Name of the repository where the image is contained
         :param image_name: Name of the image from which the container will be created
         :param command: an alternate command used to manage containers (e.g. nvidia-docker)
         """
 
+        self.repository_name = repository_name
         self.image_name = image_name
         self.command = command
         self.ports = {}
@@ -58,7 +60,7 @@ class DockerContainer:
             command.append("--device {}".format(device))
 
         # Positional args - the image of the container
-        command.append(self.image_name)
+        command.append("{}/{}".format(self.repository_name, self.image_name))
 
         # Launch the container and wait until the "run" commands finishes
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

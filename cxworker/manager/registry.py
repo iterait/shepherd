@@ -65,7 +65,7 @@ class ContainerRegistry:
         image = DockerImage(model, tag=version, registry=self.registry)
         image.pull()
 
-        container.docker_container = container.docker_container_class(image.name)
+        container.docker_container = container.docker_container_class(self.registry, image.name)
         container.set_model(model, version)
         container.docker_container.add_port_mapping(config.port, WORKER_PROCESS_PORT)
 
