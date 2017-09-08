@@ -7,3 +7,4 @@ gevent
 PyYaml
 requests
 minio
+pip
