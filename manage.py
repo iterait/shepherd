@@ -1,6 +1,6 @@
 from flask_script import Manager, Shell
 
-from CXWorker.worker import Worker
+from cxworker.worker import Worker
 
 worker = Worker()
 manager = Manager(worker.app, with_default_commands=False)

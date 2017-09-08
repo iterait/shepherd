@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from minio import Minio
 
-from CXWorker.manager.registry import ContainerRegistry
+from cxworker.manager.registry import ContainerRegistry
 from .requests import StartJobRequest, InterruptJobRequest, ReconfigureRequest
 from .responses import StartJobResponse, InterruptJobResponse, StatusResponse, ReconfigureResponse
 from .schemas import StartJobRequestSchema, InterruptJobRequestSchema, ReconfigureRequestSchema
