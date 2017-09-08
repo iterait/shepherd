@@ -2,6 +2,8 @@ from argparse import ArgumentParser
 from collections import defaultdict
 import logging
 import zmq
+import os
+import sys
 
 from cxflow.cli.common import create_dataset, create_model
 from cxflow.cli.util import validate_config, find_config
@@ -28,6 +30,8 @@ def jsonify(data: dict):
 
 
 def runner():
+    sys.path.insert(0, os.getcwd())
+
     # basic setup
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
     parser = ArgumentParser('cxworker runner')
