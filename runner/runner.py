@@ -1,11 +1,11 @@
 from argparse import ArgumentParser
 from collections import defaultdict
+import json
 import logging
-import zmq
+import numpy as np
 import os
 import sys
-import json
-import numpy as np
+import zmq
 
 from cxflow.cli.common import create_dataset, create_model
 from cxflow.cli.util import validate_config, find_config
@@ -83,6 +83,7 @@ def runner():
             for key, val in res_batch.items():
                 result[key].append(val)
 
+        logging.info('JSONify')
         result_json = to_json_serializable(result)
         encoded_result = json.dumps(result_json).encode()
 
