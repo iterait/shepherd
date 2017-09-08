@@ -42,7 +42,7 @@ def runner():
 
     # load config
     logging.info('Loading config')
-    config_path = find_config(args.config)
+    config_path = find_config(args.config_path)
     config = load_config(config_file=config_path, additional_args=[])
     assert 'predict' in config
     for section in ['dataset', 'model']:
@@ -58,7 +58,7 @@ def runner():
 
     # load model
     logging.info('Creating model')
-    model = create_model(config, None, dataset, args.config)
+    model = create_model(config, None, dataset, args.config_path)
 
     # start the loop
     logging.info('Starting the loop')
