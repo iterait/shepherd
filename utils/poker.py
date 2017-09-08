@@ -10,7 +10,7 @@ def cli(container_ip, payload_file):
         context = zmq.Context()
         socket = context.socket(zmq.DEALER)
         socket.connect("tcp://" + container_ip)
-        socket.send_multipart([payload])
+        socket.send_multipart([payload.read()])
         response, *_ = socket.recv_multipart()
         print(response)
 

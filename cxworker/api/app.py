@@ -2,12 +2,8 @@ from flask import Flask, jsonify
 from functools import partial
 import logging
 
-from minio import Minio
-
-from ..manager.registry import ContainerRegistry
 from .errors import ClientActionError, AppError
 from .responses import ErrorResponse
-from .views import create_worker_blueprint
 
 
 def internal_error_handler(error: Exception):

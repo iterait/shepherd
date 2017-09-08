@@ -3,8 +3,8 @@ from typing import Mapping, Generator, Tuple, Dict
 import logging
 import zmq.green as zmq
 
-from CXWorker.docker import DockerContainer, DockerImage
-from CXWorker.docker.container import NvidiaDockerContainer
+from cxworker.docker import DockerContainer, DockerImage
+from cxworker.docker.container import NvidiaDockerContainer
 from .config import ContainerConfig
 
 WORKER_PROCESS_PORT = 9999
