@@ -4,29 +4,30 @@ import logging
 import zmq
 import os
 import sys
+import json
+import numpy as np
 
 from cxflow.cli.common import create_dataset, create_model
 from cxflow.cli.util import validate_config, find_config
 from cxflow.utils import load_config
 
 
-def jsonify(data: dict):
-    """JSONify a dict of jsonifable objects (dict, list, numpy array)."""
+def to_json_serializable(data):
+    """Make an object containing numpy arrays/scalars JSON serializable."""
 
-    json_data = dict()
-    for key, value in data.items():
-        if isinstance(value, list): # for lists
-            value = [jsonify(item) if isinstance(item, dict) else item for item in value]
-        elif isinstance(value, dict): # for nested lists
-            value = jsonify(value)
-        elif isinstance(key, int): # if key is integer: > to string
-            key = str(key)
-        elif type(value).__module__ == 'numpy': # if value is numpy.*: > to python list
-            value = value.tolist()
-        else:
-            raise ValueError('Unsupported value type: `{}`'.format(type(value)))
-        json_data[key] = value
-    return json_data
+    if isinstance(data, dict):
+        return {key: to_json_serializable(value) for key, value in data.items()}
+    elif isinstance(data, list):
+        return [to_json_serializable(v) for v in data]
+    elif isinstance(data, np.ndarray):
+        return data.tolist()
+    elif np.isscalar(data):
+        if isinstance(data, np.float_):
+            return float(data)
+        elif isinstance(data, np.int_):
+            return int(data)
+    else:
+        raise ValueError('Unsupported JSON type `{}` (key `{}`)'.format(type(data), data))
 
 
 def runner():
@@ -70,6 +71,9 @@ def runner():
         logging.info('Waiting for payload')
         identity, payload, *_ = socket.recv_multipart()
 
+        payload = payload.decode()
+        payload = json.loads(payload)
+
         logging.info('Running the model')
         result_batches = [model.run(batch, train=False) for batch in dataset.predict_stream(payload)]
 
@@ -79,7 +83,12 @@ def runner():
             for key, val in res_batch.items():
                 result[key].append(val)
 
-        result_json = jsonify(result)
+        result_json = to_json_serializable(result)
+        encoded_result = json.dumps(result_json).encode()
 
         logging.info('Sending result')
-        socket.send_multipart([identity, result_json])
+        socket.send_multipart([identity, encoded_result])
+
+
+if __name__ == '__main__':
+    runner()
