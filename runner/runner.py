@@ -22,10 +22,7 @@ def to_json_serializable(data):
     elif isinstance(data, np.ndarray):
         return data.tolist()
     elif np.isscalar(data):
-        if isinstance(data, np.float_):
-            return float(data)
-        elif isinstance(data, np.int_):
-            return int(data)
+        return data
     else:
         raise ValueError('Unsupported JSON type `{}` (key `{}`)'.format(type(data), data))
 
@@ -81,7 +78,7 @@ def runner():
         result = defaultdict(list)
         for res_batch in result_batches:
             for key, val in res_batch.items():
-                result[key].append(val)
+                result[key] += val.tolist()
 
         logging.info('JSONify')
         result_json = to_json_serializable(result)
