@@ -1,5 +1,6 @@
 import click
 import zmq
+import sys
 
 
 @click.command()
@@ -10,9 +11,17 @@ def cli(container_ip, payload_file):
         context = zmq.Context()
         socket = context.socket(zmq.DEALER)
         socket.connect("tcp://" + container_ip)
-        socket.send_multipart([payload.read()])
-        response, *_ = socket.recv_multipart()
-        print(response)
+        socket.send_multipart([b"input", payload.read()])
+        message_type, response, *_ = socket.recv_multipart()
+
+        if message_type == b"output":
+            print(response)
+        elif message_type == b"error":
+            print(response, file=sys.stderr)
+            sys.exit(1)
+        else:
+            print("Unknown message received - type: {}, content: {}".format(message_type, response), file=sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
