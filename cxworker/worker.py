@@ -14,7 +14,7 @@ from .manager.output_listener import OutputListener
 class Worker:
     def __init__(self):
         self.zmq_context = zmq.Context()
-        self.app = create_app()
+        self.app = create_app(__name__)
         self.registry = None
         self.minio = None
         self.config: WorkerConfig = None

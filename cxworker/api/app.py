@@ -30,8 +30,8 @@ def error_handler(http_code, error: AppError):
     return jsonify(response.dump()), http_code
 
 
-def create_app():
-    app = Flask(__name__)
+def create_app(name: str):
+    app = Flask(name)
 
     app.register_error_handler(ClientActionError, partial(error_handler, 400))
     app.register_error_handler(AppError, partial(error_handler, 500))
