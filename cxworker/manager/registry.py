@@ -5,6 +5,7 @@ import zmq.green as zmq
 
 from cxworker.docker import DockerContainer, DockerImage
 from cxworker.docker.container import NvidiaDockerContainer
+from .errors import ContainerError
 from .config import ContainerConfig
 
 WORKER_PROCESS_PORT = 9999
@@ -93,7 +94,7 @@ class ContainerRegistry:
     def send_input(self, container_id: str, request_metadata, input: bytes):
         container = self.containers[container_id]
         container.current_request = request_metadata
-        container.socket.send_multipart([input])
+        container.socket.send_multipart([b"input", input])
 
     def wait_for_output(self) -> Generator[str, None, None]:
         """
@@ -106,8 +107,14 @@ class ContainerRegistry:
         return (id for id, container in self.containers.items() if (container.socket, zmq.POLLIN) in result)
 
     def read_output(self, container_id: str) -> str:
-        message, *_ = self.containers[container_id].socket.recv_multipart()
-        return message
+        message_type, message, *_ = self.containers[container_id].socket.recv_multipart()
+
+        if message_type == "output":
+            return message
+        elif message_type == "error":
+            raise ContainerError("The container encountered an error: " + message)
+        else:
+            raise ContainerError("The container responded with an unknown message type " + message_type)
 
     def get_status(self) -> Generator[dict, None, None]:
         """

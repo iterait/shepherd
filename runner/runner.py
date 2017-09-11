@@ -27,6 +27,10 @@ def to_json_serializable(data):
         raise ValueError('Unsupported JSON type `{}` (key `{}`)'.format(type(data), data))
 
 
+def send_error(socket: zmq.Socket, identity: bytes, message: bytes):
+    socket.send_multipart([identity, b"error", message])
+
+
 def runner():
     sys.path.insert(0, os.getcwd())
 
@@ -64,28 +68,35 @@ def runner():
 
     # start the loop
     logging.info('Starting the loop')
+
     while True:
         logging.info('Waiting for payload')
-        identity, payload, *_ = socket.recv_multipart()
+        identity, message_type, payload, *_ = socket.recv_multipart()
 
-        payload = payload.decode()
-        payload = json.loads(payload)
+        if message_type == b"input":
+            try:
+                payload = payload.decode()
+                payload = json.loads(payload)
 
-        logging.info('Running the model')
-        result_batches = [model.run(batch, train=False) for batch in dataset.predict_stream(payload)]
+                logging.info('Running the model')
+                result_batches = [model.run(batch, train=False) for batch in dataset.predict_stream(payload)]
 
-        logging.info('Processing the results')
-        result = defaultdict(list)
-        for res_batch in result_batches:
-            for key, val in res_batch.items():
-                result[key] += val.tolist()
+                logging.info('Processing the results')
+                result = defaultdict(list)
+                for res_batch in result_batches:
+                    for key, val in res_batch.items():
+                        result[key] += val.tolist()
 
-        logging.info('JSONify')
-        result_json = to_json_serializable(result)
-        encoded_result = json.dumps(result_json).encode()
+                logging.info('JSONify')
+                result_json = to_json_serializable(result)
+                encoded_result = json.dumps(result_json).encode()
 
-        logging.info('Sending result')
-        socket.send_multipart([identity, encoded_result])
+                logging.info('Sending result')
+                socket.send_multipart([identity, b"output", encoded_result])
+            except BaseException as e:
+                send_error(socket, identity, str(e).encode())
+        else:
+            send_error(socket, identity, b"Unknown message type received")
 
 
 if __name__ == '__main__':
