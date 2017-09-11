@@ -28,6 +28,8 @@ setup(name='cxworker',
                 ],
       include_package_data=True,
       zip_safe=False,
+      setup_requires=['pytest-runner'],
+      tests_require=['pytest'],
       install_requires=[str(ir.req) for ir in parse_requirements('requirements.txt', session='hack')],
       entry_points={
           'console_scripts': [
