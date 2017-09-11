@@ -1,5 +1,5 @@
+click
 Flask
-Flask-Script
 marshmallow
 simplejson
 pyzmq
