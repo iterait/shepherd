@@ -12,9 +12,10 @@ def cli(ctx):
     ctx.obj = worker.app
 
 
-@click.option("-h", "--host", dest="host", default="", help="The host name to which the HTTP API should bind")
-@click.option("-p", "--port", dest="port", default=5000, help="The port to which the HTTP API should bind")
-@click.option("-c", "--config", dest="config_file", default="cxworker.yml", help="Path to a configuration file")
+@click.command()
+@click.option("-h", "--host", default="", help="The host name to which the HTTP API should bind")
+@click.option("-p", "--port", default=5000, help="The port to which the HTTP API should bind")
+@click.option("-c", "--config", "config_file", default="cxworker.yml", help="Path to a configuration file")
 def run_worker(host, port, config_file):
     with open(config_file, "r") as config:
         worker.load_config(config)
