@@ -115,9 +115,9 @@ class ContainerRegistry:
         if message_type == "output":
             return message
         elif message_type == "error":
-            raise ContainerError("The container encountered an error: " + message)
+            raise ContainerError("The container encountered an error: " + message.decode())
         else:
-            raise ContainerError("The container responded with an unknown message type " + message_type)
+            raise ContainerError("The container responded with an unknown message type " + message_type.decode())
 
     def get_status(self) -> Generator[dict, None, None]:
         """
