@@ -6,7 +6,7 @@ from .errors import DockerError
 
 
 class DockerContainer:
-    def __init__(self, repository_name: str, image_name: str, command: str = "docker"):
+    def __init__(self, repository_name: str, image_name: str, autoremove: bool, command: str = "docker"):
         """
         :param repository_name: Name of the repository where the image is contained
         :param image_name: Name of the image from which the container will be created
@@ -15,6 +15,7 @@ class DockerContainer:
 
         self.repository_name = repository_name
         self.image_name = image_name
+        self.autoremove = autoremove
         self.command = command
         self.ports = {}
         self.volumes = []
@@ -48,8 +49,9 @@ class DockerContainer:
         for host_port, container_port in self.ports.items():
             command += ['-p', '127.0.0.1:{host}:{container}'.format(host=host_port, container=container_port)]
 
-        # Remove the container when it exits
-        command.append("--rm")
+        # If desired, remove the container when it exits
+        if self.autoremove:
+            command.append("--rm")
 
         # Bind volumes
         for volume_spec in self.volumes:
@@ -116,8 +118,8 @@ class DockerContainer:
 
 
 class NvidiaDockerContainer(DockerContainer):
-    def __init__(self, image_name: str):
-        super().__init__(image_name, "nvidia-docker")
+    def __init__(self, repository: str, image_name: str, autoremove: bool):
+        super().__init__(repository, image_name, autoremove, "nvidia-docker")
 
     def start(self):
         nvidia_metadata = requests.get('http://localhost:3476/docker/cli/json').json()

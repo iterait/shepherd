@@ -18,13 +18,15 @@ class StorageConfig:
 
 
 class WorkerConfig:
-    def __init__(self, registry: str, storage: StorageConfig, containers: Mapping[str, ContainerConfig]):
+    def __init__(self, registry: str, storage: StorageConfig, containers: Mapping[str, ContainerConfig],
+                 autoremove_containers: bool):
         self.registry = registry
         self.storage = storage
         self.containers = containers
+        self.autoremove_containers = autoremove_containers
 
 
-def load_config(config_stream):
+def load_config(config_stream) -> WorkerConfig:
     config_object = yaml.load(config_stream)
     containers = {}
 
@@ -43,4 +45,4 @@ def load_config(config_stream):
 
     storage = StorageConfig(**storage_config)
 
-    return WorkerConfig(registry, storage, containers)
+    return WorkerConfig(registry, storage, containers, bool(containers.get("autoremove_containers", True)))

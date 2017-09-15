@@ -27,11 +27,13 @@ class Container:
 
 
 class ContainerRegistry:
-    def __init__(self, zmq_context: zmq.Context, registry: str, container_config: Mapping[str, ContainerConfig]):
+    def __init__(self, zmq_context: zmq.Context, registry: str, container_config: Mapping[str, ContainerConfig],
+                 autoremove_containers: bool):
         self.poller = zmq.Poller()
         self.containers: Dict[str, Container] = {}
         self.container_config = container_config
         self.registry = registry
+        self.autoremove_containers = autoremove_containers
 
         for name, config in container_config.items():
             socket = zmq_context.socket(zmq.DEALER)
@@ -66,7 +68,8 @@ class ContainerRegistry:
         image = DockerImage(model, tag=version, registry=self.registry)
         image.pull()
 
-        container.docker_container = container.docker_container_class(self.registry, image.name)
+        container.docker_container = container.docker_container_class(self.registry, image.name,
+                                                                      self.autoremove_containers)
         container.set_model(model, version)
         container.docker_container.add_port_mapping(config.port, WORKER_PROCESS_PORT)
 
