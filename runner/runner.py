@@ -1,3 +1,4 @@
+import re
 from argparse import ArgumentParser
 from collections import defaultdict
 import json
@@ -58,11 +59,13 @@ def runner():
     validate_config(config)
     logging.debug('Loaded config: %s', config)
 
-    # load config
+    config["model"]["n_gpus"] = len([s for s in os.listdir("/dev") if re.search(r'nvidia[0-9]+', s) is not None])
+
+    # create dataset
     logging.info('Creating dataset')
     dataset = create_dataset(config, None)
 
-    # load model
+    # create model
     logging.info('Creating model')
     model = create_model(config, None, dataset, args.config_path)
 
