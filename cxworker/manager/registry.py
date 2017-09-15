@@ -112,9 +112,9 @@ class ContainerRegistry:
     def read_output(self, container_id: str) -> str:
         message_type, message, *_ = self.containers[container_id].socket.recv_multipart()
 
-        if message_type == "output":
+        if message_type == b"output":
             return message
-        elif message_type == "error":
+        elif message_type == b"error":
             raise ContainerError("The container encountered an error: " + message.decode())
         else:
             raise ContainerError("The container responded with an unknown message type " + message_type.decode())
