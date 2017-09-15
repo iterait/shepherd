@@ -45,4 +45,4 @@ def load_config(config_stream) -> WorkerConfig:
 
     storage = StorageConfig(**storage_config)
 
-    return WorkerConfig(registry, storage, containers, bool(containers.get("autoremove_containers", True)))
+    return WorkerConfig(registry, storage, containers, bool(config_object.get("autoremove_containers", True)))
