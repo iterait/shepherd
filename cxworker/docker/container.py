@@ -75,7 +75,10 @@ class DockerContainer:
             raise DockerError('Running the container failed', rc, stderr)
 
         # Read the container ID from the standard output
-        self.container_id = process.stdout.read().strip()
+        stdout = process.stdout.read().strip()
+        logging.debug("Received '%s' from docker", stdout)
+
+        self.container_id = stdout
 
     def kill(self):
         """
@@ -91,7 +94,7 @@ class DockerContainer:
         stderr = process.stderr.read()
 
         if len(stderr):
-            logging.warning("Non-empty stderr when starting container: %s", stderr)
+            logging.warning("Non-empty stderr when killing container: %s", stderr)
         if rc != 0:
             raise DockerError('Killing the container failed', rc, stderr)
 
