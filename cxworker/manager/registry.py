@@ -73,6 +73,9 @@ class ContainerRegistry:
         container.set_model(model, version)
         container.docker_container.add_port_mapping(config.port, WORKER_PROCESS_PORT)
 
+        for device in config.devices:
+            container.docker_container.add_device(device)
+
         for slave_id in slaves:
             slave_config = self.container_config[slave_id]
             slave_container = self.containers[slave_id]
