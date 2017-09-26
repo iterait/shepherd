@@ -55,11 +55,13 @@ class DockerContainer:
 
         # Bind volumes
         for volume_spec in self.volumes:
-            command.append("--volume {}".format(volume_spec))
+            command.append("--volume")
+            command.append(volume_spec)
 
         # Bind devices
         for device in self.devices:
-            command.append("--device {}".format(device))
+            command.append("--device")
+            command.append(device)
 
         # Positional args - the image of the container
         command.append("{}/{}".format(self.repository_name, self.image_name))
