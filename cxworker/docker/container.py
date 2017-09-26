@@ -131,4 +131,7 @@ class NvidiaDockerContainer(DockerContainer):
         for volume_spec in volumes:
             self.add_volume(volume_spec)
 
+        self.add_device("/dev/nvidia-uvm")
+        self.add_device("/dev/nvidiactl")
+
         super().start()
