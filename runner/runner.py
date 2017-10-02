@@ -79,7 +79,6 @@ def runner():
         if message_type == b"input":
             try:
                 payload = payload.decode()
-                payload = json.loads(payload)
 
                 logging.info('Running the model')
                 result_batches = [model.run(batch, train=False) for batch in dataset.predict_stream(payload)]
