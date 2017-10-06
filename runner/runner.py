@@ -80,14 +80,22 @@ def runner():
             try:
                 payload = payload.decode()
 
-                logging.info('Running the model')
-                result_batches = [model.run(batch, train=False) for batch in dataset.predict_stream(payload)]
-
-                logging.info('Processing the results')
+                logging.info('Payload accepted')
                 result = defaultdict(list)
-                for res_batch in result_batches:
-                    for key, val in res_batch.items():
-                        result[key] += val.tolist()
+                for input_batch in dataset.predict_stream(payload):
+                    logging.info('Another batch (%s)', list(input_batch.keys()))
+                    output_batch = model.run(input_batch, train=False)
+                    if hasattr(dataset, 'postprocess_batch'):
+                        logging.info('\tPostprocessing')
+                        postprocessed_batch = dataset.postprocess_batch({**input_batch, **output_batch})
+                        logging.info('\tdone')
+                        output_batch = {**output_batch, **postprocessed_batch}
+                    else:
+                        logging.info('Skipping postprocessing')
+
+                    result_batch = {**input_batch, **output_batch}
+                    for source, value in result_batch.items():
+                        result[source] += list(value)
 
                 logging.info('JSONify')
                 result_json = to_json_serializable(result)
