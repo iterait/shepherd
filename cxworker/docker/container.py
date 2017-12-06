@@ -6,7 +6,7 @@ from .errors import DockerError
 
 
 class DockerContainer:
-    def __init__(self, repository_name: str, image_name: str, autoremove: bool, command: str = "docker"):
+    def __init__(self, repository_name: str, image_name: str, autoremove: bool, command: str = "docker", runtime: str = None):
         """
         :param repository_name: Name of the repository where the image is contained
         :param image_name: Name of the image from which the container will be created
@@ -21,6 +21,7 @@ class DockerContainer:
         self.volumes = []
         self.devices = []
         self.container_id = None
+        self.runtime = runtime
 
     def add_port_mapping(self, host_port, container_port):
         """
@@ -123,7 +124,7 @@ class DockerContainer:
         return len(process.stdout.readlines()) > 1
 
 
-class NvidiaDockerContainer(DockerContainer):
+class LegacyNvidiaDockerContainer(DockerContainer):
     def __init__(self, repository: str, image_name: str, autoremove: bool):
         super().__init__(repository, image_name, autoremove, "nvidia-docker")
 
@@ -138,3 +139,8 @@ class NvidiaDockerContainer(DockerContainer):
         self.add_device("/dev/nvidiactl")
 
         super().start()
+
+
+class NvidiaDockerContainer(DockerContainer):
+    def __init__(self, repository: str, image_name: str, autoremove: bool):
+        super().__init__(repository, image_name, autoremove, runtime="nvidia")

@@ -4,7 +4,7 @@ import logging
 import zmq.green as zmq
 
 from cxworker.docker import DockerContainer, DockerImage
-from cxworker.docker.container import NvidiaDockerContainer
+from cxworker.docker.container import NvidiaDockerContainer, LegacyNvidiaDockerContainer
 from .errors import ContainerError
 from .config import ContainerConfig
 
@@ -42,6 +42,8 @@ class ContainerRegistry:
                 container_class = DockerContainer
             elif config.type == "nvidia":
                 container_class = NvidiaDockerContainer
+            elif config.type == "nvidia-legacy":
+                container_class = LegacyNvidiaDockerContainer
             else:
                 raise RuntimeError("Unknown container type: {}".format(config.type))
 
