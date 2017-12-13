@@ -6,7 +6,7 @@ import zmq.green as zmq
 from cxworker.docker import DockerContainer, DockerImage
 from cxworker.docker.container import NvidiaDockerContainer, LegacyNvidiaDockerContainer
 from .errors import ContainerError
-from .config import ContainerConfig
+from .config import ContainerConfig, RegistryConfig
 
 WORKER_PROCESS_PORT = 9999
 
@@ -27,7 +27,7 @@ class Container:
 
 
 class ContainerRegistry:
-    def __init__(self, zmq_context: zmq.Context, registry: str, container_config: Mapping[str, ContainerConfig],
+    def __init__(self, zmq_context: zmq.Context, registry: RegistryConfig, container_config: Mapping[str, ContainerConfig],
                  autoremove_containers: bool):
         self.poller = zmq.Poller()
         self.containers: Dict[str, Container] = {}
@@ -70,7 +70,7 @@ class ContainerRegistry:
         image = DockerImage(model, tag=version, registry=self.registry)
         image.pull()
 
-        container.docker_container = container.docker_container_class(self.registry, image.name,
+        container.docker_container = container.docker_container_class(self.registry.url, image.name,
                                                                       self.autoremove_containers)
         container.set_model(model, version)
         container.docker_container.add_port_mapping(config.port, WORKER_PROCESS_PORT)

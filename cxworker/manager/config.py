@@ -17,8 +17,15 @@ class StorageConfig:
         self.secure = secure
 
 
+class RegistryConfig:
+    def __init__(self, url, username=None, password=None):
+        self.url = url
+        self.username = username
+        self.password = password
+
+
 class WorkerConfig:
-    def __init__(self, registry: str, storage: StorageConfig, containers: Mapping[str, ContainerConfig],
+    def __init__(self, registry: RegistryConfig, storage: StorageConfig, containers: Mapping[str, ContainerConfig],
                  autoremove_containers: bool):
         self.registry = registry
         self.storage = storage
@@ -35,9 +42,11 @@ def load_config(config_stream) -> WorkerConfig:
         if containers[name].port is None:
             raise RuntimeError("Container {} needs to have a port configured")
 
-    registry = config_object.get("registry", None)
-    if registry is None:
+    registry_config = config_object.get("registry", None)
+    if registry_config is None:
         raise RuntimeError("The Docker registry address has to be configured")
+
+    registry = RegistryConfig(**registry_config)
 
     storage_config = config_object.get("storage")
     if storage_config is None:
