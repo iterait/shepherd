@@ -6,6 +6,8 @@ import logging
 import numpy as np
 import os
 import sys
+
+import traceback
 import zmq
 
 from cxflow.cli.common import create_dataset, create_model
@@ -28,8 +30,8 @@ def to_json_serializable(data):
         raise ValueError('Unsupported JSON type `{}` (key `{}`)'.format(type(data), data))
 
 
-def send_error(socket: zmq.Socket, identity: bytes, message: bytes):
-    socket.send_multipart([identity, b"error", message])
+def send_error(socket: zmq.Socket, identity: bytes, message: bytes, additional_message: bytes = None):
+    socket.send_multipart([identity, b"error", message] + ([additional_message] if additional_message is not None else []))
 
 
 def runner():
@@ -104,7 +106,7 @@ def runner():
                 logging.info('Sending result')
                 socket.send_multipart([identity, b"output", encoded_result])
             except BaseException as e:
-                send_error(socket, identity, str(e).encode())
+                send_error(socket, identity, "{}: {}".format(type(e).__name__, str(e), traceback.format_tb(e.__traceback__)).encode())
         else:
             send_error(socket, identity, b"Unknown message type received")
 

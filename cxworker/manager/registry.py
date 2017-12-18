@@ -115,11 +115,14 @@ class ContainerRegistry:
         return (id for id, container in self.containers.items() if (container.socket, zmq.POLLIN) in result)
 
     def read_output(self, container_id: str) -> str:
-        message_type, message, *_ = self.containers[container_id].socket.recv_multipart()
+        message_type, message, *rest = self.containers[container_id].socket.recv_multipart()
 
         if message_type == b"output":
             return message
         elif message_type == b"error":
+            if len(rest) >= 1:
+                logging.error("Received error traceback:")
+                logging.error(rest[0])
             raise ContainerError("The container encountered an error: " + message.decode())
         else:
             raise ContainerError("The container responded with an unknown message type " + message_type.decode())
