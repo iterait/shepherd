@@ -89,13 +89,13 @@ def runner():
                     output_batch = model.run(input_batch, train=False)
                     if hasattr(dataset, 'postprocess_batch'):
                         logging.info('\tPostprocessing')
-                        postprocessed_batch = dataset.postprocess_batch({**input_batch, **output_batch})
+                        result_batch = dataset.postprocess_batch(input_batch=input_batch,
+                                                                 output_batch=output_batch)
                         logging.info('\tdone')
-                        output_batch = {**output_batch, **postprocessed_batch}
                     else:
                         logging.info('Skipping postprocessing')
+                        result_batch = output_batch
 
-                    result_batch = {**input_batch, **output_batch}
                     for source, value in result_batch.items():
                         result[source] += list(value)
 
