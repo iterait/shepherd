@@ -106,6 +106,7 @@ def runner():
                 logging.info('Sending result')
                 socket.send_multipart([identity, b"output", encoded_result])
             except BaseException as e:
+                logging.exception(e)
                 send_error(socket, identity, "{}: {}".format(type(e).__name__, str(e), traceback.format_tb(e.__traceback__)).encode())
         else:
             send_error(socket, identity, b"Unknown message type received")
