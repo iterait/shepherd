@@ -24,6 +24,9 @@ class OutputListener:
             for id in container_ids:
                 request = self.registry.get_current_request(id)
 
+                if request is None:
+                    continue  # TODO containers without a request should not send any output - investigate!
+
                 try:
                     output = self.registry.read_output(id)
                     self.minio.put_object(request.id, request.result_url, BytesIO(output), len(output))
