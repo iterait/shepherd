@@ -1,8 +1,17 @@
-from collections import namedtuple
+from typing import NamedTuple
 
-StartJobRequest = namedtuple("StartJobRequest", ("id", "container_id", "source_url", "result_url", "status_url"))
 
-InterruptJobRequest = namedtuple("InterruptJobRequest", ("container_id", ))
+class StartJobRequest(NamedTuple):
+    id: str
+    container_id: str
+    source_url: str
+    result_url: str
+    status_url: str
+    refresh_model: bool = False
+
+
+class InterruptJobRequest(NamedTuple):
+    container_id: str
 
 
 class ReconfigureRequest:

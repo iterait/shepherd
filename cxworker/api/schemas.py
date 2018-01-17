@@ -7,6 +7,7 @@ class StartJobRequestSchema(Schema):
     source_url = fields.String()
     result_url = fields.String()
     status_url = fields.Url(missing=None, allow_none=True)
+    refresh_model = fields.Boolean(missing=False)
 
 
 class InterruptJobRequestSchema(Schema):

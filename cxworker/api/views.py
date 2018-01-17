@@ -35,6 +35,9 @@ def create_worker_blueprint(registry: ContainerRegistry, minio: Minio):
 
         payload = minio.get_object(start_job_request.id, start_job_request.source_url).read()
 
+        if start_job_request.refresh_model:
+            registry.refresh_model(start_job_request.container_id)
+
         registry.send_input(start_job_request.container_id, start_job_request, payload)
 
         return jsonify(StartJobResponse().dump())

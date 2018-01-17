@@ -1,6 +1,9 @@
 from typing import Mapping, Generator, Tuple, Dict
 
 import logging
+
+import requests
+from requests.auth import HTTPBasicAuth
 import zmq.green as zmq
 
 from cxworker.docker import DockerContainer, DockerImage
@@ -20,6 +23,7 @@ class Container:
         self.docker_container: DockerContainer = None
         self.model_name = None
         self.model_version = None
+        self.layer_checksums = None
 
     def set_model(self, name, version):
         self.model_name = name
@@ -67,6 +71,7 @@ class ContainerRegistry:
         if container.docker_container is not None:
             self.kill_container(id)
 
+        container.layer_checksums = self.fetch_image_checksums(model, version)
         image = DockerImage(model, tag=version, registry=self.registry)
         image.pull()
 
@@ -91,6 +96,35 @@ class ContainerRegistry:
 
         container.docker_container.start()
         container.socket.connect("tcp://0.0.0.0:{}".format(config.port))
+
+    def fetch_image_checksums(self, name, version):
+        try:
+            response = requests.get("https://{registry}/v2/{model}/manifests/{version}".format(
+                registry=self.registry.url,
+                model=name,
+                version=version
+            ), auth=HTTPBasicAuth(self.registry.username, self.registry.password))
+        except ConnectionError:
+            raise ConnectionError("Could not reach the registry")
+
+        if response.status_code != 200:
+            raise ConnectionError("The registry returned an error")
+
+        return "".join(layer["blobSum"].split(":")[1] for layer in response.json()["fsLayers"])
+
+    def refresh_model(self, container_id: str):
+        container = self.containers[container_id]
+
+        try:
+            current_sums = self.fetch_image_checksums(container.model_name, container.model_version)
+        except ConnectionError as e:
+            logging.error("Could not refresh the image: %s", str(e))
+            return
+
+        # If the checksums don't match, restart the container, which results in an update
+        if container.layer_checksums != current_sums:
+            current_slaves = tuple(id for id, c in self.containers.items() if c.master == container)
+            self.start_container(container_id, container.model_name, container.model_version, current_slaves)
 
     def kill_container(self, id: str):
         container = self.containers[id]

@@ -48,4 +48,7 @@ class OutputListener:
     @staticmethod
     def _send_status(request, data: dict):
         if request.status_url is not None:
-            requests.post(request.status_url, json=data)
+            try:
+                requests.post(request.status_url, json=data)
+            except ConnectionError:
+                logging.error("Failed to set status for request %s", request.id)
