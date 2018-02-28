@@ -86,7 +86,7 @@ def runner():
                 result = defaultdict(list)
                 for input_batch in dataset.predict_stream(payload):
                     logging.info('Another batch (%s)', list(input_batch.keys()))
-                    output_batch = model.run(input_batch, train=False)
+                    output_batch = model.run(input_batch, train=False, stream=None)
                     if hasattr(dataset, 'postprocess_batch'):
                         logging.info('\tPostprocessing')
                         result_batch = dataset.postprocess_batch(input_batch=input_batch,
