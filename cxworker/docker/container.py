@@ -1,4 +1,7 @@
+import re
 import subprocess
+from typing import Dict
+
 import requests
 import logging
 
@@ -6,7 +9,8 @@ from .errors import DockerError
 
 
 class DockerContainer:
-    def __init__(self, repository_name: str, image_name: str, autoremove: bool, command: str = "docker", runtime: str = None):
+    def __init__(self, repository_name: str, image_name: str, autoremove: bool, command: str = "docker",
+                 runtime: str = None, env: Dict[str, str] = None):
         """
         :param repository_name: Name of the repository where the image is contained
         :param image_name: Name of the image from which the container will be created
@@ -22,6 +26,7 @@ class DockerContainer:
         self.devices = []
         self.container_id = None
         self.runtime = runtime
+        self.env = env or {}
 
     def add_port_mapping(self, host_port, container_port):
         """
@@ -50,9 +55,20 @@ class DockerContainer:
         for host_port, container_port in self.ports.items():
             command += ['-p', '127.0.0.1:{host}:{container}'.format(host=host_port, container=container_port)]
 
+        # Set environment variables
+        if self.env:
+            command.append("-e")
+
+            for key, value in self.env.items():
+                command.append("{}={}".format(key, value))
+
         # If desired, remove the container when it exits
         if self.autoremove:
             command.append("--rm")
+
+        # Set runtime
+        if self.runtime:
+            command.append("--runtime={}".format(self.runtime))
 
         # Bind volumes
         for volume_spec in self.volumes:
@@ -144,3 +160,16 @@ class LegacyNvidiaDockerContainer(DockerContainer):
 class NvidiaDockerContainer(DockerContainer):
     def __init__(self, repository: str, image_name: str, autoremove: bool):
         super().__init__(repository, image_name, autoremove, runtime="nvidia")
+
+    def add_device(self, name):
+        match = re.match(r'/dev/nvidia([0-9]+)$', name)
+        if match is not None:
+            value = self.env.get("NVIDIA_VISIBLE_DEVICES")
+            if value is not None:
+                value += "," + match.group(1)
+            else:
+                value = match.group(1)
+
+            self.env["NVIDIA_VISIBLE_DEVICES"] = value
+        else:
+            super().add_device(name)
