@@ -1,5 +1,5 @@
-worker_type: docker
-registry: 0.0.0.0:6000
+registry:
+  url: 0.0.0.0:6000
 storage:
   url: 0.0.0.0:7000
   access_key: AKIAIOSFODNN7EXAMPLE
