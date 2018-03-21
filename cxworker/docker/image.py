@@ -1,3 +1,4 @@
+import json
 import subprocess
 
 from cxworker.manager.config import RegistryConfig
@@ -11,6 +12,20 @@ class DockerImage:
         self.registry = registry
 
     def pull(self):
+        self._login()
+
+        process = subprocess.Popen([
+            'docker',
+            'pull',
+            '{registry}/{name}:{tag}'.format(registry=self.registry.url, tag=self.tag, name=self.name)
+        ], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+
+        rc = process.wait()
+
+        if rc != 0:
+            raise DockerError('Pulling the image failed', rc, process.stderr.read())
+
+    def _login(self):
         if self.registry.username is not None:
             process = subprocess.Popen([
                 'docker',
@@ -29,13 +44,17 @@ class DockerImage:
             if rc != 0:
                 raise DockerError('Logging in to the registry failed', rc, process.stderr.read())
 
-        process = subprocess.Popen([
+    def update(self):
+        self._login()
+
+        output = subprocess.check_output([
             'docker',
             'pull',
             '{registry}/{name}:{tag}'.format(registry=self.registry.url, tag=self.tag, name=self.name)
-        ], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+        ])
 
-        rc = process.wait()
+        for line in output.decode().splitlines():
+            if line.startswith("Status: Downloaded"):
+                return True
 
-        if rc != 0:
-            raise DockerError('Pulling the image failed', rc, process.stderr.read())
+        return False
