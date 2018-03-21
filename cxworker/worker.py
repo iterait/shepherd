@@ -26,10 +26,10 @@ class Worker:
                            self.config.storage.secure)
 
     def run(self, host: str, port: int):
-        logging.basicConfig(level=logging.DEBUG)
-
         if self.config is None:
             raise RuntimeError("Configuration has not been loaded yet")
+
+        logging.basicConfig(level=self.config.logging.log_level)
 
         self.app.register_blueprint(create_worker_blueprint(self.registry, self.minio))
 
