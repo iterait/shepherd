@@ -1,4 +1,3 @@
-import json
 import subprocess
 
 from cxworker.manager.config import RegistryConfig
@@ -10,6 +9,10 @@ class DockerImage:
         self.name = name
         self.tag = tag
         self.registry = registry
+
+    @property
+    def full_name(self):
+        return "{}/{}".format(self.registry.url, self.name)
 
     def pull(self):
         self._login()
@@ -45,6 +48,11 @@ class DockerImage:
                 raise DockerError('Logging in to the registry failed', rc, process.stderr.read())
 
     def update(self):
+        """
+        Attempt to update the local copy of the image from the registry
+        :return: True if there was an update, False otherwise
+        """
+
         self._login()
 
         output = subprocess.check_output([

@@ -21,7 +21,7 @@ class Worker:
 
     def load_config(self, config_stream):
         self.config = load_config(config_stream)
-        self.registry = ContainerRegistry(self.zmq_context, self.config.registry, self.config.containers, self.config.autoremove_containers)
+        self.registry = ContainerRegistry(self.zmq_context, self.config.registry, self.config.containers)
         self.minio = Minio(self.config.storage.url, self.config.storage.access_key, self.config.storage.secret_key,
                            self.config.storage.secure)
 

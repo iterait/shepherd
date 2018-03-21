@@ -1,13 +1,6 @@
 import logging
 import yaml
-from typing import Mapping, List, NamedTuple, Optional
-
-
-class ContainerConfig(NamedTuple):
-    port: int
-    type: str
-    devices: List[str] = []
-    extra: dict = {}
+from typing import NamedTuple, Optional, Dict, Any
 
 
 class StorageConfig(NamedTuple):
@@ -35,8 +28,7 @@ class WorkerConfig(NamedTuple):
     registry: RegistryConfig
     storage: StorageConfig
     logging: LoggingConfig
-    containers: Mapping[str, ContainerConfig]
-    autoremove_containers: bool = True
+    containers: Dict[str, Dict[str, Any]]
 
 
 def load_config(config_stream) -> WorkerConfig:
@@ -44,15 +36,15 @@ def load_config(config_stream) -> WorkerConfig:
     containers = {}
 
     for name, container in config_object.get("containers", {}).items():
-        containers[name] = ContainerConfig(**container)
+        containers[name] = container
 
-    registry_config = config_object.get("registry")
+    registry_config = config_object.get("registry", {})
     registry = RegistryConfig(**registry_config)
 
-    storage_config = config_object.get("storage")
+    storage_config = config_object.get("storage", {})
     storage = StorageConfig(**storage_config)
 
-    logging_config = config_object.get("logging")
+    logging_config = config_object.get("logging", {})
     logging = LoggingConfig(**logging_config)
 
-    return WorkerConfig(registry, storage, logging, containers, bool(config_object.get("autoremove_containers", True)))
+    return WorkerConfig(registry, storage, logging, containers)
