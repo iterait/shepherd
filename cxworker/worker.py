@@ -50,7 +50,8 @@ class Worker:
             sys.exit(1)
 
         try:
-            logging.info('Listening for API calls and worker outputs (send a keyboard interrupt to stop the worker)')
+            logging.info('Listening for API calls at http://%s:%s (send a keyboard interrupt to stop the worker)',
+                         host, port)
             gevent.joinall([api, output])
         except KeyboardInterrupt:
             self.registry.kill_all()
