@@ -3,8 +3,12 @@ class AppError(Exception, BaseException):
 
 
 class ClientActionError(AppError):
-    status_code = 400
+    pass
 
 
 class UnknownContainerError(ClientActionError):
+    pass
+
+
+class StorageError(Exception):
     pass
