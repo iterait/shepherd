@@ -1,3 +1,5 @@
+logging:
+  level: debug
 worker_type: docker
 registry:
   url: 0.0.0.0:6000

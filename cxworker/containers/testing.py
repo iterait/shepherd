@@ -1,3 +1,4 @@
+import logging
 import gevent
 import zmq.green as zmq
 from typing import Dict, Any, Sequence
@@ -26,14 +27,19 @@ class DummyContainerAdapter(ContainerAdapter):
     def serve(self):
         context = zmq.Context()
         socket = context.socket(zmq.ROUTER)
-        socket.bind(f"tcp://*:{self.config.port}")
+        address = f"tcp://*:{self.config.port}"
+        socket.bind(address)
 
+        logging.info('Testing container is listening at `%s`', address)
         while True:
             identity, message_type, *_ = socket.recv_multipart()
+            logging.debug('Received message `%s` of type `%s`', identity, message_type)
 
             if message_type == b"input":
                 gevent.sleep(5)
-                socket.send_multipart([identity, b"output", b"{}"])
+                object_name, body = b"output", b"{}"
+                logging.debug('Sending response `%s` to `%s`', body, object_name)
+                socket.send_multipart([identity, object_name, body])
 
     def kill(self):
         if self.server is not None:
