@@ -36,5 +36,6 @@ class DummyContainerAdapter(ContainerAdapter):
                 socket.send_multipart([identity, b"output", b"{}"])
 
     def kill(self):
-        self.server.kill()
+        if self.server is not None:
+            self.server.kill()
         self.running = False

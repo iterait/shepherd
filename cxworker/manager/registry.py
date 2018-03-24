@@ -1,4 +1,5 @@
 import logging
+from zmq.error import ZMQError
 import zmq.green as zmq
 from typing import Mapping, Generator, Tuple, Dict, Any
 
@@ -101,7 +102,10 @@ class ContainerRegistry:
     def kill_container(self, id: str):
         container = self.containers[id]
         zmq_address = "tcp://0.0.0.0:{}".format(container.adapter.config.port)
-        container.socket.disconnect(zmq_address)
+        try:
+            container.socket.disconnect(zmq_address)
+        except ZMQError:
+            logging.warning('Failed to disconnect socket of `{}`  (perhaps it was not started/connected)'.format(id))
         container.adapter.kill()
 
     def send_input(self, container_id: str, request_metadata, input: bytes):
