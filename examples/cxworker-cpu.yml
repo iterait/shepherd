@@ -9,7 +9,7 @@ storage:
 containers:
   container_a:
     port: 9001
-    type: cpu
+    type: docker
   container_b:
     port: 9002
-    type: cpu
+    type: docker

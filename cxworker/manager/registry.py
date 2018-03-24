@@ -55,8 +55,9 @@ class ContainerRegistry:
             elif container_type == "dummy":
                 adapter = DummyContainerAdapter(config)
             else:
-                raise RuntimeError("Unknown container type: {}".format(container_type))
+                raise ContainerConfigurationError("Unknown container type: {}".format(container_type))
 
+            logging.info('Creating container `%s` of type `%s`', name, container_type)
             self.containers[name] = Container(socket, container_type, adapter)
             self.poller.register(socket, zmq.POLLIN)
 
