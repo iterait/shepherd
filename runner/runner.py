@@ -54,11 +54,11 @@ def runner():
     logging.info('Loading config')
     config_path = find_config(args.config_path)
     config = load_config(config_file=config_path, additional_args=[])
-    assert 'predict' in config
-    for section in ['dataset', 'model']:
-        if section in config['predict']:
-            for key in config['predict'][section]:
-                config[section][key] = config['predict'][section][key]
+    if 'predict' in config:
+        for section in ['dataset', 'model']:
+            if section in config['predict']:
+                for key in config['predict'][section]:
+                    config[section][key] = config['predict'][section][key]
     validate_config(config)
     logging.debug('Loaded config: %s', config)
 
