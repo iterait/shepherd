@@ -46,4 +46,6 @@ class OutputListener:
             try:
                 requests.post(request.status_url, json=data)
             except ConnectionError:
-                logging.error("Failed to set status for request %s", request.id)
+                logging.error("Failed to report status for request `%s`", request.id)
+        else:
+            logging.warning("Cannot report status for task `%s` as status_url was not provided.", request.id)
