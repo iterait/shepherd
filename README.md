@@ -18,15 +18,13 @@ The test suite can be run with `python setup.py test`.
 ### Launching the Worker
 
 First, you need to have a Docker registry and a Minio server running. The 
-easiest way to achieve this is to use the Docker Compose config in 
-`utils/docker-compose-sandbox.yml`:
+easiest way to achieve this is to use the Docker Compose example:
 
 ```
-cd utils
-docker-compose -f docker-compose-sandbox.yml up -d
+docker-compose -f examples/docker/docker-compose-sandbox.yml up -d
 ```
 
-Second, you need a configuration file. The examples found in the `examples/` 
+Second, you need a configuration file. Again, examples found in the `examples/configs/` 
 folder are a great starting point. Feel free to pick one of those and edit it to 
 your needs.
 
