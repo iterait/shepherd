@@ -1,4 +1,5 @@
 import subprocess
+import logging
 
 from cxworker.manager.config import RegistryConfig
 from .errors import DockerError
@@ -16,11 +17,13 @@ class DockerImage:
 
     def pull(self):
         self._login()
+        image_url = '{registry}/{name}:{tag}'.format(registry=self.registry.url, tag=self.tag, name=self.name)
+        logging.info('Pulling %s', image_url)
 
         process = subprocess.Popen([
             'docker',
             'pull',
-            '{registry}/{name}:{tag}'.format(registry=self.registry.url, tag=self.tag, name=self.name)
+            image_url
         ], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
 
         rc = process.wait()

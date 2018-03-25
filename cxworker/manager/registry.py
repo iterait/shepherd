@@ -76,6 +76,7 @@ class ContainerRegistry:
         return self.containers[container_id]
 
     def start_container(self, container_id: str, model: str, version: str, slaves: Tuple[str, ...] = ()):
+        logging.info('Starting container `%s` with model `%s:%s`', container_id, model, version)
         container = self[container_id]
 
         for slave_id in slaves:
@@ -114,6 +115,7 @@ class ContainerRegistry:
             self.start_container(container_id, container.model_name, container.model_version, current_slaves)
 
     def kill_container(self, container_id: str):
+        logging.info('Killing container `%s`', container_id)
         container = self[container_id]
         zmq_address = "tcp://0.0.0.0:{}".format(container.adapter.config.port)
         try:
