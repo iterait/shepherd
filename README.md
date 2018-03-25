@@ -31,7 +31,7 @@ your needs.
 Finally, you need to run the following command to start the worker:
 
 ```
-python manage.py run_worker -h 0.0.0.0 -p 5000 -c examples/configs/cxworker-cpu.yml
+python manage.py run_worker -h 0.0.0.0 -p 5000 -c examples/configs/cxworker-docker-cpu.yml
 ```
 
 Be sure to adjust the command line parameters according to your needs (`-h` is 
