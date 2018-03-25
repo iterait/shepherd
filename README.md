@@ -23,7 +23,7 @@ easiest way to achieve this is to use the Docker Compose config in
 
 ```
 cd utils
-docker-compose up -d -f docker-compose-sandbox.yml
+docker-compose -f docker-compose-sandbox.yml up -d
 ```
 
 Second, you need a configuration file. The examples found in the `examples/` 
