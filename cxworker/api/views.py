@@ -37,8 +37,8 @@ def create_worker_blueprint(registry: ContainerRegistry, minio: Minio):
         try:
             payload = minio.get_object(start_job_request.id, start_job_request.source_url).read()
         except MinioError as me:
-            raise StorageError('Can not obtain job payload from minio storage {}:{}'
-                               .format(start_job_request.id, start_job_request.source_url)) from me
+            raise StorageError('Can not obtain job payload from minio storage {}:{} ({})'
+                               .format(start_job_request.id, start_job_request.source_url, str(me))) from me
 
         if start_job_request.refresh_model:
             registry.refresh_model(start_job_request.container_id)
