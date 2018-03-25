@@ -135,7 +135,6 @@ class ContainerRegistry:
         """
 
         result = self.poller.poll()
-
         return (container_id for container_id, container in self.containers.items()
                 if (container.socket, zmq.POLLIN) in result)
 

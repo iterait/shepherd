@@ -19,16 +19,11 @@ class OutputListener:
 
     def listen(self):
         while True:
-            container_ids = self.registry.wait_for_output()
-
-            for id in container_ids:
-                request = self.registry.get_current_request(id)
-
-                if request is None:
-                    continue  # TODO containers without a request should not send any output - investigate!
+            for container_id in self.registry.wait_for_output():
+                request = self.registry.get_current_request(container_id)
 
                 try:
-                    output = self.registry.read_output(id)
+                    output = self.registry.read_output(container_id)
                     self.minio.put_object(request.id, request.result_url, BytesIO(output), len(output))
 
                     self._send_status(request, {
@@ -36,14 +31,14 @@ class OutputListener:
                         "status": "Done"
                     })
                 except ContainerError as e:
-                    logging.exception("Exception in container {}".format(id), e)
+                    logging.exception("Exception in container {}, %s".format(str(container_id)), e)
 
                     self._send_status(request, {
                         "success": False,
                         "status": str(e)
                     })
 
-                self.registry.request_finished(id)
+                self.registry.request_finished(container_id)
 
     @staticmethod
     def _send_status(request, data: dict):
