@@ -56,7 +56,7 @@ def create_worker_blueprint(registry: ContainerRegistry, minio: Minio):
 
         return jsonify(InterruptJobResponse().dump())
 
-    @worker.route('/model', methods=['POST'])
+    @worker.route('/reconfigure', methods=['POST'])
     def reconfigure():
         request_data = load_request(ReconfigureRequestSchema())
         reconfigure_request = ReconfigureRequest(request_data)
