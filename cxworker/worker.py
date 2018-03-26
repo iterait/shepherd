@@ -25,8 +25,8 @@ class Worker:
         self.config = load_config(config_stream)
         logging.basicConfig(level=self.config.logging.log_level)
         self.registry = ContainerRegistry(self.zmq_context, self.config.registry, self.config.containers)
-        self.minio = Minio(self.config.storage.url, self.config.storage.access_key, self.config.storage.secret_key,
-                           self.config.storage.secure)
+        self.minio = Minio(self.config.storage.schemeless_url, self.config.storage.access_key,
+                           self.config.storage.secret_key, self.config.storage.secure)
 
     def run(self, host: str, port: int):
         if self.config is None:

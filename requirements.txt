@@ -9,3 +9,4 @@ PyYaml
 requests
 minio
 pip
+schematics

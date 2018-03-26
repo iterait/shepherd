@@ -1,7 +1,7 @@
 import logging
 from zmq.error import ZMQError
 import zmq.green as zmq
-from typing import Mapping, Generator, Tuple, Dict, Any
+from typing import Mapping, Generator, Tuple, Dict, Any, Optional
 
 from cxworker.containers.adapters import DockerAdapter, BareAdapter, ContainerAdapter
 from cxworker.errors import ContainerConfigurationError
@@ -36,12 +36,11 @@ class ContainerRegistry:
     Manages creation and access to a configured set of containers
     """
 
-    def __init__(self, zmq_context: zmq.Context, registry: RegistryConfig,
+    def __init__(self, zmq_context: zmq.Context, registry: Optional[RegistryConfig],
                  container_config: Mapping[str, Dict[str, Any]]):
         self.poller = zmq.Poller()
         self.containers: Dict[str, Container] = {}
         self.container_config = container_config
-        self.registry = registry
 
         for container_id, config in container_config.items():
             socket = zmq_context.socket(zmq.DEALER)
@@ -51,6 +50,8 @@ class ContainerRegistry:
                 raise ContainerConfigurationError("No type specified for container '{}'".format(container_id))
 
             if container_type == "docker":
+                if registry is None:
+                    raise ContainerConfigurationError("To use docker containers, you need to configure a registry URL")
                 adapter = DockerAdapter(config, registry)
             elif container_type == "bare":
                 adapter = BareAdapter(config)

@@ -11,7 +11,7 @@ class DummyContainerAdapter(ContainerAdapter):
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.config = self.Config(**config)
+        self.config = self.Config(config)
         self.server = None
 
     def load_model(self, model_name: str, model_version: str):
