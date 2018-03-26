@@ -13,9 +13,9 @@ def internal_error_handler(error: Exception):
     :return: a Flask response
     """
 
-    response = ErrorResponse('Internal server error ({})'.format(str(error)))
+    response = ErrorResponse({"message": 'Internal server error ({})'.format(str(error))})
     logging.exception(error)
-    return jsonify(response.dump()), 500
+    return jsonify(response.to_primitive()), 500
 
 
 def error_handler(http_code, error: AppError):
@@ -26,8 +26,8 @@ def error_handler(http_code, error: AppError):
     :return: a Flask response
     """
 
-    response = ErrorResponse(str(error))
-    return jsonify(response.dump()), http_code
+    response = ErrorResponse({"message": str(error)})
+    return jsonify(response.to_primitive()), http_code
 
 
 def create_app(name: str):

@@ -3,6 +3,7 @@ from zmq.error import ZMQError
 import zmq.green as zmq
 from typing import Mapping, Generator, Tuple, Dict, Any, Optional
 
+from cxworker.api.models import ContainerModel
 from cxworker.containers.adapters import DockerAdapter, BareAdapter, ContainerAdapter
 from cxworker.errors import ContainerConfigurationError
 from cxworker.containers.testing import DummyContainerAdapter
@@ -154,20 +155,21 @@ class ContainerRegistry:
         else:
             raise ContainerError("The container responded with an unknown message type " + message_type.decode())
 
-    def get_status(self) -> Generator[dict, None, None]:
+    def get_status(self) -> Generator[Tuple[str, ContainerModel], None, None]:
         """
         Get status information for all containers
         :return: a generator of status information
         """
 
         for name, container in self.containers.items():
-            yield {
-                "name": name,
+            yield name, ContainerModel({
                 "running": container.adapter.running,
                 "request": container.current_request.id if container.current_request is not None else None,
-                "model_name": container.model_name,
-                "model_version": container.model_version
-            }
+                "model": {
+                    "name": container.model_name,
+                    "version": container.model_version
+                }
+            })
 
     def kill_all(self):
         for name, container in self.containers.items():
