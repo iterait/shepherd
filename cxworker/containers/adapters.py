@@ -3,7 +3,10 @@ import os
 import abc
 import re
 import shlex
-from typing import Dict, Any, NamedTuple, List, Optional, Sequence
+from typing import Dict, Any, List, Optional, Sequence
+
+from schematics import Model
+from schematics.types import StringType, IntType, ListType, BooleanType
 
 from cxworker.docker import DockerContainer, DockerImage
 from cxworker.errors import ContainerConfigurationError
@@ -15,10 +18,10 @@ class ContainerAdapter(metaclass=abc.ABCMeta):
     A base class for container adapters - classes that allow launching different kinds of containers.
     """
 
-    class Config(NamedTuple):
-        type: str
-        port: int
-        devices: List[str] = []
+    class Config(Model):
+        type: str = StringType(required=True)
+        port: int = IntType(required=True)
+        devices: List[str] = ListType(StringType, default=lambda: [])
 
     config: Config
 
@@ -85,11 +88,11 @@ class DockerAdapter(ContainerAdapter):
     WORKER_PROCESS_PORT = 9999
 
     class Config(ContainerAdapter.Config):
-        autoremove_containers: bool = True
+        autoremove_containers: bool = BooleanType(default=False)
 
     def __init__(self, config: Dict[str, Any], registry_config: RegistryConfig):
         super().__init__(config)
-        self.config: self.Config = self.Config(**config)
+        self.config: self.Config = self.Config(config)
         self.registry_config = registry_config
         self.container: Optional[DockerContainer] = None
         self.image: Optional[DockerImage] = None
@@ -130,20 +133,17 @@ class BareAdapter(ContainerAdapter):
     few models.
     """
 
-    class Config(NamedTuple):
-        type: str
-        port: int
-        model_name: str
-        model_version: str
-        config_path: str
-        working_directory: str
-        stdout_file: Optional[str] = None
-        stderr_file: Optional[str] = None
-        devices: List[str] = []
+    class Config(ContainerAdapter.Config):
+        model_name: str = StringType(required=True)
+        model_version: str = StringType(required=True)
+        config_path: str = StringType(required=True)
+        working_directory: str = StringType(required=True)
+        stdout_file: Optional[str] = StringType(required=False)
+        stderr_file: Optional[str] = StringType(required=False)
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.config: self.Config = self.Config(**config)
+        self.config: self.Config = self.Config(config)
         self.process = None
 
     def load_model(self, model_name: str, model_version: str):

@@ -13,11 +13,11 @@ class DockerImage:
 
     @property
     def full_name(self):
-        return "{}/{}".format(self.registry.url, self.name)
+        return "{}/{}".format(self.registry.schemeless_url, self.name)
 
     def pull(self):
         self._login()
-        image_url = '{registry}/{name}:{tag}'.format(registry=self.registry.url, tag=self.tag, name=self.name)
+        image_url = '{registry}/{name}:{tag}'.format(registry=self.registry.schemeless_url, tag=self.tag, name=self.name)
         logging.info('Pulling %s', image_url)
 
         process = subprocess.Popen([
@@ -61,7 +61,7 @@ class DockerImage:
         output = subprocess.check_output([
             'docker',
             'pull',
-            '{registry}/{name}:{tag}'.format(registry=self.registry.url, tag=self.tag, name=self.name)
+            '{registry}/{name}:{tag}'.format(registry=self.registry.schemeless_url, tag=self.tag, name=self.name)
         ])
 
         for line in output.decode().splitlines():
