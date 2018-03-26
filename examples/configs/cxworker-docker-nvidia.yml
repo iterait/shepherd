@@ -1,7 +1,7 @@
 registry:
-  url: 0.0.0.0:6000
+  url: http://0.0.0.0:6000
 storage:
-  url: 0.0.0.0:7000
+  url: http://0.0.0.0:7000
   access_key: AKIAIOSFODNN7EXAMPLE
   secret_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
