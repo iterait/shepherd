@@ -1,2 +1,2 @@
-class ContainerError(BaseException):
+class SheepError(BaseException):
     pass

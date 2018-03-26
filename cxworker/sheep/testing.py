@@ -3,10 +3,10 @@ import gevent
 import zmq.green as zmq
 from typing import Dict, Any, Sequence
 
-from cxworker.containers.adapters import ContainerAdapter
+from cxworker.sheep.adapters import SheepAdapter
 
 
-class DummyContainerAdapter(ContainerAdapter):
+class DummySheep(SheepAdapter):
     running = False
 
     def __init__(self, config: Dict[str, Any]):
@@ -20,7 +20,7 @@ class DummyContainerAdapter(ContainerAdapter):
     def update_model(self):
         pass
 
-    def start(self, slaves: Sequence[ContainerAdapter]):
+    def start(self, herd_members: Sequence[SheepAdapter]):
         self.running = True
         self.server = gevent.spawn(self.serve)
 
@@ -45,7 +45,7 @@ class DummyContainerAdapter(ContainerAdapter):
                 logging.debug('Sending error `%s`')
                 socket.send_multipart([identity, b"error", b"Unrecognized message type"])
 
-    def kill(self):
+    def slaughter(self):
         if self.server is not None:
-            self.server.kill()
+            self.server.slaughter()
         self.running = False

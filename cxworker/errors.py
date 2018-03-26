@@ -1,2 +1,2 @@
-class ContainerConfigurationError(BaseException):
+class SheepConfigurationError(BaseException):
     pass

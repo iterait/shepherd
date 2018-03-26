@@ -9,7 +9,7 @@ class ModelModel(Model):
     version: Optional[str] = StringType(serialize_when_none=True)
 
 
-class ContainerModel(Model):
+class SheepModel(Model):
     running: bool = BooleanType(required=True)
     model: ModelModel = ModelType(ModelModel, required=True)
     request: Optional[str] = UUIDType(serialize_when_none=True)

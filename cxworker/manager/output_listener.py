@@ -4,41 +4,41 @@ import logging
 import requests
 from minio import Minio
 
-from .errors import ContainerError
-from .registry import ContainerRegistry
+from cxworker.manager.shepherd import Shepherd
+from .errors import SheepError
 
 
 class OutputListener:
     """
-    Waits for output from containers and stores it
+    Waits for output from sheep and stores it
     """
 
-    def __init__(self, registry: ContainerRegistry, minio: Minio):
-        self.registry = registry
+    def __init__(self, shepherd: Shepherd, minio: Minio):
+        self.shepherd = shepherd
         self.minio = minio
 
     def listen(self):
         while True:
-            for container_id in self.registry.wait_for_output():
-                request = self.registry.get_current_request(container_id)
+            for sheep_id in self.shepherd.wait_for_output():
+                request = self.shepherd.get_current_request(sheep_id)
 
                 try:
-                    output = self.registry.read_output(container_id)
+                    output = self.shepherd.read_output(sheep_id)
                     self.minio.put_object(request.id, request.result_url, BytesIO(output), len(output))
 
                     self._send_status(request, {
                         "success": True,
                         "status": "Done"
                     })
-                except ContainerError as e:
-                    logging.exception("Exception in container {}, %s".format(str(container_id)), e)
+                except SheepError as e:
+                    logging.exception("Exception in sheep {}, %s".format(str(sheep_id)), e)
 
                     self._send_status(request, {
                         "success": False,
                         "status": str(e)
                     })
 
-                self.registry.request_finished(container_id)
+                self.shepherd.request_finished(sheep_id)
 
     @staticmethod
     def _send_status(request, data: dict):
