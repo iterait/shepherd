@@ -1,22 +1,24 @@
-from typing import NamedTuple
+from typing import Optional, List
+from schematics import Model
+from schematics.types import StringType, URLType, BooleanType, ListType, ModelType
+
+from cxworker.api.models import ModelModel
 
 
-class StartJobRequest(NamedTuple):
-    id: str
-    container_id: str
-    source_url: str
-    result_url: str
-    status_url: str
-    refresh_model: bool = False
+class StartJobRequest(Model):
+    id: str = StringType(required=True)
+    container_id: str = StringType(required=True)
+    source_url: str = StringType(required=True)
+    result_url: str = StringType(required=True)
+    status_url: Optional[str] = StringType(default=None, serialize_when_none=True)
+    refresh_model: bool = BooleanType(default=False)
 
 
-class InterruptJobRequest(NamedTuple):
-    container_id: str
+class InterruptJobRequest(Model):
+    container_id: str = StringType(required=True)
 
 
-class ReconfigureRequest:
-    def __init__(self, data):
-        self.container_id = data["container_id"]
-        self.model_name = data["model"]["name"]
-        self.model_version = data["model"]["version"]
-
+class ReconfigureRequest(Model):
+    model: ModelModel = ModelType(ModelModel, required=True)
+    container_id: str = StringType(required=True)
+    slave_container_ids: List[str] = ListType(StringType, default=lambda: [])

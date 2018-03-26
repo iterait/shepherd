@@ -1,7 +1,6 @@
 pytest
 click
 Flask
-marshmallow
 simplejson
 pyzmq
 gevent
