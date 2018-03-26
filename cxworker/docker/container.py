@@ -1,26 +1,15 @@
-import re
+import logging
 import subprocess
 from typing import Dict
 
-import requests
-import logging
-
+from cxworker.docker import DockerImage
 from .errors import DockerError
 
 
 class DockerContainer:
-    def __init__(self, repository_name: str, image_name: str, autoremove: bool, command: str = "docker",
-                 runtime: str = None, env: Dict[str, str] = None):
-        """
-        :param repository_name: Name of the repository where the image is contained
-        :param image_name: Name of the image from which the container will be created
-        :param command: an alternate command used to manage containers (e.g. nvidia-docker)
-        """
-
-        self.repository_name = repository_name
-        self.image_name = image_name
+    def __init__(self, image: DockerImage, autoremove: bool, runtime: str = None, env: Dict[str, str] = None):
+        self.image = image
         self.autoremove = autoremove
-        self.command = command
         self.ports = {}
         self.volumes = []
         self.devices = []
@@ -49,7 +38,7 @@ class DockerContainer:
         """
 
         # Run given image in detached mode
-        command = [self.command, 'run', '-d']
+        command = ['docker', 'run', '-d']
 
         # Add configured port mappings
         for host_port, container_port in self.ports.items():
@@ -81,7 +70,7 @@ class DockerContainer:
             command.append(device)
 
         # Positional args - the image of the container
-        command.append("{}/{}".format(self.repository_name, self.image_name))
+        command.append(self.image.full_name)
 
         # Launch the container and wait until the "run" commands finishes
         logging.debug("Running command %s", str(command))
@@ -108,7 +97,7 @@ class DockerContainer:
         if self.container_id is None:
             raise DockerError('The container was not started yet')
 
-        command = [self.command, 'kill', self.container_id]
+        command = ['docker', 'kill', self.container_id]
         process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
         rc = process.wait()
         stderr = process.stderr.read()
@@ -129,7 +118,7 @@ class DockerContainer:
         if self.container_id is None:
             raise DockerError('The container was not started yet')
 
-        command = [self.command, 'ps', '--filter', 'id={}'.format(self.container_id.decode())]
+        command = ['docker', 'ps', '--filter', 'id={}'.format(self.container_id.decode())]
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         rc = process.wait()
 
@@ -138,38 +127,3 @@ class DockerContainer:
 
         # If the command output contains more than one line, the container was found (the first line is a header)
         return len(process.stdout.readlines()) > 1
-
-
-class LegacyNvidiaDockerContainer(DockerContainer):
-    def __init__(self, repository: str, image_name: str, autoremove: bool):
-        super().__init__(repository, image_name, autoremove, "nvidia-docker")
-
-    def start(self):
-        nvidia_metadata = requests.get('http://localhost:3476/docker/cli/json').json()
-        volumes = nvidia_metadata.get("Volumes", [])
-
-        for volume_spec in volumes:
-            self.add_volume(volume_spec)
-
-        self.add_device("/dev/nvidia-uvm")
-        self.add_device("/dev/nvidiactl")
-
-        super().start()
-
-
-class NvidiaDockerContainer(DockerContainer):
-    def __init__(self, repository: str, image_name: str, autoremove: bool):
-        super().__init__(repository, image_name, autoremove, runtime="nvidia")
-
-    def add_device(self, name):
-        match = re.match(r'/dev/nvidia([0-9]+)$', name)
-        if match is not None:
-            value = self.env.get("NVIDIA_VISIBLE_DEVICES")
-            if value is not None:
-                value += "," + match.group(1)
-            else:
-                value = match.group(1)
-
-            self.env["NVIDIA_VISIBLE_DEVICES"] = value
-        else:
-            super().add_device(name)

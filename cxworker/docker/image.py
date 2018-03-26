@@ -1,4 +1,5 @@
 import subprocess
+import logging
 
 from cxworker.manager.config import RegistryConfig
 from .errors import DockerError
@@ -10,7 +11,27 @@ class DockerImage:
         self.tag = tag
         self.registry = registry
 
+    @property
+    def full_name(self):
+        return "{}/{}".format(self.registry.url, self.name)
+
     def pull(self):
+        self._login()
+        image_url = '{registry}/{name}:{tag}'.format(registry=self.registry.url, tag=self.tag, name=self.name)
+        logging.info('Pulling %s', image_url)
+
+        process = subprocess.Popen([
+            'docker',
+            'pull',
+            image_url
+        ], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+
+        rc = process.wait()
+
+        if rc != 0:
+            raise DockerError('Pulling the image failed', rc, process.stderr.read())
+
+    def _login(self):
         if self.registry.username is not None:
             process = subprocess.Popen([
                 'docker',
@@ -29,13 +50,22 @@ class DockerImage:
             if rc != 0:
                 raise DockerError('Logging in to the registry failed', rc, process.stderr.read())
 
-        process = subprocess.Popen([
+    def update(self):
+        """
+        Attempt to update the local copy of the image from the registry
+        :return: True if there was an update, False otherwise
+        """
+
+        self._login()
+
+        output = subprocess.check_output([
             'docker',
             'pull',
             '{registry}/{name}:{tag}'.format(registry=self.registry.url, tag=self.tag, name=self.name)
-        ], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+        ])
 
-        rc = process.wait()
+        for line in output.decode().splitlines():
+            if line.startswith("Status: Downloaded"):
+                return True
 
-        if rc != 0:
-            raise DockerError('Pulling the image failed', rc, process.stderr.read())
+        return False

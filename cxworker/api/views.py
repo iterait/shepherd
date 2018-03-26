@@ -1,11 +1,12 @@
 from flask import Blueprint, request, jsonify
 from minio import Minio
+from minio.error import MinioError
 
 from cxworker.manager.registry import ContainerRegistry
 from .requests import StartJobRequest, InterruptJobRequest, ReconfigureRequest
 from .responses import StartJobResponse, InterruptJobResponse, StatusResponse, ReconfigureResponse
 from .schemas import StartJobRequestSchema, InterruptJobRequestSchema, ReconfigureRequestSchema
-from .errors import ClientActionError
+from .errors import ClientActionError, StorageError
 
 
 def load_request(schema):
@@ -33,7 +34,11 @@ def create_worker_blueprint(registry: ContainerRegistry, minio: Minio):
         request_data = load_request(StartJobRequestSchema())
         start_job_request = StartJobRequest(**request_data)
 
-        payload = minio.get_object(start_job_request.id, start_job_request.source_url).read()
+        try:
+            payload = minio.get_object(start_job_request.id, start_job_request.source_url).read()
+        except MinioError as me:
+            raise StorageError('Can not obtain job payload from minio storage {}:{} ({})'
+                               .format(start_job_request.id, start_job_request.source_url, str(me))) from me
 
         if start_job_request.refresh_model:
             registry.refresh_model(start_job_request.container_id)
@@ -51,7 +56,7 @@ def create_worker_blueprint(registry: ContainerRegistry, minio: Minio):
 
         return jsonify(InterruptJobResponse().dump())
 
-    @worker.route('/model', methods=['POST'])
+    @worker.route('/reconfigure', methods=['POST'])
     def reconfigure():
         request_data = load_request(ReconfigureRequestSchema())
         reconfigure_request = ReconfigureRequest(request_data)

@@ -1,5 +1,7 @@
-worker_type: docker
-registry: 0.0.0.0:6000
+logging:
+  level: debug
+registry:
+  url: 0.0.0.0:6000
 storage:
   url: 0.0.0.0:7000
   access_key: AKIAIOSFODNN7EXAMPLE
@@ -9,11 +11,7 @@ storage:
 containers:
   container_a:
     port: 9001
-    type: nvidia
-    devices:
-      - /dev/nvidia0
+    type: docker
   container_b:
     port: 9002
-    type: nvidia
-    devices:
-      - /dev/nvidia1
+    type: docker

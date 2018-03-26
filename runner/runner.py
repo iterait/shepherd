@@ -41,23 +41,24 @@ def runner():
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
     parser = ArgumentParser('cxworker runner')
     parser.add_argument('config_path')
+    parser.add_argument('-p', dest="port", default=9999, type=int)
     args = parser.parse_args()
 
     # socket magic
     context = zmq.Context()
     socket = context.socket(zmq.ROUTER)
     socket.setsockopt(zmq.IDENTITY, b"container")
-    socket.bind("tcp://*:9999")
+    socket.bind("tcp://*:{}".format(args.port))
 
     # load config
     logging.info('Loading config')
     config_path = find_config(args.config_path)
     config = load_config(config_file=config_path, additional_args=[])
-    assert 'predict' in config
-    for section in ['dataset', 'model']:
-        if section in config['predict']:
-            for key in config['predict'][section]:
-                config[section][key] = config['predict'][section][key]
+    if 'predict' in config:
+        for section in ['dataset', 'model']:
+            if section in config['predict']:
+                for key in config['predict'][section]:
+                    config[section][key] = config['predict'][section][key]
     validate_config(config)
     logging.debug('Loaded config: %s', config)
 
