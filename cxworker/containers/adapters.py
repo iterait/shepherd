@@ -130,13 +130,16 @@ class BareAdapter(ContainerAdapter):
     few models.
     """
 
-    class Config(ContainerAdapter.Config):
+    class Config(NamedTuple):
+        type: str
+        port: int
         model_name: str
         model_version: str
         config_path: str
         working_directory: str
         stdout_file: Optional[str] = None
         stderr_file: Optional[str] = None
+        devices: List[str] = []
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
@@ -155,8 +158,8 @@ class BareAdapter(ContainerAdapter):
         pass
 
     def start(self, slaves: Sequence[ContainerAdapter]):
-        stdout = open(self.config.stdout_file) if self.config.stdout_file is not None else subprocess.DEVNULL
-        stderr = open(self.config.stderr_file) if self.config.stderr_file is not None else subprocess.DEVNULL
+        stdout = open(self.config.stdout_file, 'a') if self.config.stdout_file is not None else subprocess.DEVNULL
+        stderr = open(self.config.stderr_file, 'a') if self.config.stderr_file is not None else subprocess.DEVNULL
 
         devices = self.config.devices
         for slave in slaves:

@@ -13,7 +13,7 @@ def internal_error_handler(error: Exception):
     :return: a Flask response
     """
 
-    response = ErrorResponse('Internal server error')
+    response = ErrorResponse('Internal server error ({})'.format(str(error)))
     logging.exception(error)
     return jsonify(response.dump()), 500
 

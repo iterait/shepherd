@@ -1,3 +1,5 @@
+logging:
+  level: debug
 registry:
   url: 0.0.0.0:6000
 storage:
@@ -9,7 +11,4 @@ storage:
 containers:
   container_a:
     port: 9001
-    type: cpu
-  container_b:
-    port: 9002
-    type: cpu
+    type: dummy
