@@ -31,13 +31,13 @@ class SheepAdapter(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def load_model(self, model_name: str, model_version: str):
         """
-        Load a model
+        Tell the sheep to prepare a new model (without restarting).
         """
 
     @abc.abstractmethod
     def update_model(self) -> bool:
         """
-        Update the model loaded of the underlying container. The container should not be restarted.
+        Update the currently loaded model. The underlying process/container/etc. should not be restarted.
         :return: True if there was an update, False otherwise
         """
 
@@ -58,7 +58,7 @@ class SheepAdapter(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def running(self) -> bool:
         """
-        Is the container running?
+        Is the sheep running, i.e. capable of accepting computation requests?
         """
 
 
