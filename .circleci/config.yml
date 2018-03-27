@@ -1,0 +1,37 @@
+version: 2
+
+references:
+
+  install: &install
+    run:
+      name: Install dependencies and cxworker
+      command: |
+        pacman --noconfirm --needed -Syu minio
+        mkdir examples/docker/cxflow_example/ssh
+        echo $PRIVATE_SSH_KEY_PRIVATE | tr ' ' '\n' | base64 -d > examples/docker/cxflow_example/ssh/id_rsa
+        pip install -r requirements.txt
+        pip install .
+
+
+  test: &test
+    run:
+      name: Run tests.
+      command: |
+        tests/overall/test_bare.sh
+
+jobs:
+
+  test_archlinux:
+    docker:
+      - image: cognexa/cxflow:latest
+    working_directory: ~/cxworker
+    steps:
+      - checkout
+      - *install
+      - *test
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test_archlinux

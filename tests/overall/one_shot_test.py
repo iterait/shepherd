@@ -4,9 +4,9 @@ import requests
 import time
 import json
 
-time.sleep(2)
+time.sleep(1)
 
-request_id = 'docker-test-request'
+request_id = 'test-request'
 source_url = 'input.json'
 output_url = 'output.json'
 container_id = "container_a"
@@ -18,7 +18,7 @@ if not minio.bucket_exists(request_id):
     minio.make_bucket(request_id)
 minio.put_object(request_id, source_url, BytesIO(input_data), len(input_data))
 
-configuration = {"container_id": container_id, "model": {"name": "cxflow-test", "version": "latest" } }
+configuration = {"container_id": container_id, "model": {"name": "cxflow-test", "version": "latest"}}
 resp = requests.post('http://0.0.0.0:5000/reconfigure', json=configuration)
 print(resp.status_code, resp.content)
 assert resp.status_code == 200
@@ -28,8 +28,8 @@ resp = requests.post('http://0.0.0.0:5000/start-job', json=task)
 print(resp.status_code, resp.content)
 assert resp.status_code == 200
 
-time.sleep(2)
+time.sleep(5)
 output = json.loads(minio.get_object(request_id, output_url).read().decode())
 assert output['key'] == [42]
 assert output['output'] == [999]
-print('Docker test OK.')
+print('Test OK.')

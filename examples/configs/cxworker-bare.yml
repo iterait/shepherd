@@ -8,10 +8,10 @@ storage:
   secret_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
 containers:
-  bare_container:
+  container_a:
     port: 9001
     type: bare
-    model_name: bare-cxflow
+    model_name: cxflow-test
     model_version: latest
     config_path: config.yaml
     stdout_file: /tmp/bare-cxworker-runner-stdout.txt
