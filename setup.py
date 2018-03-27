@@ -2,7 +2,7 @@ from pip.req import parse_requirements
 from setuptools import setup
 
 setup(name='cxworker',
-      version='0.0.1',
+      version='0.1.0',
       description='Worker',
       long_description='Works',
       classifiers=[
