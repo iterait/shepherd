@@ -3,7 +3,7 @@ from typing import Dict
 from schematics import Model
 from schematics.types import StringType, BooleanType, DictType, ModelType
 
-from cxworker.api.models import ContainerModel
+from cxworker.api.models import SheepModel
 
 
 class ErrorResponse(Model):
@@ -11,7 +11,7 @@ class ErrorResponse(Model):
 
 
 class StatusResponse(Model):
-    containers: Dict[str, ContainerModel] = DictType(ModelType(ContainerModel), required=True)
+    containers: Dict[str, SheepModel] = DictType(ModelType(SheepModel), required=True)
 
 
 class InterruptJobResponse(Model):

@@ -5,7 +5,7 @@ from schematics import Model
 from schematics.exceptions import DataError, FieldError
 from typing import TypeVar, Type
 
-from cxworker.manager.registry import ContainerRegistry
+from cxworker.manager.shepherd import Shepherd
 from .requests import StartJobRequest, InterruptJobRequest, ReconfigureRequest
 from .responses import StartJobResponse, InterruptJobResponse, StatusResponse, ReconfigureResponse
 from .errors import ClientActionError, StorageError
@@ -39,7 +39,7 @@ def serialize_response(response: Model) -> Response:
     return jsonify(response.to_primitive())
 
 
-def create_worker_blueprint(registry: ContainerRegistry, minio: Minio):
+def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
     worker = Blueprint('worker', __name__)
 
     @worker.route('/start-job', methods=['POST'])
@@ -53,9 +53,9 @@ def create_worker_blueprint(registry: ContainerRegistry, minio: Minio):
                                .format(start_job_request.id, start_job_request.source_url, str(me))) from me
 
         if start_job_request.refresh_model:
-            registry.refresh_model(start_job_request.container_id)
+            shepherd.refresh_model(start_job_request.container_id)
 
-        registry.send_input(start_job_request.container_id, start_job_request, payload)
+        shepherd.send_input(start_job_request.container_id, start_job_request, payload)
 
         return serialize_response(StartJobResponse())
 
@@ -63,7 +63,7 @@ def create_worker_blueprint(registry: ContainerRegistry, minio: Minio):
     def interrupt_job():
         interrupt_job_request = load_request(InterruptJobRequest)
 
-        registry.kill_container(interrupt_job_request.container_id)
+        shepherd.slaughter_sheep(interrupt_job_request.container_id)
 
         return serialize_response(InterruptJobResponse())
 
@@ -71,15 +71,15 @@ def create_worker_blueprint(registry: ContainerRegistry, minio: Minio):
     def reconfigure():
         reconfigure_request = load_request(ReconfigureRequest)
 
-        registry.start_container(reconfigure_request.container_id, reconfigure_request.model.name,
-                                 reconfigure_request.model.version)
+        shepherd.start_sheep(reconfigure_request.container_id, reconfigure_request.model.name,
+                             reconfigure_request.model.version)
 
         return serialize_response(ReconfigureResponse())
 
     @worker.route('/status', methods=['GET'])
     def get_status():
         response = StatusResponse()
-        response.containers = dict(registry.get_status())
+        response.containers = dict(shepherd.get_status())
         return serialize_response(response)
 
     return worker

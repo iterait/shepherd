@@ -6,8 +6,8 @@ class ClientActionError(AppError):
     """Base client-side error exception, will result in 400 response."""
 
 
-class UnknownContainerError(ClientActionError):
-    """Exception raised when application attempts to use container with unknown id."""
+class UnknownSheepError(ClientActionError):
+    """Exception raised when application attempts to use a sheep with an unknown id."""
 
 
 class StorageError(AppError):
