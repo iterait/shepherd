@@ -1,7 +1,11 @@
 import logging
+import os
+import os.path as path
+import shutil
 from zmq.error import ZMQError
 import zmq.green as zmq
 from typing import Mapping, Generator, Tuple, Dict, Any, Optional
+from minio import Minio
 
 from cxworker.api.models import SheepModel
 from cxworker.sheep.adapters import DockerSheep, BareSheep, SheepAdapter
@@ -40,7 +44,17 @@ class Shepherd:
     """
 
     def __init__(self, zmq_context: zmq.Context, registry: Optional[RegistryConfig],
-                 sheep_config: Mapping[str, Dict[str, Any]]):
+                 sheep_config: Mapping[str, Dict[str, Any]], data_root: str, minio: Minio):
+        """
+        Create Shepherd, the mighty Sheep manager.
+
+        :param zmq_context: zmq context
+        :param registry: optional docker registry config
+        :param sheep_config: sheep config
+        :param data_root: directory where the task/sheep directories will be managed
+        :param minio: Minio handle
+        """
+        self.minio = minio
         self.poller = zmq.Poller()
         self.sheep: Dict[str, RuntimeSheepData] = {}
 
@@ -65,6 +79,12 @@ class Shepherd:
             logging.info('Creating sheep `%s` of type `%s`', sheep_id, sheep_type)
             self.sheep[sheep_id] = RuntimeSheepData(socket, sheep_type, adapter)
             self.poller.register(socket, zmq.POLLIN)
+
+            logging.info('Creating data root dir `%s`', data_root)
+            if path.exists(data_root):
+                shutil.rmtree(data_root)
+            os.makedirs(data_root)
+            self.data_root = data_root
 
     def __getitem__(self, sheep_id: str) -> RuntimeSheepData:
         """

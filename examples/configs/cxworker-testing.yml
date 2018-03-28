@@ -1,3 +1,4 @@
+data_root: /tmp/worker-data
 logging:
   level: debug
 registry:

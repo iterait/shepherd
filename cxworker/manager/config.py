@@ -56,6 +56,7 @@ class LoggingConfig(Model):
 
 
 class WorkerConfig(Model):
+    data_root: str = StringType(required=True)
     storage: StorageConfig = ModelType(StorageConfig, required=True)
     logging: LoggingConfig = ModelType(LoggingConfig, required=True)
     containers: Dict[str, Dict[str, Any]] = DictType(DictType(BaseType), required=True)
