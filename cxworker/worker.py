@@ -11,6 +11,7 @@ from .api.views import create_worker_blueprint
 from .api import create_app
 from .manager.config import load_config, WorkerConfig
 from .manager.output_listener import OutputListener
+from .sheep.welcome import welcome
 
 
 class Worker:
@@ -24,6 +25,7 @@ class Worker:
     def load_config(self, config_stream):
         self.config = load_config(config_stream)
         logging.basicConfig(level=self.config.logging.log_level)
+        welcome()
         self.shepherd = Shepherd(self.zmq_context, self.config.registry, self.config.containers)
         self.minio = Minio(self.config.storage.schemeless_url, self.config.storage.access_key,
                            self.config.storage.secret_key, self.config.storage.secure)
