@@ -7,6 +7,7 @@ import gevent
 import os.path as path
 from functools import partial
 import shutil
+from io import BytesIO
 
 from cxworker.api.models import SheepModel
 from cxworker.sheep.sheep import DockerSheep, BareSheep, BaseSheep, DummySheep
@@ -102,12 +103,13 @@ class Shepherd:
 
     def enqueue_job(self, sheep_id: str, job_id: str) -> None:
         logging.debug('En-queueing job `%s` for sheep `%s`', job_id, sheep_id)
-        self[sheep_id].requests.put(job_id)
+        self[sheep_id].requests_queue.put(job_id)
+        self[sheep_id].requests_set.add(job_id)
 
     def dequeue_and_feed_jobs(self, sheep_id: str) -> None:
         while True:
             sheep = self[sheep_id]
-            job_id = sheep.requests.get()
+            job_id = sheep.requests_queue.get()
             logging.debug('De-queueing job `%s` for sheep `%s`', job_id, sheep_id)
             working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
             pull_minio_bucket(self.minio, job_id, working_directory)
@@ -126,27 +128,24 @@ class Shepherd:
             result = self.poller.poll()
             sheep_ids = (sheep_id for sheep_id, sheep in self.sheep.items() if (sheep.socket, zmq.POLLIN) in result)
             for sheep_id in sheep_ids:
-                try:
-                    message_type, job_id, *rest = self[sheep_id].socket.recv_multipart()
-                    message_type = message_type.decode()
-                    job_id = job_id.decode()
+                message_type, job_id, *rest = self[sheep_id].socket.recv_multipart()
+                message_type = message_type.decode()
+                job_id = job_id.decode()
 
-                    if message_type == "output":
-                        pass
-                    elif message_type == "error":
-                        if len(rest) >= 1:
-                            logging.error("Received error traceback:")
-                            logging.error(rest[0])
-                        raise SheepError("The sheep encountered an error when working on job `{}`".format(job_id))
-                    else:
-                        raise SheepError("The sheep responded with an unknown message type " + message_type.decode())
+                working_directory = path.join(self[sheep_id].sheep_data_root, job_id)
+                push_minio_bucket(self.minio, job_id, working_directory)
+                shutil.rmtree(working_directory)
 
-                    working_directory = path.join(self[sheep_id].sheep_data_root, job_id)
-                    push_minio_bucket(self.minio, job_id, working_directory)
-                    shutil.rmtree(working_directory)
+                if message_type == "output":
+                    self.minio.put_object(job_id, 'done', BytesIO(b''), 0)
+                else:
+                    self.minio.put_object(job_id, 'error', BytesIO(b''), 0)
+                    logging.error("The sheep encountered an error when working on job `%s`", job_id)
+                    if len(rest) >= 1:
+                        logging.error("Received error traceback:")
+                        logging.error(rest[0])
 
-                except SheepError as e:
-                    logging.exception("Exception in sheep {}, %s".format(str(sheep_id)), e)
+                self[sheep_id].requests_set.remove(job_id)
 
     def get_status(self) -> Generator[Tuple[str, SheepModel], None, None]:
         """

@@ -1,4 +1,5 @@
 from minio import Minio
+from minio.error import MinioError
 from io import BytesIO
 import logging
 import requests
@@ -45,5 +46,11 @@ for i in range(NUM):
     request_id = 'test-request'+str(i)
     logging.info('Checking results of %s', request_id)
     output = json.loads(minio.get_object(request_id, output_url).read().decode())
+    minio.stat_object(request_id, 'done')
+    try:
+        minio.stat_object(request_id, 'error')
+        assert False
+    except MinioError:
+        pass
     assert output['key'] == [i]
     assert output['output'] == [i*2]
