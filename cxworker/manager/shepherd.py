@@ -111,6 +111,7 @@ class Shepherd:
             logging.debug('De-queueing job `%s` for sheep `%s`', job_id, sheep_id)
             working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
             pull_minio_bucket(self.minio, job_id, working_directory)
+            create_clean_dir(path.join(working_directory, 'outputs'))
             self[sheep_id].socket.send_multipart([b"input", job_id.encode(), sheep.sheep_data_root.encode()])
 
     def spawn_feeders(self) -> List[gevent.Greenlet]:
@@ -136,7 +137,7 @@ class Shepherd:
                         if len(rest) >= 1:
                             logging.error("Received error traceback:")
                             logging.error(rest[0])
-                        raise SheepError("The sheep encountered an error when working on job `%s`", job_id)
+                        raise SheepError("The sheep encountered an error when working on job `{}`".format(job_id))
                     else:
                         raise SheepError("The sheep responded with an unknown message type " + message_type.decode())
 

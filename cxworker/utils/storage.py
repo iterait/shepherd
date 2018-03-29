@@ -22,11 +22,16 @@ def pull_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
     """
     logging.debug('Pulling minio bucket `%s` to `%s`', bucket_name, dir_name)
     try:
+        pulled_count = 0
         for object in minio.list_objects_v2(bucket_name, recursive=True):
-            filepath = path.join(*object.object_name.split(_MINIO_FOLDER_DELIMITER))
-            filedir = path.join(dir_name, path.dirname(filepath))
-            os.makedirs(filedir, exist_ok=True)
-            minio.fget_object(bucket_name, object.object_name, path.join(filedir, filepath))
+            if object.object_name.startswith('inputs'+_MINIO_FOLDER_DELIMITER):
+                filepath = path.join(*object.object_name.split(_MINIO_FOLDER_DELIMITER))
+                os.makedirs(path.join(dir_name, path.dirname(filepath)), exist_ok=True)
+                minio.fget_object(bucket_name, object.object_name, path.join(dir_name, filepath))
+                pulled_count += 1
+        if pulled_count == 0:
+            logging.warning('No input objects pulled from bucket `%s`. Make they are in the `inputs/` folder.',
+                            bucket_name)
     except MinioError as me:
         raise StorageError('Failed to pull minio bucket `{}`'.format(bucket_name)) from me
 
@@ -42,11 +47,16 @@ def push_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
     """
     logging.debug('Pushing minio bucket `%s` to `%s`', bucket_name, dir_name)
     try:
-        for prefix, _, files in os.walk(dir_name):
+        pushed_count = 0
+        for prefix, _, files in os.walk(path.join('outputs', dir_name)):
             for file in files:
-                filepath = path.relpath(path.join(prefix, file), dir_name)
+                filepath = path.relpath(path.join('outputs', prefix, file), dir_name)
                 object_name = filepath.replace(path.sep, _MINIO_FOLDER_DELIMITER)
                 minio.fput_object(bucket_name, object_name, path.join(dir_name, filepath))
+                pushed_count += 1
+        if pushed_count == 0:
+            logging.warning('No output files pushed to bucket `%s`. Make sure they are in the `outputs/` folder.',
+                            bucket_name)
     except MinioError as me:
         raise StorageError('Failed to push minio bucket `{}`'.format(bucket_name)) from me
 

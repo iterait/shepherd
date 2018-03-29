@@ -87,7 +87,7 @@ def runner():
                 job_id = job_id.decode()
                 io_path = io_path.decode()
                 logging.info('Processing job `%s`', job_id)
-                input_path = path.join(io_path, job_id, 'input.json')
+                input_path = path.join(io_path, job_id, 'inputs', 'input.json')
                 payload = json.load(open(input_path))
                 result = defaultdict(list)
                 for input_batch in dataset.predict_stream(payload):
@@ -107,7 +107,7 @@ def runner():
 
                 logging.info('JSONify')
                 result_json = to_json_serializable(result)
-                json.dump(result_json, open(path.join(io_path, job_id, 'output.json'), 'w'))
+                json.dump(result_json, open(path.join(io_path, job_id, 'outputs', 'output.json'), 'w'))
 
                 logging.info('Sending result')
                 socket.send_multipart([identity, b"output", job_id.encode()])

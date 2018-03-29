@@ -10,8 +10,8 @@ pool = multiprocessing.Pool(4)
 
 time.sleep(1)
 
-source_url = 'input.json'
-output_url = 'output.json'
+source_url = 'inputs/input.json'
+output_url = 'outputs/output.json'
 container_id = "container_a"
 
 input_data = b'{"key":[42]}'

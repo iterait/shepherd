@@ -233,11 +233,11 @@ class DummySheep(BaseSheep):
 
             if message_type == b"input":
                 gevent.sleep(3)
-                input_path = path.join(io_path, job_id, 'input.json')
+                input_path = path.join(io_path, job_id, 'inputs', 'input.json')
                 payload = json.load(open(input_path))
                 result_json = payload
                 result_json['output'] = [payload['key'][0]*2]
-                json.dump(result_json, open(path.join(io_path, job_id, 'output.json'), 'w'))
+                json.dump(result_json, open(path.join(io_path, job_id, 'outputs', 'output.json'), 'w'))
                 self.feeding_socket.send_multipart([identity, b"output", job_id.encode()])
             else:
                 logging.debug('Sending error `%s`')
