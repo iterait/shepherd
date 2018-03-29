@@ -36,7 +36,7 @@ class Worker:
         if self.config is None:
             raise RuntimeError("Configuration has not been loaded yet")
 
-        self.app.register_blueprint(create_worker_blueprint(self.shepherd, self.minio))
+        self.app.register_blueprint(create_worker_blueprint(self.shepherd, self.minio, self.zmq_context))
 
         api_server = WSGIServer((host, port), self.app)
 

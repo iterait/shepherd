@@ -12,10 +12,9 @@ from io import BytesIO
 from cxworker.api.models import SheepModel
 from cxworker.sheep.sheep import DockerSheep, BareSheep, BaseSheep, DummySheep
 from cxworker.errors import SheepConfigurationError
-from .errors import SheepError
-from ..api.errors import UnknownSheepError
+from ..api.errors import UnknownSheepError, UnknownJobError
 from .config import RegistryConfig
-from ..utils import pull_minio_bucket, push_minio_bucket
+from ..utils import pull_minio_bucket, push_minio_bucket, minio_object_exists
 from cxworker.utils import create_clean_dir
 
 
@@ -38,6 +37,9 @@ class Shepherd:
         self.minio = minio
         self.poller = zmq.Poller()
         self.sheep: Dict[str, BaseSheep] = {}
+
+        self.notifier = zmq_context.socket(zmq.PUB)
+        self.notifier.bind("tcp://*:6666")
 
         for sheep_id, config in sheep_config.items():
             socket = zmq_context.socket(zmq.DEALER)
@@ -81,7 +83,7 @@ class Shepherd:
 
         sheep.load_model(model, version)
         sheep.start()
-        # TODO clear queue
+        sheep.requests_set = set()
         sheep.socket.connect("tcp://0.0.0.0:{}".format(sheep.config.port))
 
     def refresh_model(self, sheep_id: str) -> None:
@@ -110,7 +112,7 @@ class Shepherd:
         while True:
             sheep = self[sheep_id]
             job_id = sheep.requests_queue.get()
-            logging.debug('De-queueing job `%s` for sheep `%s`', job_id, sheep_id)
+            logging.info('De-queueing job `%s` for sheep `%s`', job_id, sheep_id)
             working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
             pull_minio_bucket(self.minio, job_id, working_directory)
             create_clean_dir(path.join(working_directory, 'outputs'))
@@ -146,6 +148,8 @@ class Shepherd:
                         logging.error(rest[0])
 
                 self[sheep_id].requests_set.remove(job_id)
+                logging.info('Job `%s` from sheep `%s` has been finished', job_id, sheep_id)
+                self.notifier.send(b'')
 
     def get_status(self) -> Generator[Tuple[str, SheepModel], None, None]:
         """
@@ -166,3 +170,14 @@ class Shepherd:
         for sheep_id, sheep in self.sheep.items():
             if sheep.running is not None:
                 self.slaughter_sheep(sheep_id)
+
+    def is_job_done(self, job_id: str) -> bool:
+        if minio_object_exists(self.minio, job_id, 'done') or minio_object_exists(self.minio, job_id, 'error'):
+            return True
+        else:
+            for sheep in self.sheep.values():
+                if job_id in sheep.requests_set:
+                    return False
+            else:
+                raise UnknownJobError('Job `{}` is not know to this worker'.format(job_id))
+

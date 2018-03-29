@@ -61,6 +61,14 @@ def push_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
         raise StorageError('Failed to push minio bucket `{}`'.format(bucket_name)) from me
 
 
+def minio_object_exists(minio: Minio, bucket_name: str, object_name: str) -> bool:
+    try:
+        minio.stat_object(bucket_name, object_name)
+        return True
+    except MinioError:
+        return False
+
+
 def create_clean_dir(dir_path) -> str:
     logging.debug('Creating clean dir dir `%s`', dir_path)
     if path.exists(dir_path):

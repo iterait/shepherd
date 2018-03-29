@@ -24,3 +24,7 @@ class StartJobResponse(Model):
 
 class ReconfigureResponse(Model):
     success: bool = BooleanType(default=True, required=True)
+
+
+class JobStatusResponse(Model):
+    ready: bool = BooleanType(required=True)

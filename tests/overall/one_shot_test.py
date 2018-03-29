@@ -5,6 +5,7 @@ import logging
 import requests
 import time
 import json
+import sys
 import multiprocessing
 logging.basicConfig(level=logging.DEBUG)
 pool = multiprocessing.Pool(4)
@@ -23,10 +24,13 @@ configuration = {"sheep_id": container_id, "model": {"name": "cxflow-test", "ver
 resp = requests.post('http://0.0.0.0:5000/reconfigure', json=configuration)
 assert resp.status_code == 200
 
-NUM = 10
+offset = 0
+if len(sys.argv)>1:
+    offset = int(sys.argv[1])
+NUM = 5
 
 for i in range(NUM):
-    request_id = 'test-request'+str(i)
+    request_id = 'test-request'+str(i+offset)
     if minio.bucket_exists(request_id):
         for obj in minio.list_objects_v2(request_id, recursive=True):
             minio.remove_object(request_id, obj.object_name)
@@ -40,11 +44,10 @@ for i in range(NUM):
     resp = requests.post('http://0.0.0.0:5000/start-job', json=task)
     assert resp.status_code == 200
 
-time.sleep(3)
-
 for i in range(NUM):
-    request_id = 'test-request'+str(i)
+    request_id = 'test-request'+str(i+offset)
     logging.info('Checking results of %s', request_id)
+    requests.get('http://0.0.0.0:5000/jobs/{}/wait_ready'.format(request_id))
     output = json.loads(minio.get_object(request_id, output_url).read().decode())
     minio.stat_object(request_id, 'done')
     try:
