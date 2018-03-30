@@ -1,88 +1,15 @@
-from abc import ABCMeta, abstractmethod, abstractstaticmethod
-from typing import List, Optional, Union, Sequence
+from typing import Optional, Union, Sequence
 
 import zmq.green as zmq
 from zmq.error import ZMQBaseError
 
-
-__all__ = ['Messenger', 'InputMessage', 'DoneMessage', 'ErrorMessage', 'MessengerError', 'UnknownMessageTypeError']
-
-
-class MessengerError(ValueError):
-    pass
-
-
-class UnknownMessageTypeError(MessengerError):
-    pass
-
-
-class UnexpectedMessageTypeError(MessengerError):
-    pass
-
-
-class BaseMessage(metaclass=ABCMeta):
-
-    def __init__(self, identity: Optional[bytes]=None):
-        self.identity: Optional[bytes] = identity
-
-    @abstractmethod
-    def serialize(self) -> List[bytes]:
-        pass
-
-    @staticmethod
-    @abstractstaticmethod
-    def type() -> str:
-        pass
-
-
-class InputMessage(BaseMessage):
-
-    def __init__(self, job_id: str, io_data_root: str, **kwargs):
-        super().__init__(**kwargs)
-        self.job_id: str = job_id
-        self.io_data_root: str = io_data_root
-
-    def serialize(self) -> List[bytes]:
-        return [self.job_id.encode(), self.io_data_root.encode()]
-
-    @staticmethod
-    def type() -> str:
-        return 'input'
-
-
-class DoneMessage(BaseMessage):
-
-    def __init__(self, job_id: str, **kwargs):
-        super().__init__(**kwargs)
-        self.job_id: str = job_id
-
-    def serialize(self) -> List[bytes]:
-        return [self.job_id.encode()]
-
-    @staticmethod
-    def type() -> str:
-        return 'output'
-
-
-class ErrorMessage(BaseMessage):
-
-    def __init__(self, job_id: str, short_error: str, long_error: Optional[str]=None, **kwargs):
-        super().__init__(**kwargs)
-        self.job_id: str = job_id
-        self.short_error: str = short_error
-        self.long_error: str = long_error
-
-    def serialize(self) -> List[bytes]:
-        return [self.job_id.encode(), self.short_error.encode(), self.long_error.encode()]
-
-    @staticmethod
-    def type() -> str:
-        return 'error'
+from .errors import *
+from .messages import *
 
 
 class Messenger:
     """
-    Static helper class for sending and receiving images through zmq sockets.
+    Static helper class for sending and receiving messages through zmq sockets.
     """
 
     _MESSAGE_TYPES_MAPPING = {InputMessage.type(): InputMessage,
@@ -112,7 +39,7 @@ class Messenger:
         try:
             socket.send_multipart(serialized_message)
         except ZMQBaseError as zmq_error:
-            raise MessengerError('Failed to send message') from zmq_error
+            raise MessageError('Failed to send message') from zmq_error
 
     @staticmethod
     def recv(socket: zmq.Socket, expected_message_types: Optional[Sequence[type]]=None) \
@@ -136,7 +63,7 @@ class Messenger:
             message_type = message_type.decode()
             message_parts = [part.decode() for part in message_parts]
         except ZMQBaseError as zmq_error:
-            raise MessengerError('Failed to receive message') from zmq_error
+            raise MessageError('Failed to receive message') from zmq_error
 
         # check if message type is known
         if message_type not in Messenger._MESSAGE_TYPES_MAPPING:
