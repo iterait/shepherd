@@ -14,6 +14,7 @@ import zmq
 from cxflow.cli.common import create_dataset, create_model
 from cxflow.cli.util import validate_config, find_config
 from cxflow.utils import load_config
+from cxworker.comm import Messenger, DoneMessage, ErrorMessage, InputMessage
 
 
 def to_json_serializable(data):
@@ -29,10 +30,6 @@ def to_json_serializable(data):
         return data
     else:
         raise ValueError('Unsupported JSON type `{}` (key `{}`)'.format(type(data), data))
-
-
-def send_error(socket: zmq.Socket, identity: bytes, job_id, message: bytes, additional_message: bytes = None):
-    socket.send_multipart([identity, b"error", job_id.encode(), message] + ([additional_message] if additional_message is not None else []))
 
 
 def runner():
@@ -80,43 +77,41 @@ def runner():
 
     while True:
         logging.info('Waiting for payload')
-        identity, message_type, job_id, io_path, *_ = socket.recv_multipart()
+        message: InputMessage = Messenger.recv(socket, [InputMessage])
 
-        if message_type == b"input":
-            try:
-                job_id = job_id.decode()
-                io_path = io_path.decode()
-                logging.info('Processing job `%s`', job_id)
-                input_path = path.join(io_path, job_id, 'inputs', 'input.json')
-                payload = json.load(open(input_path))
-                result = defaultdict(list)
-                for input_batch in dataset.predict_stream(payload):
-                    logging.info('Another batch (%s)', list(input_batch.keys()))
-                    output_batch = model.run(input_batch, train=False, stream=None)
-                    if hasattr(dataset, 'postprocess_batch'):
-                        logging.info('\tPostprocessing')
-                        result_batch = dataset.postprocess_batch(input_batch=input_batch,
-                                                                 output_batch=output_batch)
-                        logging.info('\tdone')
-                    else:
-                        logging.info('Skipping postprocessing')
-                        result_batch = output_batch
+        try:
+            job_id = message.job_id
+            io_path = message.io_data_root
+            logging.info('Processing job `%s`', job_id)
+            input_path = path.join(io_path, job_id, 'inputs', 'input.json')
+            payload = json.load(open(input_path))
+            result = defaultdict(list)
+            for input_batch in dataset.predict_stream(payload):
+                logging.info('Another batch (%s)', list(input_batch.keys()))
+                output_batch = model.run(input_batch, train=False, stream=None)
+                if hasattr(dataset, 'postprocess_batch'):
+                    logging.info('\tPostprocessing')
+                    result_batch = dataset.postprocess_batch(input_batch=input_batch,
+                                                             output_batch=output_batch)
+                    logging.info('\tdone')
+                else:
+                    logging.info('Skipping postprocessing')
+                    result_batch = output_batch
 
-                    for source, value in result_batch.items():
-                        result[source] += list(value)
+                for source, value in result_batch.items():
+                    result[source] += list(value)
 
-                logging.info('JSONify')
-                result_json = to_json_serializable(result)
-                json.dump(result_json, open(path.join(io_path, job_id, 'outputs', 'output.json'), 'w'))
+            logging.info('JSONify')
+            result_json = to_json_serializable(result)
+            json.dump(result_json, open(path.join(io_path, job_id, 'outputs', 'output.json'), 'w'))
 
-                logging.info('Sending result')
-                socket.send_multipart([identity, b"output", job_id.encode()])
-            except BaseException as e:
-                logging.exception(e)
-                send_error(socket, identity, job_id, "{}: {}".format(type(e).__name__, str(e),
-                                                             traceback.format_tb(e.__traceback__)).encode())
-        else:
-            send_error(socket, identity, job_id, b"Unknown message type received")
+            logging.info('Sending result')
+            Messenger.send(socket, DoneMessage(job_id), message)
+        except BaseException as e:
+            logging.exception(e)
+            short_erorr = "{}: {}".format(type(e).__name__, str(e))
+            long_error = traceback.format_tb(e.__traceback__)
+            Messenger.send(socket, ErrorMessage(job_id, short_erorr, long_error), message)
 
 
 if __name__ == '__main__':

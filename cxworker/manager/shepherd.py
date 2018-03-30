@@ -17,6 +17,7 @@ from ..api.errors import UnknownSheepError, UnknownJobError
 from .config import RegistryConfig
 from ..utils import pull_minio_bucket, push_minio_bucket, minio_object_exists
 from cxworker.utils import create_clean_dir
+from ..comm import Messenger, InputMessage, DoneMessage, ErrorMessage
 
 
 class Shepherd:
@@ -125,32 +126,30 @@ class Shepherd:
             working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
             pull_minio_bucket(self.minio, job_id, working_directory)
             create_clean_dir(path.join(working_directory, 'outputs'))
-            self[sheep_id].socket.send_multipart([b"input", job_id.encode(), sheep.sheep_data_root.encode()])
+            Messenger.send(sheep.socket, InputMessage(job_id, sheep.sheep_data_root))
 
     def listen(self) -> None:
         while True:
             result = self.poller.poll()
             sheep_ids = (sheep_id for sheep_id, sheep in self.sheep.items() if (sheep.socket, zmq.POLLIN) in result)
             for sheep_id in sheep_ids:
-                message_type, job_id, *rest = self[sheep_id].socket.recv_multipart()
-                message_type = message_type.decode()
-                job_id = job_id.decode()
+                sheep = self[sheep_id]
+                message = Messenger.recv(sheep.socket, [DoneMessage, ErrorMessage])
+                job_id = message.job_id
 
                 working_directory = path.join(self[sheep_id].sheep_data_root, job_id)
                 push_minio_bucket(self.minio, job_id, working_directory)
                 shutil.rmtree(working_directory)
 
-                if message_type == "output":
+                if isinstance(message, DoneMessage):
                     self.minio.put_object(job_id, 'done', BytesIO(b''), 0)
-                else:
-                    self.minio.put_object(job_id, 'error', BytesIO(b''), 0)
-                    logging.error("The sheep encountered an error when working on job `%s`", job_id)
-                    if len(rest) >= 1:
-                        logging.error("Received error traceback:")
-                        logging.error(rest[0])
+                    logging.info('Job `%s` from sheep `%s` done', job_id, sheep_id)
+                elif isinstance(message, ErrorMessage):
+                    error = (message.short_error + '\n' + message.long_error).encode()
+                    self.minio.put_object(job_id, 'error', BytesIO(error), len(error))
+                    logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep_id, message.short_error)
 
                 self[sheep_id].requests_set.remove(job_id)
-                logging.info('Job `%s` from sheep `%s` has been finished', job_id, sheep_id)
                 self.notifier.send(b'')
 
     def get_status(self) -> Generator[Tuple[str, SheepModel], None, None]:
