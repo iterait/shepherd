@@ -20,7 +20,7 @@ def pull_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
     :param dir_name: directory name to pull to
     :raise StorageError: if the pull fails
     """
-    logging.debug('Pulling minio bucket `%s` to `%s`', bucket_name, dir_name)
+    logging.debug('Pulling minio bucket `%s` to dir `%s`', bucket_name, dir_name)
     try:
         pulled_count = 0
         for object in minio.list_objects_v2(bucket_name, recursive=True):
@@ -45,10 +45,10 @@ def push_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
     :param dir_name: directory name to push to from
     :raise StorageError: if the push fails
     """
-    logging.debug('Pushing minio bucket `%s` to `%s`', bucket_name, dir_name)
+    logging.debug('Pushing dir `%s` to minio bucket `%s`', dir_name, bucket_name)
     try:
         pushed_count = 0
-        for prefix, _, files in os.walk(path.join('outputs', dir_name)):
+        for prefix, _, files in os.walk(path.join(dir_name, 'outputs')):
             for file in files:
                 filepath = path.relpath(path.join('outputs', prefix, file), dir_name)
                 object_name = filepath.replace(path.sep, _MINIO_FOLDER_DELIMITER)
