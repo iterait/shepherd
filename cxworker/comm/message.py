@@ -82,7 +82,7 @@ class ErrorMessage(BaseMessage):
 
 class Messenger:
     """
-    Static helper class for sending and receiving images through zmq DEALER/ROUTER sockets.
+    Static helper class for sending and receiving images through zmq sockets.
     """
 
     _MESSAGE_TYPES_MAPPING = {InputMessage.type(): InputMessage,
@@ -92,7 +92,7 @@ class Messenger:
     @staticmethod
     def send(socket: zmq.Socket, message: BaseMessage, response_to: Optional[BaseMessage]=None) -> None:
         """
-        Encode the given image and send it to the given DEALER/ROUTER socket.
+        Encode the given image and send it to the given socket.
 
         :param socket: socket to send the message to
         :param message: message to be send
@@ -100,8 +100,6 @@ class Messenger:
         :raise MessengerError: if it fails
         :raise UnknownMessageTypeError: if the message to be send is of unknown type
         """
-        assert socket.type in [zmq.DEALER, zmq.ROUTER]
-
         # check if the message type is known
         if type(message) not in Messenger._MESSAGE_TYPES_MAPPING.values():
             raise UnknownMessageTypeError('Unknown message type `{}`. Known message types are {}.'
@@ -120,7 +118,7 @@ class Messenger:
     def recv(socket: zmq.Socket, expected_message_types: Optional[Sequence[type]]=None) \
             -> Union[InputMessage, DoneMessage, ErrorMessage]:
         """
-        Receive, decode and return a message from the given DEALER/ROUTER socket.
+        Receive, decode and return a message from the given socket.
 
         :param socket: socket to receive the message from
         :param expected_message_types: a sequence of expected message types (optional)
@@ -128,15 +126,13 @@ class Messenger:
         :raise UnknownMessageTypeError: if the received message is of unknown type
         :raise UnexpectedMessageTypeError: if the received message type is not expected
         """
-        assert socket.type in [zmq.DEALER, zmq.ROUTER]
-
         # receive the message
         try:
-            if socket.type == zmq.DEALER:
+            if socket.type == zmq.ROUTER:
+                identity, message_type, *message_parts = socket.recv_multipart()
+            else:
                 identity = None
                 message_type, *message_parts = socket.recv_multipart()
-            elif socket.type == zmq.ROUTER:
-                identity, message_type, *message_parts = socket.recv_multipart()
             message_type = message_type.decode()
             message_parts = [part.decode() for part in message_parts]
         except ZMQBaseError as zmq_error:
