@@ -7,6 +7,7 @@ import gevent
 import os.path as path
 from functools import partial
 import shutil
+from gevent.queue import Queue
 from io import BytesIO
 
 from cxworker.api.models import SheepModel
@@ -83,8 +84,14 @@ class Shepherd:
 
         sheep.load_model(model, version)
         sheep.start()
+        if sheep.feeding_greenlet is not None:
+            sheep.feeding_greenlet.kill()
+            sheep.feeding_greenlet = None
         sheep.requests_set = set()
+        sheep.requests_queue = Queue()
         sheep.socket.connect("tcp://0.0.0.0:{}".format(sheep.config.port))
+        dequeue_jobs_fn = partial(self.dequeue_and_feed_jobs, sheep_id)
+        sheep.feeding_greenlet = gevent.spawn(dequeue_jobs_fn)
 
     def refresh_model(self, sheep_id: str) -> None:
         sheep = self[sheep_id]
@@ -102,6 +109,8 @@ class Shepherd:
             logging.warning('Failed to disconnect socket of `{}`  (perhaps it was not started/connected)'
                             .format(sheep_id))
         sheep.slaughter()
+        if sheep.feeding_greenlet is not None:
+            sheep.feeding_greenlet.kill()
 
     def enqueue_job(self, sheep_id: str, job_id: str) -> None:
         logging.debug('En-queueing job `%s` for sheep `%s`', job_id, sheep_id)
@@ -117,13 +126,6 @@ class Shepherd:
             pull_minio_bucket(self.minio, job_id, working_directory)
             create_clean_dir(path.join(working_directory, 'outputs'))
             self[sheep_id].socket.send_multipart([b"input", job_id.encode(), sheep.sheep_data_root.encode()])
-
-    def spawn_feeders(self) -> List[gevent.Greenlet]:
-        dequeuers = []
-        for sheep_id in self.sheep.keys():
-            dequeue_jobs_fn = partial(self.dequeue_and_feed_jobs, sheep_id)
-            dequeuers.append(gevent.spawn(dequeue_jobs_fn))
-        return dequeuers
 
     def listen(self) -> None:
         while True:

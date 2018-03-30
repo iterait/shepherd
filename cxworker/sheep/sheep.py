@@ -37,12 +37,13 @@ class BaseSheep(metaclass=abc.ABCMeta):
 
     def __init__(self, socket: zmq.Socket, sheep_data_root: str):
         self.config: Optional[self.Config] = None
-        self.socket = socket
-        self.requests_queue = Queue()
-        self.requests_set = set()
-        self.model_name = None
-        self.model_version = None
-        self.sheep_data_root = sheep_data_root
+        self.feeding_greenlet: gevent.Greenlet = None
+        self.socket: zmq.Socket = socket
+        self.requests_queue: Queue = Queue()
+        self.requests_set: set = set()
+        self.model_name: Optional[str] = None
+        self.model_version: Optional[str] = None
+        self.sheep_data_root: Optional[str] = sheep_data_root
 
     def load_model(self, model_name: str, model_version: str):
         """

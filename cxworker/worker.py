@@ -42,7 +42,6 @@ class Worker:
 
         api_handler = gevent.spawn(api_server.start)
         sheep_listener = gevent.spawn(self.shepherd.listen)
-        sheep_feeder = self.shepherd.spawn_feeders()
 
         # everything should be ready, lets check if minio works
         try:
@@ -56,7 +55,7 @@ class Worker:
         try:
             logging.info('Listening for API calls at http://%s:%s (send a keyboard interrupt to stop the worker)',
                          host, port)
-            gevent.joinall([api_handler, sheep_listener]+sheep_feeder)
+            gevent.joinall([api_handler, sheep_listener])
         except KeyboardInterrupt:
             logging.info("Interrupt caught, slaughtering all the sheep")
             self.shepherd.slaughter_all()

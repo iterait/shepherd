@@ -31,8 +31,8 @@ def to_json_serializable(data):
         raise ValueError('Unsupported JSON type `{}` (key `{}`)'.format(type(data), data))
 
 
-def send_error(socket: zmq.Socket, identity: bytes, message: bytes, additional_message: bytes = None):
-    socket.send_multipart([identity, b"error", message] + ([additional_message] if additional_message is not None else []))
+def send_error(socket: zmq.Socket, identity: bytes, job_id, message: bytes, additional_message: bytes = None):
+    socket.send_multipart([identity, b"error", job_id.encode(), message] + ([additional_message] if additional_message is not None else []))
 
 
 def runner():
@@ -113,10 +113,10 @@ def runner():
                 socket.send_multipart([identity, b"output", job_id.encode()])
             except BaseException as e:
                 logging.exception(e)
-                send_error(socket, identity, "{}: {}".format(type(e).__name__, str(e),
+                send_error(socket, identity, job_id, "{}: {}".format(type(e).__name__, str(e),
                                                              traceback.format_tb(e.__traceback__)).encode())
         else:
-            send_error(socket, identity, b"Unknown message type received")
+            send_error(socket, identity, job_id, b"Unknown message type received")
 
 
 if __name__ == '__main__':
