@@ -1,6 +1,6 @@
 data_root: /tmp/worker-data
 logging:
-  level: info
+  level: debug
 registry:
   url: http://0.0.0.0:6000
 storage:
