@@ -1,17 +1,15 @@
 import logging
-from zmq.error import ZMQError
 import zmq.green as zmq
-from typing import Mapping, Generator, Tuple, Dict, Any, Optional, List
+from typing import Mapping, Generator, Tuple, Dict, Any, Optional
 from minio import Minio
 import gevent
 import os.path as path
 from functools import partial
 import shutil
-from gevent.queue import Queue
 from io import BytesIO
 
 from cxworker.api.models import SheepModel
-from cxworker.sheep.sheep import DockerSheep, BareSheep, BaseSheep, DummySheep
+from cxworker.sheep import *
 from cxworker.errors import SheepConfigurationError
 from ..api.errors import UnknownSheepError, UnknownJobError
 from .config import RegistryConfig
@@ -64,11 +62,7 @@ class Shepherd:
             logging.info('Created sheep `%s` of type `%s`', sheep_id, sheep_type)
             self.sheep[sheep_id] = sheep
             self.poller.register(socket, zmq.POLLIN)
-            sheep.jobs_meta = dict()
-            sheep.jobs_queue = Queue()
-            sheep.socket.connect("tcp://0.0.0.0:{}".format(sheep.config.port))
-            dequeue_jobs_fn = partial(self.dequeue_and_feed_jobs, sheep_id)
-            sheep.feeding_greenlet = gevent.spawn(dequeue_jobs_fn)
+            gevent.spawn(partial(self.dequeue_and_feed_jobs, sheep_id))
 
     def __getitem__(self, sheep_id: str) -> BaseSheep:
         """
@@ -84,26 +78,11 @@ class Shepherd:
 
     def start_sheep(self, sheep_id: str, model: str, version: str) -> None:
         logging.info('Starting sheep `%s` with model `%s:%s`', sheep_id, model, version)
-        sheep = self[sheep_id]
-
-        if sheep.running:
-            self.slaughter_sheep(sheep_id)
-
-        sheep.load_model(model, version)
-        sheep.in_progress = set()
-        sheep.start()
-        sheep.socket.connect("tcp://0.0.0.0:{}".format(sheep.config.port))
+        self[sheep_id].start(model, version)
 
     def slaughter_sheep(self, sheep_id: str) -> None:
         logging.info('Slaughtering sheep `%s`', sheep_id)
-        sheep = self[sheep_id]
-        zmq_address = "tcp://0.0.0.0:{}".format(sheep.config.port)
-        try:
-            sheep.socket.disconnect(zmq_address)
-        except ZMQError:
-            logging.warning('Failed to disconnect socket of `{}`  (perhaps it was not started/connected)'
-                            .format(sheep_id))
-        sheep.slaughter()
+        self[sheep_id].slaughter()
 
     def enqueue_job(self, job_id: str, job_meta: ModelModel, sheep_id: Optional[str]=None) -> None:
         logging.info('En-queueing job `%s` for sheep `%s`', job_id, sheep_id)
@@ -183,9 +162,8 @@ class Shepherd:
             })
 
     def slaughter_all(self) -> None:
-        for sheep_id, sheep in self.sheep.items():
-            if sheep.running is not None:
-                self.slaughter_sheep(sheep_id)
+        for sheep_id in self.sheep.keys():
+            self.slaughter_sheep(sheep_id)
 
     def is_job_done(self, job_id: str) -> bool:
         if minio_object_exists(self.minio, job_id, 'done') or minio_object_exists(self.minio, job_id, 'error'):
@@ -196,4 +174,3 @@ class Shepherd:
                     return False
             else:
                 raise UnknownJobError('Job `{}` is not know to this worker'.format(job_id))
-

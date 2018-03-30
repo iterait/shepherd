@@ -35,7 +35,7 @@ for i in range(NUM):
     data = json.dumps({'key': [i]}).encode()
     minio.put_object(request_id, source_url, BytesIO(data), len(data))
 
-    task = {"job_id": request_id, "model": {"name": "cxflow-test", "version": "latest"+str(i)}}
+    task = {"job_id": request_id, "model": {"name": "cxflow-test", "version": "latest"}}
     logging.info('Calling start-job end-point for %s', request_id)
     resp = requests.post('http://0.0.0.0:5000/start-job', json=task)
     assert resp.status_code == 200
