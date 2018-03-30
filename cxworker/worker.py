@@ -23,6 +23,7 @@ class Worker:
     def load_config(self, config_stream):
         self.config = load_config(config_stream)
         logging.basicConfig(level=self.config.logging.log_level)
+        logging.getLogger("urllib3").setLevel(logging.WARNING)
 
         logging.debug('Creating minio handle')
         self.minio = Minio(self.config.storage.schemeless_url, self.config.storage.access_key,

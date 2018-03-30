@@ -20,12 +20,8 @@ input_data = b'{"key":[42]}'
 
 minio = Minio('0.0.0.0:7000', 'AKIAIOSFODNN7EXAMPLE', 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY', False)
 
-configuration = {"sheep_id": container_id, "model": {"name": "cxflow-test", "version": "latest"}}
-resp = requests.post('http://0.0.0.0:5000/reconfigure', json=configuration)
-assert resp.status_code == 200
-
 offset = 0
-if len(sys.argv)>1:
+if len(sys.argv) > 1:
     offset = int(sys.argv[1])
 NUM = 5
 
@@ -39,7 +35,7 @@ for i in range(NUM):
     data = json.dumps({'key': [i]}).encode()
     minio.put_object(request_id, source_url, BytesIO(data), len(data))
 
-    task = {"job_id": request_id, "sheep_id": container_id}
+    task = {"job_id": request_id, "model": {"name": "cxflow-test", "version": "latest"+str(i)}}
     logging.info('Calling start-job end-point for %s', request_id)
     resp = requests.post('http://0.0.0.0:5000/start-job', json=task)
     assert resp.status_code == 200

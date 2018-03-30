@@ -8,11 +8,12 @@ import os.path as path
 import json
 from zmq import Socket
 from zmq.error import ZMQError
+from gevent.lock import Semaphore
 
 import gevent
 import zmq
 from gevent.queue import Queue
-from typing import Dict, Any, List, Optional, Sequence
+from typing import Dict, Any, List, Optional, Sequence, DefaultDict
 
 from schematics import Model
 from schematics.types import StringType, IntType, ListType, BooleanType
@@ -21,6 +22,8 @@ from zmq import green as zmq
 from cxworker.docker import DockerContainer, DockerImage
 from cxworker.errors import SheepConfigurationError
 from cxworker.manager.config import RegistryConfig
+
+from ..api.models import ModelModel
 
 
 class BaseSheep(metaclass=abc.ABCMeta):
@@ -39,11 +42,12 @@ class BaseSheep(metaclass=abc.ABCMeta):
         self.config: Optional[self.Config] = None
         self.feeding_greenlet: gevent.Greenlet = None
         self.socket: zmq.Socket = socket
-        self.requests_queue: Queue = Queue()
-        self.requests_set: set = set()
+        self.jobs_queue: Queue = Queue()
+        self.jobs_meta: DefaultDict[str, ModelModel] = dict()
         self.model_name: Optional[str] = None
         self.model_version: Optional[str] = None
         self.sheep_data_root: Optional[str] = sheep_data_root
+        self.in_progress: set = set()
 
     def load_model(self, model_name: str, model_version: str):
         """
@@ -207,9 +211,6 @@ class DummySheep(BaseSheep):
         self.config = self.Config(config)
         self.server = None
         self.feeding_socket: Socket = None
-
-    def load_model(self, model_name: str, model_version: str):
-        pass
 
     def update_model(self):
         pass

@@ -18,6 +18,7 @@ from .config import RegistryConfig
 from ..utils import pull_minio_bucket, push_minio_bucket, minio_object_exists
 from cxworker.utils import create_clean_dir
 from ..comm import Messenger, InputMessage, DoneMessage, ErrorMessage
+from ..api.models import ModelModel
 
 
 class Shepherd:
@@ -63,6 +64,11 @@ class Shepherd:
             logging.info('Created sheep `%s` of type `%s`', sheep_id, sheep_type)
             self.sheep[sheep_id] = sheep
             self.poller.register(socket, zmq.POLLIN)
+            sheep.jobs_meta = dict()
+            sheep.jobs_queue = Queue()
+            sheep.socket.connect("tcp://0.0.0.0:{}".format(sheep.config.port))
+            dequeue_jobs_fn = partial(self.dequeue_and_feed_jobs, sheep_id)
+            sheep.feeding_greenlet = gevent.spawn(dequeue_jobs_fn)
 
     def __getitem__(self, sheep_id: str) -> BaseSheep:
         """
@@ -84,21 +90,9 @@ class Shepherd:
             self.slaughter_sheep(sheep_id)
 
         sheep.load_model(model, version)
+        sheep.in_progress = set()
         sheep.start()
-        if sheep.feeding_greenlet is not None:
-            sheep.feeding_greenlet.kill()
-            sheep.feeding_greenlet = None
-        sheep.requests_set = set()
-        sheep.requests_queue = Queue()
         sheep.socket.connect("tcp://0.0.0.0:{}".format(sheep.config.port))
-        dequeue_jobs_fn = partial(self.dequeue_and_feed_jobs, sheep_id)
-        sheep.feeding_greenlet = gevent.spawn(dequeue_jobs_fn)
-
-    def refresh_model(self, sheep_id: str) -> None:
-        sheep = self[sheep_id]
-        # If there is an update, restart the sheep
-        if sheep.update_model():
-            self.start_sheep(sheep_id, sheep.model_name, sheep.model_version)
 
     def slaughter_sheep(self, sheep_id: str) -> None:
         logging.info('Slaughtering sheep `%s`', sheep_id)
@@ -110,23 +104,43 @@ class Shepherd:
             logging.warning('Failed to disconnect socket of `{}`  (perhaps it was not started/connected)'
                             .format(sheep_id))
         sheep.slaughter()
-        if sheep.feeding_greenlet is not None:
-            sheep.feeding_greenlet.kill()
 
-    def enqueue_job(self, sheep_id: str, job_id: str) -> None:
-        logging.debug('En-queueing job `%s` for sheep `%s`', job_id, sheep_id)
-        self[sheep_id].requests_queue.put(job_id)
-        self[sheep_id].requests_set.add(job_id)
+    def enqueue_job(self, job_id: str, job_meta: ModelModel, sheep_id: Optional[str]=None) -> None:
+        logging.info('En-queueing job `%s` for sheep `%s`', job_id, sheep_id)
+        if sheep_id is None:
+            sheep_id = next(iter(self.sheep.keys()))
+            logging.info('Job `%s` is auto-assigned to sheep `%s`', job_id, sheep_id)
+        self[sheep_id].jobs_meta[job_id] = job_meta
+        self[sheep_id].jobs_queue.put(job_id)
 
     def dequeue_and_feed_jobs(self, sheep_id: str) -> None:
         while True:
             sheep = self[sheep_id]
-            job_id = sheep.requests_queue.get()
+            job_id = sheep.jobs_queue.get()
             logging.info('De-queueing job `%s` for sheep `%s`', job_id, sheep_id)
             working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
             pull_minio_bucket(self.minio, job_id, working_directory)
             create_clean_dir(path.join(working_directory, 'outputs'))
+            model = sheep.jobs_meta[job_id]
+            if model.name != sheep.model_name or model.version != sheep.model_version:
+                logging.info('Job `%s` requires model `%s:%s` on `%s`', job_id, model.name, model.version, sheep_id)
+                zmq_context = zmq.Context()
+
+                def wait_sheep_empty():
+                    notification_listener = zmq_context.socket(zmq.SUB)
+                    notification_listener.setsockopt(zmq.SUBSCRIBE, b'')
+                    notification_listener.connect("tcp://0.0.0.0:6666")
+                    while len(sheep.in_progress) > 0:
+                        notification_listener.recv()
+                    notification_listener.close()
+
+                waiter = gevent.spawn(wait_sheep_empty)
+                waiter.join()
+                self.slaughter_sheep(sheep_id)
+                self.start_sheep(sheep_id, model.name, model.version)
+
             Messenger.send(sheep.socket, InputMessage(job_id, sheep.sheep_data_root))
+            sheep.in_progress.add(job_id)
 
     def listen(self) -> None:
         while True:
@@ -149,7 +163,8 @@ class Shepherd:
                     self.minio.put_object(job_id, 'error', BytesIO(error), len(error))
                     logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep_id, message.short_error)
 
-                self[sheep_id].requests_set.remove(job_id)
+                self[sheep_id].jobs_meta.pop(job_id)
+                sheep.in_progress.remove(job_id)
                 self.notifier.send(b'')
 
     def get_status(self) -> Generator[Tuple[str, SheepModel], None, None]:
@@ -177,7 +192,7 @@ class Shepherd:
             return True
         else:
             for sheep in self.sheep.values():
-                if job_id in sheep.requests_set:
+                if job_id in sheep.jobs_meta.keys():
                     return False
             else:
                 raise UnknownJobError('Job `{}` is not know to this worker'.format(job_id))

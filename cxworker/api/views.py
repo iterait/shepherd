@@ -8,8 +8,8 @@ import gevent
 import zmq.green as zmq
 
 from cxworker.manager.shepherd import Shepherd
-from .requests import StartJobRequest, InterruptJobRequest, ReconfigureRequest
-from .responses import StartJobResponse, InterruptJobResponse, StatusResponse, ReconfigureResponse, JobStatusResponse
+from .requests import StartJobRequest
+from .responses import StartJobResponse, StatusResponse, JobStatusResponse
 from .errors import ClientActionError, StorageError
 
 
@@ -56,21 +56,8 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio, zmq_context):
     def start_job():
         start_job_request = load_request(StartJobRequest)
         check_job_exists(minio, start_job_request.job_id)
-
-        if start_job_request.refresh_model:
-            shepherd.refresh_model(start_job_request.sheep_id)
-
-        shepherd.enqueue_job(start_job_request.sheep_id, start_job_request.job_id)
-
+        shepherd.enqueue_job(start_job_request.job_id, start_job_request.model, start_job_request.sheep_id)
         return serialize_response(StartJobResponse())
-
-    @worker.route('/interrupt-job', methods=['POST'])
-    def interrupt_job():
-        interrupt_job_request = load_request(InterruptJobRequest)
-
-        shepherd.slaughter_sheep(interrupt_job_request.sheep_id)
-
-        return serialize_response(InterruptJobResponse())
 
     @worker.route("/jobs/<job_id>/ready", methods=["GET"])
     def is_ready(job_id):
@@ -104,15 +91,6 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio, zmq_context):
         waiter = gevent.spawn(wait_job_ready)
         waiter.join()
         return serialize_response(JobStatusResponse({'ready': shepherd.is_job_done(job_id)}))
-
-    @worker.route('/reconfigure', methods=['POST'])
-    def reconfigure():
-        reconfigure_request = load_request(ReconfigureRequest)
-
-        shepherd.start_sheep(reconfigure_request.sheep_id, reconfigure_request.model.name,
-                             reconfigure_request.model.version)
-
-        return serialize_response(ReconfigureResponse())
 
     @worker.route('/status', methods=['GET'])
     def get_status():
