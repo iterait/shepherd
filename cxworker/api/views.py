@@ -7,7 +7,7 @@ from typing import TypeVar, Type
 import gevent
 import zmq.green as zmq
 
-from cxworker.manager.shepherd import Shepherd
+from cxworker.shepherd.shepherd import Shepherd
 from .requests import StartJobRequest
 from .responses import StartJobResponse, StatusResponse, JobStatusResponse
 from .errors import ClientActionError, StorageError

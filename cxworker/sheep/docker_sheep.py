@@ -5,7 +5,7 @@ from schematics.types import BooleanType
 
 from .base_sheep import BaseSheep
 from ..docker import DockerContainer, DockerImage
-from ..manager.config import RegistryConfig
+from ..shepherd.config import RegistryConfig
 
 __all__ = ['DockerSheep', 'extract_gpu_number']
 

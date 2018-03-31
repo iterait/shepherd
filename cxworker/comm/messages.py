@@ -1,65 +1,57 @@
-from abc import ABCMeta, abstractmethod, abstractstaticmethod
-from typing import List, Optional
+import json
+import sys, inspect
+from schematics import Model
+from schematics.types import StringType, serializable, PolyModelType
+from typing import List
+
+__all__ = ['Message', 'InputMessage', 'DoneMessage', 'ErrorMessage', 'encode_message', 'decode_message']
 
 
-__all__ = ['BaseMessage', 'InputMessage', 'DoneMessage', 'ErrorMessage']
+class Message(Model):
+    identity = StringType(default='')
+    job_id = StringType()
+
+    @serializable
+    def message_type(self):
+        return self.__class__.__name__
 
 
-class BaseMessage(metaclass=ABCMeta):
-
-    def __init__(self, identity: Optional[bytes]=None):
-        self.identity: Optional[bytes] = identity
-
-    @abstractmethod
-    def serialize(self) -> List[bytes]:
-        pass
-
-    @staticmethod
-    @abstractstaticmethod
-    def type() -> str:
-        pass
+def get_message_classes():
+    return inspect.getmembers(sys.modules[__name__], lambda obj: inspect.isclass(obj) and issubclass(obj, Message))
 
 
-class InputMessage(BaseMessage):
+def claim(field, data):
+    for name, cls in get_message_classes():
+        if data["message_type"] == name:
+            return cls
 
-    def __init__(self, job_id: str, io_data_root: str, **kwargs):
-        super().__init__(**kwargs)
-        self.job_id: str = job_id
-        self.io_data_root: str = io_data_root
-
-    def serialize(self) -> List[bytes]:
-        return [self.job_id.encode(), self.io_data_root.encode()]
-
-    @staticmethod
-    def type() -> str:
-        return 'input'
+    return None
 
 
-class DoneMessage(BaseMessage):
-
-    def __init__(self, job_id: str, **kwargs):
-        super().__init__(**kwargs)
-        self.job_id: str = job_id
-
-    def serialize(self) -> List[bytes]:
-        return [self.job_id.encode()]
-
-    @staticmethod
-    def type() -> str:
-        return 'output'
+class InputMessage(Message):
+    io_data_root = StringType()
 
 
-class ErrorMessage(BaseMessage):
+class DoneMessage(Message):
+    pass
 
-    def __init__(self, job_id: str, short_error: str, long_error: Optional[str]=None, **kwargs):
-        super().__init__(**kwargs)
-        self.job_id: str = job_id
-        self.short_error: str = short_error
-        self.long_error: str = long_error
 
-    def serialize(self) -> List[bytes]:
-        return [self.job_id.encode(), self.short_error.encode(), self.long_error.encode()]
+class ErrorMessage(Message):
+    short_error = StringType()
+    long_error = StringType()
 
-    @staticmethod
-    def type() -> str:
-        return 'error'
+
+class MessageWrapper(Model):
+    message = PolyModelType(tuple(map(lambda item: item[1], get_message_classes())), claim_function=claim)
+
+
+def encode_message(message: Message) -> List[bytes]:
+    message.validate()
+    wrapper = MessageWrapper(dict(message=message))
+    return [json.dumps(wrapper.to_primitive()).encode()]
+
+
+def decode_message(value: bytes) -> Message:
+    wrapper = MessageWrapper(json.loads(value.decode()))
+    wrapper.validate()
+    return wrapper.message

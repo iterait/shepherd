@@ -6,8 +6,8 @@ from minio import Minio
 
 from cxworker.api import create_app
 from cxworker.api.views import create_worker_blueprint
-from cxworker.manager.config import ContainerConfig
-from cxworker.manager.registry import ContainerRegistry
+from cxworker.shepherd.config import ContainerConfig
+from cxworker.shepherd.registry import ContainerRegistry
 
 
 @pytest.fixture()

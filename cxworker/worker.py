@@ -6,10 +6,10 @@ import logging
 import sys
 from urllib3.exceptions import MaxRetryError
 
-from cxworker.manager.shepherd import Shepherd
+from cxworker.shepherd.shepherd import Shepherd
 from .api.views import create_worker_blueprint
 from .api import create_app
-from .manager.config import load_config, WorkerConfig
+from .shepherd.config import load_config, WorkerConfig
 
 
 class Worker:

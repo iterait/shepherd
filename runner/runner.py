@@ -106,12 +106,13 @@ def runner():
             json.dump(result_json, open(path.join(io_path, job_id, 'outputs', 'output.json'), 'w'))
 
             logging.info('Sending result')
-            Messenger.send(socket, DoneMessage(job_id), message)
+            Messenger.send(socket, DoneMessage(dict(job_id=job_id)), message)
         except BaseException as e:
             logging.exception(e)
             short_erorr = "{}: {}".format(type(e).__name__, str(e))
             long_error = traceback.format_tb(e.__traceback__)
-            Messenger.send(socket, ErrorMessage(job_id, short_erorr, long_error), message)
+            Messenger.send(socket, ErrorMessage(dict(job_id=job_id, short_erorr=short_erorr, long_error=long_error)),
+                           message)
 
 
 if __name__ == '__main__':

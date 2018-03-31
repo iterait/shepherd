@@ -27,7 +27,7 @@ class Shepherd:
     def __init__(self, zmq_context: zmq.Context, registry_config: Optional[RegistryConfig],
                  sheep_config: Mapping[str, Dict[str, Any]], data_root: str, minio: Minio):
         """
-        Create Shepherd, the mighty Sheep manager and his sheep.
+        Create Shepherd, the mighty Sheep shepherd and his sheep.
 
         :param zmq_context: zmq context
         :param registry_config: optional docker registry config
@@ -54,8 +54,6 @@ class Shepherd:
                 sheep = DockerSheep(config=config, registry_config=registry_config, **common_kwargs)
             elif sheep_type == "bare":
                 sheep = BareSheep(config=config, **common_kwargs)
-            elif sheep_type == "dummy":
-                sheep = DummySheep(config=config, **common_kwargs)
             else:
                 raise SheepConfigurationError("Unknown sheep type: {}".format(sheep_type))
 
@@ -118,7 +116,7 @@ class Shepherd:
                 self.slaughter_sheep(sheep_id)
                 self.start_sheep(sheep_id, model.name, model.version)
 
-            Messenger.send(sheep.socket, InputMessage(job_id, sheep.sheep_data_root))
+            Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
             sheep.in_progress.add(job_id)
 
     def listen(self) -> None:
