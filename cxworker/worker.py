@@ -2,10 +2,10 @@ import sys
 import logging
 
 import gevent
-import zmq.green as zmq
 from minio import Minio
 from gevent.wsgi import WSGIServer
 from urllib3.exceptions import MaxRetryError
+import cxflow as cx
 
 from .shepherd import Shepherd
 from .api.views import create_worker_blueprint
@@ -15,7 +15,6 @@ from .shepherd.config import load_config, WorkerConfig
 
 class Worker:
     def __init__(self):
-        self.zmq_context = zmq.Context.instance()
         self.app = create_app(__name__)
         self.shepherd: Shepherd = None
         self.minio = None
@@ -23,7 +22,9 @@ class Worker:
 
     def load_config(self, config_stream):
         self.config = load_config(config_stream)
-        logging.basicConfig(level=self.config.logging.log_level)
+        logging.basicConfig(level=self.config.logging.log_level,
+                            format=cx.constants.CXF_LOG_FORMAT,
+                            datefmt=cx.constants.CXF_LOG_DATE_FORMAT)
         logging.getLogger("urllib3").setLevel(logging.WARNING)
 
         logging.debug('Creating minio handle')
@@ -31,8 +32,7 @@ class Worker:
                            self.config.storage.secret_key, self.config.storage.secure)
 
         logging.debug('Creating shepherd')
-        self.shepherd = Shepherd(self.zmq_context, self.config.registry, self.config.containers, self.config.data_root,
-                                 self.minio)
+        self.shepherd = Shepherd(self.config.registry, self.config.containers, self.config.data_root, self.minio)
 
     def run(self, host: str, port: int):
         if self.config is None:
@@ -40,7 +40,7 @@ class Worker:
 
         self.app.register_blueprint(create_worker_blueprint(self.shepherd, self.minio))
 
-        api_server = WSGIServer((host, port), self.app)
+        api_server = WSGIServer((host, port), self.app, log=logging.getLogger(''))
 
         api_handler = gevent.spawn(api_server.start)
         sheep_listener = gevent.spawn(self.shepherd.listen)
