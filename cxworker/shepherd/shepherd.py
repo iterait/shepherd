@@ -31,7 +31,7 @@ class Shepherd:
     def __init__(self, zmq_context: zmq.Context, registry_config: Optional[RegistryConfig],
                  sheep_config: Mapping[str, Dict[str, Any]], data_root: str, minio: Minio):
         """
-        Create Shepherd, the mighty Sheep shepherd and his sheep.
+        Create mighty Shepherd.
 
         :param zmq_context: zmq context
         :param registry_config: optional docker registry config
@@ -63,6 +63,7 @@ class Shepherd:
             self.sheep[sheep_id] = sheep
             self.poller.register(socket, zmq.POLLIN)
             gevent.spawn(partial(self.dequeue_and_feed_jobs, sheep_id))
+            gevent.spawn(partial(self.health_check, sheep_id))
 
     def __getitem__(self, sheep_id: str) -> BaseSheep:
         """
@@ -112,6 +113,24 @@ class Shepherd:
         self[sheep_id].jobs_meta[job_id] = job_meta
         self[sheep_id].jobs_queue.put(job_id)
 
+    def health_check(self, sheep_id: str) -> None:
+        """
+        Check sheep's health and resolve it's in-progress jobs if it is not running.
+
+        :param sheep_id: id of the sheep to be checked
+        """
+        while True:
+            gevent.sleep(1)
+            sheep = self[sheep_id]
+            if not sheep.running:
+                for job_id in sheep.in_progress:
+                    shutil.rmtree(path.join(self[sheep_id].sheep_data_root, job_id))
+                    error = b'Sheep container died without notice'
+                    logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep_id, job_id, error)
+                    self.minio.put_object(job_id, 'error', BytesIO(error), len(error))
+                sheep.in_progress = set()
+                self.notifier.notify()
+
     def dequeue_and_feed_jobs(self, sheep_id: str) -> None:
         """
         De-queue jobs and, prepare working directories and send ``InputMessage`` to the specified sheep in an end-less
@@ -127,14 +146,15 @@ class Shepherd:
             pull_minio_bucket(self.minio, job_id, working_directory)
             create_clean_dir(path.join(working_directory, 'outputs'))
             model = sheep.jobs_meta[job_id]
-            if model.name != sheep.model_name or model.version != sheep.model_version:
+            if model.name != sheep.model_name or model.version != sheep.model_version or not sheep.running:
                 logging.info('Job `%s` requires model `%s:%s` on `%s`', job_id, model.name, model.version, sheep_id)
                 self.notifier.wait_for(lambda: len(sheep.in_progress) == 0)
                 self.slaughter_sheep(sheep_id)
                 self.start_sheep(sheep_id, model.name, model.version)
 
-            Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
             sheep.in_progress.add(job_id)
+            sheep.jobs_meta.pop(job_id)
+            Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
 
     def listen(self) -> None:
         """
@@ -159,8 +179,6 @@ class Shepherd:
                     error = (message.short_error + '\n' + message.long_error).encode()
                     self.minio.put_object(job_id, 'error', BytesIO(error), len(error))
                     logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep_id, message.short_error)
-
-                self[sheep_id].jobs_meta.pop(job_id)
                 sheep.in_progress.remove(job_id)
                 self.notifier.notify()
 
@@ -196,7 +214,7 @@ class Shepherd:
             return True
         else:
             for sheep in self.sheep.values():
-                if job_id in sheep.jobs_meta.keys():
+                if job_id in sheep.jobs_meta.keys() or job_id in sheep.in_progress:
                     return False
             else:
                 raise UnknownJobError('Job `{}` is not know to this worker'.format(job_id))

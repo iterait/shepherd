@@ -2,6 +2,7 @@ import abc
 import logging
 from typing import List, Optional, DefaultDict
 
+import gevent
 import zmq.green as zmq
 from zmq.error import ZMQBaseError
 from gevent.queue import Queue
