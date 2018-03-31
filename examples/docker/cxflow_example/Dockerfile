@@ -17,6 +17,6 @@ WORKDIR /project
 ADD . .
 
 # Replace this with your model of choice
-ADD cxflow-test /project/config.yaml
+ADD cxflow-test/latest/config.yaml /project/config.yaml
 
 CMD cxworker-runner /project

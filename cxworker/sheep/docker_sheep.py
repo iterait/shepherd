@@ -49,7 +49,7 @@ class DockerSheep(BaseSheep):
         :param kwargs: :py:class:`BaseSheep`'s kwargs
         """
         super().__init__(**kwargs)
-        self.config: self.Config = self.Config(config)
+        self._config: self.Config = self.Config(config)
         self._registry_config = registry_config
         self._container: Optional[DockerContainer] = None
         self._image: Optional[DockerImage] = None
@@ -75,13 +75,13 @@ class DockerSheep(BaseSheep):
         super().start(model_name, model_version)
 
         # prepare nvidia docker 2 env/runtime arguments (-e/--runtime)
-        visible_gpu_numbers = list(filter(None, map(extract_gpu_number, self.config.devices)))
+        visible_gpu_numbers = list(filter(None, map(extract_gpu_number, self._config.devices)))
         env = {"NVIDIA_VISIBLE_DEVICES": ",".join(visible_gpu_numbers)}
         runtime = "nvidia" if visible_gpu_numbers else None
 
         # create and start :py:class:`DockerContainer`
-        self._container = DockerContainer(self._image, self.config.autoremove_containers, env=env, runtime=runtime)
-        self._container.add_port_mapping(self.config.port, self._CONTAINER_POINT)
+        self._container = DockerContainer(self._image, self._config.autoremove_containers, env=env, runtime=runtime)
+        self._container.add_port_mapping(self._config.port, self._CONTAINER_POINT)
         self._container.add_bind_mount(self.sheep_data_root, self.sheep_data_root)
         self._container.start()
 
