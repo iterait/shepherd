@@ -121,17 +121,20 @@ class Shepherd:
         while True:
             gevent.sleep(1)
             sheep = self[sheep_id]
-            if not sheep.running:
-                for job_id in sheep.in_progress:
-                    # clean-up the working directory
-                    shutil.rmtree(path.join(self[sheep_id].sheep_data_root, job_id))
+            try:
+                if not sheep.running:
+                    for job_id in sheep.in_progress:
+                        # clean-up the working directory
+                        shutil.rmtree(path.join(self[sheep_id].sheep_data_root, job_id))
 
-                    # save the error
-                    error = b'Sheep container died without notice'
-                    logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep_id, job_id, error)
-                    self.minio.put_object(job_id, 'error', BytesIO(error), len(error))
-                sheep.in_progress = set()
-                self.notifier.notify()
+                        # save the error
+                        error = b'Sheep container died without notice'
+                        logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep_id, job_id, error)
+                        self.minio.put_object(job_id, 'error', BytesIO(error), len(error))
+                    sheep.in_progress = set()
+                    self.notifier.notify()
+            except SheepError as se:
+                logging.warning('Failed to check sheep\'s health due to the following exception: %s', str(se))
 
     def dequeue_and_feed_jobs(self, sheep_id: str) -> None:
         """

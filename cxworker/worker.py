@@ -48,7 +48,7 @@ class Worker:
                             self._config.storage.secret_key, self._config.storage.secure)
 
         logging.debug('Creating shepherd')
-        self._shepherd = Shepherd(self._config.registry, self._config.containers, self._config.data_root, self._minio)
+        self._shepherd = Shepherd(self._config.registry, self._config.sheep, self._config.data_root, self._minio)
 
     def run(self, host: str, port: int) -> None:
         """

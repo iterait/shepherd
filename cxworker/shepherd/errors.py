@@ -1,2 +1,0 @@
-class SheepError(BaseException):
-    pass

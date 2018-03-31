@@ -15,7 +15,7 @@ def cli(ctx):
 
 
 @click.command()
-@click.option("-h", "--host", default="", help="The host name to which the HTTP API should bind")
+@click.option("-h", "--host", default="0.0.0.0", help="The host name to which the HTTP API should bind")
 @click.option("-p", "--port", default=5000, help="The port to which the HTTP API should bind")
 @click.option("-c", "--config", "config_file", default="cxworker.yml", help="Path to a configuration file")
 def run_worker(host, port, config_file) -> None:
