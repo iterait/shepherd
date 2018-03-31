@@ -157,8 +157,15 @@ class Shepherd:
                 # we need to wait for the in-progress jobs which are already in the socket
                 self.notifier.wait_for(lambda: len(sheep.in_progress) == 0)
                 self.slaughter_sheep(sheep_id)
-                self.start_sheep(sheep_id, model.name, model.version)
-
+                try:
+                    self.start_sheep(sheep_id, model.name, model.version)
+                except SheepConfigurationError as sce:
+                    shutil.rmtree(path.join(sheep.sheep_data_root, job_id))
+                    error = 'Failed to start sheep for this job ({})'.format(str(sce))
+                    logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep_id, job_id, error)
+                    error = error.encode()
+                    self.minio.put_object(job_id, 'error', BytesIO(error), len(error))
+                    continue
             # send the InputMessage to the sheep
             sheep.in_progress.add(job_id)
             sheep.jobs_meta.pop(job_id)

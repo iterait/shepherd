@@ -1,8 +1,10 @@
 import os
 import shlex
 import subprocess
+import os.path as path
 from typing import Dict, Any, Optional
 
+import cxflow as cx
 from schematics.types import StringType
 
 from .base_sheep import BaseSheep
@@ -15,56 +17,72 @@ __all__ = ['BareSheep']
 
 class BareSheep(BaseSheep):
     """
-    An adapter that can only run one type of the model on bare metal.
+    An adapter that running models on bare metal with ``cxworker-runner``.
     This might be useful when Docker isolation is impossible or not necessary, for example in deployments with just a
     few models.
     """
 
     class Config(BaseSheep.Config):
-        model_name: str = StringType(required=True)
-        model_version: str = StringType(required=True)
-        config_path: str = StringType(required=True)
-        working_directory: str = StringType(required=True)
-        stdout_file: Optional[str] = StringType(required=False)
-        stderr_file: Optional[str] = StringType(required=False)
+        working_directory: str = StringType(required=True)  # working directory of the cxworker-runner
+        stdout_file: Optional[str] = StringType(required=False)  # if specified, capture runner's stdout to this file
+        stderr_file: Optional[str] = StringType(required=False)  # if specified, capture runner's stderr to this file
 
     def __init__(self, config: Dict[str, Any], **kwargs):
+        """
+        Create new :py:class:`BareSheep`.
+
+        :param config: bare sheep configuration (:py:class:`BareSheep.Config`)
+        :param kwargs: parent's kwargs
+        """
         super().__init__(**kwargs)
-        self.config: self.Config = self.Config(config)
-        self.process = None
+        self._config: self.Config = self.Config(config)
+        self._runner: Optional[subprocess.Popen] = None
+        self._runner_config_path: Optional[str] = None
 
-    def load_model(self, model_name: str, model_version: str):
-        if model_name != self.config.model_name:
-            raise SheepConfigurationError("This sheep can only load model '{}'".format(model_name))
+    def _load_model(self, model_name: str, model_version: str) -> None:
+        """
+        Set up runner config path to ``working_directory`` / ``model_name`` / ``model_version`` / ``config.yaml.
 
-        if model_version != self.config.model_version:
-            raise SheepConfigurationError("This sheep can only load version '{}' of model '{}'"
-                                          .format(model_name, model_version))
-        super().load_model(model_name, model_version)
+        :param model_name: model name
+        :param model_version: model version
+        :raise SheepConfigurationError: if the runner config path does not exist
+        """
+        cxflow_config_path = path.join(self._config.working_directory, model_name, model_version,
+                                       cx.constants.CXF_CONFIG_FILE)
+        if not path.exists(cxflow_config_path):
+            raise SheepConfigurationError("Cannot load model `{}:{}`, file '{}' does not exist."
+                                          .format(model_name, model_version, cxflow_config_path))
+        super()._load_model(model_name, model_version)
+        self._runner_config_path = path.relpath(cxflow_config_path, self._config.working_directory)
 
-    def update_model(self):
-        pass
+    def start(self, model_name: str, model_version: str) -> None:
+        """
+        Start a subprocess with the sheep runner.
 
-    def start(self, model_name: str, model_version: str):
+        :param model_name: model name
+        :param model_version: model version
+        """
         super().start(model_name, model_version)
-        stdout = open(self.config.stdout_file, 'a') if self.config.stdout_file is not None else subprocess.DEVNULL
-        stderr = open(self.config.stderr_file, 'a') if self.config.stderr_file is not None else subprocess.DEVNULL
 
-        devices = self.config.devices
-
+        # prepare env. variables for GPU computation and stdout/stderr files
         env = os.environ.copy()
-        env["CUDA_VISIBLE_DEVICES"] = ",".join(filter(None, map(extract_gpu_number, devices)))
+        env["CUDA_VISIBLE_DEVICES"] = ",".join(filter(None, map(extract_gpu_number, self._config.devices)))
+        stdout = open(self._config.stdout_file, 'a') if self._config.stdout_file is not None else subprocess.DEVNULL
+        stderr = open(self._config.stderr_file, 'a') if self._config.stderr_file is not None else subprocess.DEVNULL
 
-        self.process = subprocess.Popen(
-            shlex.split("cxworker-runner -p {} {}".format(self.config.port, self.config.config_path)), env=env,
-            cwd=self.config.working_directory, stdout=stdout, stderr=stderr)
+        # start the runner in a new sub-process
+        self._runner = subprocess.Popen(
+            shlex.split("cxworker-runner -p {} {}".format(self._config.port, self._runner_config_path)), env=env,
+            cwd=self._config.working_directory, stdout=stdout, stderr=stderr)
 
-    def slaughter(self):
+    def slaughter(self) -> None:
+        """Kill the underlying runner (subprocess)."""
         super().slaughter()
-        if self.process is not None:
-            self.process.kill()
+        if self._runner is not None:
+            self._runner.kill()
 
     @property
     def running(self) -> bool:
-        return self.process is not None and self.process.poll() is None
+        """Check if the underlying runner (subprocess) is running."""
+        return self._runner is not None and self._runner.poll() is None
 

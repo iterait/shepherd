@@ -29,49 +29,69 @@ def extract_gpu_number(device_name: str) -> Optional[str]:
 
 class DockerSheep(BaseSheep):
     """
-    A container adapter with a Docker backend. If the user links nvidia devices into it, the nvidia runtime
-    (a.k.a. nvidia-docker2) is used.
+    Sheep running its jobs in docker containers.
+    To enable GPU computation, specify the gpu devices in the configuration and sheep will attempt to
+    use ``nvidia docker 2``.
     """
 
-    CONTAINER_PORT = 9999
+    _CONTAINER_POINT = 9999
     """Container port to bind the socket to."""
 
     class Config(BaseSheep.Config):
         autoremove_containers: bool = BooleanType(default=False)
 
     def __init__(self, config: Dict[str, Any], registry_config: RegistryConfig, **kwargs):
+        """
+        Create new :py:class:`DockerSheep`.
+
+        :param config: docker sheep configuration
+        :param registry_config: docker registry configuration
+        :param kwargs: :py:class:`BaseSheep`'s kwargs
+        """
         super().__init__(**kwargs)
         self.config: self.Config = self.Config(config)
-        self.registry_config = registry_config
-        self.container: Optional[DockerContainer] = None
-        self.image: Optional[DockerImage] = None
+        self._registry_config = registry_config
+        self._container: Optional[DockerContainer] = None
+        self._image: Optional[DockerImage] = None
 
-    def load_model(self, model_name: str, model_version: str):
-        super().load_model(model_name, model_version)
-        self.image = DockerImage(model_name, model_version, self.registry_config)
-        self.image.pull()
+    def _load_model(self, model_name: str, model_version: str) -> None:
+        """
+        Pull docker image of the given name and version from the previously configured docker registry.
 
-    def update_model(self) -> bool:
-        return self.image.pull()
+        :param model_name: docker image name
+        :param model_version: docker image version
+        """
+        super()._load_model(model_name, model_version)
+        self._image = DockerImage(model_name, model_version, self._registry_config)
+        self._image.pull()
 
-    def start(self, model_name: str, model_version: str):
+    def start(self, model_name: str, model_version: str) -> None:
+        """
+        Run a docker command starting the docker runner.
+
+        :param model_name: docker image name
+        :param model_version: docker image version
+        """
         super().start(model_name, model_version)
-        devices = self.config.devices
 
-        visible_gpu_numbers = list(filter(None, map(extract_gpu_number, devices)))
+        # prepare nvidia docker 2 env/runtime arguments (-e/--runtime)
+        visible_gpu_numbers = list(filter(None, map(extract_gpu_number, self.config.devices)))
         env = {"NVIDIA_VISIBLE_DEVICES": ",".join(visible_gpu_numbers)}
+        runtime = "nvidia" if visible_gpu_numbers else None
 
-        self.container = DockerContainer(self.image, self.config.autoremove_containers, env=env,
-                                         runtime="nvidia" if visible_gpu_numbers else None)
-        self.container.add_port_mapping(self.config.port, self.CONTAINER_PORT)
-        self.container.add_bind_mount(self.sheep_data_root, self.sheep_data_root)
-        self.container.start()
+        # create and start :py:class:`DockerContainer`
+        self._container = DockerContainer(self._image, self.config.autoremove_containers, env=env, runtime=runtime)
+        self._container.add_port_mapping(self.config.port, self._CONTAINER_POINT)
+        self._container.add_bind_mount(self.sheep_data_root, self.sheep_data_root)
+        self._container.start()
 
-    def slaughter(self):
+    def slaughter(self) -> None:
+        """Kill the underlying docker container."""
         super().slaughter()
-        if self.container is not None:
-            self.container.kill()
+        if self._container is not None:
+            self._container.kill()
 
     @property
     def running(self) -> bool:
-        return self.container is not None and self.container.running
+        """Check if the underlying docker container is running."""
+        return self._container is not None and self._container.running
