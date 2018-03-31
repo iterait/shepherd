@@ -85,4 +85,3 @@ class BareSheep(BaseSheep):
     def running(self) -> bool:
         """Check if the underlying runner (subprocess) is running."""
         return self._runner is not None and self._runner.poll() is None
-

@@ -24,8 +24,14 @@ setup(name='cxworker',
       author_email='info@cognexa.com',
       license='MIT',
       packages=['cxworker',
-                'runner',
-                'cxworker.comm'
+                'cxworker.api',
+                'cxworker.comm',
+                'cxworker.docker',
+                'cxworker.comm',
+                'cxworker.runner',
+                'cxworker.sheep',
+                'cxworker.shepherd',
+                'cxworker.utils'
                 ],
       include_package_data=True,
       zip_safe=False,
@@ -34,7 +40,7 @@ setup(name='cxworker',
       install_requires=[str(ir.req) for ir in parse_requirements('requirements.txt', session='hack')],
       entry_points={
           'console_scripts': [
-              'cxworker-runner=runner.runner:runner'
+              'cxworker-runner=cxworker.runner.runner_entry_point:run'
           ]
       }
 )
