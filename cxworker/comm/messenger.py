@@ -52,7 +52,6 @@ class Messenger:
         :raise UnknownMessageTypeError: if the received message is of unknown type
         :raise UnexpectedMessageTypeError: if the received message type is not expected
         """
-        print(Messenger._MESSAGE_TYPES_MAPPING)
         # receive the message
         try:
             identity = ''

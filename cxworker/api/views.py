@@ -78,18 +78,8 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio, zmq_context):
 
         :param job_id: An identifier of the queried job
         """
-
         check_job_exists(minio, job_id)
-
-        def wait_job_ready():
-            notification_listener = zmq_context.socket(zmq.SUB)
-            notification_listener.setsockopt(zmq.SUBSCRIBE, b'')
-            notification_listener.connect("tcp://0.0.0.0:6666")
-            while not shepherd.is_job_done(job_id):
-                notification_listener.recv()
-            notification_listener.close()
-        waiter = gevent.spawn(wait_job_ready)
-        waiter.join()
+        shepherd.notifier.wait_for(lambda: shepherd.is_job_done(job_id))
         return serialize_response(JobStatusResponse({'ready': shepherd.is_job_done(job_id)}))
 
     @worker.route('/status', methods=['GET'])

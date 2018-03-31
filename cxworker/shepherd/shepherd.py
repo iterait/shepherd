@@ -15,7 +15,7 @@ from ..api.errors import UnknownSheepError, UnknownJobError
 from .config import RegistryConfig
 from ..utils import pull_minio_bucket, push_minio_bucket, minio_object_exists
 from cxworker.utils import create_clean_dir
-from ..comm import Messenger, InputMessage, DoneMessage, ErrorMessage
+from ..comm import Messenger, InputMessage, DoneMessage, ErrorMessage, JobDoneNotifier
 from ..api.models import ModelModel
 
 
@@ -38,9 +38,7 @@ class Shepherd:
         self.minio = minio
         self.poller = zmq.Poller()
         self.sheep: Dict[str, BaseSheep] = {}
-
-        self.notifier = zmq_context.socket(zmq.PUB)
-        self.notifier.bind("tcp://*:6666")
+        self.notifier = JobDoneNotifier()
 
         for sheep_id, config in sheep_config.items():
             socket = zmq_context.socket(zmq.DEALER)
@@ -101,18 +99,7 @@ class Shepherd:
             model = sheep.jobs_meta[job_id]
             if model.name != sheep.model_name or model.version != sheep.model_version:
                 logging.info('Job `%s` requires model `%s:%s` on `%s`', job_id, model.name, model.version, sheep_id)
-                zmq_context = zmq.Context()
-
-                def wait_sheep_empty():
-                    notification_listener = zmq_context.socket(zmq.SUB)
-                    notification_listener.setsockopt(zmq.SUBSCRIBE, b'')
-                    notification_listener.connect("tcp://0.0.0.0:6666")
-                    while len(sheep.in_progress) > 0:
-                        notification_listener.recv()
-                    notification_listener.close()
-
-                waiter = gevent.spawn(wait_sheep_empty)
-                waiter.join()
+                self.notifier.wait_for(lambda: len(sheep.in_progress) == 0)
                 self.slaughter_sheep(sheep_id)
                 self.start_sheep(sheep_id, model.name, model.version)
 
@@ -142,7 +129,7 @@ class Shepherd:
 
                 self[sheep_id].jobs_meta.pop(job_id)
                 sheep.in_progress.remove(job_id)
-                self.notifier.send(b'')
+                self.notifier.notify()
 
     def get_status(self) -> Generator[Tuple[str, SheepModel], None, None]:
         """
