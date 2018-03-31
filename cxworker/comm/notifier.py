@@ -16,7 +16,7 @@ class JobDoneNotifier:
 
     def __init__(self):
         """Create new JobDoneNotifier."""
-        self._zmq_context = zmq.Context()
+        self._zmq_context = zmq.Context.instance()
         self._socket = self._zmq_context.socket(zmq.PUB)
         self._port = self._socket.bind_to_random_port("tcp://0.0.0.0")
 

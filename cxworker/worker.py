@@ -15,7 +15,7 @@ from .shepherd.config import load_config, WorkerConfig
 
 class Worker:
     def __init__(self):
-        self.zmq_context = zmq.Context()
+        self.zmq_context = zmq.Context.instance()
         self.app = create_app(__name__)
         self.shepherd: Shepherd = None
         self.minio = None

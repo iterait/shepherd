@@ -7,7 +7,7 @@ from schematics.types import StringType
 
 from .base_sheep import BaseSheep
 from .docker_sheep import extract_gpu_number
-from ..errors import SheepConfigurationError
+from cxworker.sheep.errors import SheepConfigurationError
 
 
 __all__ = ['BareSheep']

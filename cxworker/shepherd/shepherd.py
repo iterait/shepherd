@@ -13,7 +13,7 @@ from .config import RegistryConfig
 from ..sheep import *
 from ..api.models import SheepModel
 from ..api.models import ModelModel
-from ..errors import SheepConfigurationError
+from cxworker.sheep.errors import SheepConfigurationError
 from ..api.errors import UnknownSheepError, UnknownJobError
 from ..utils import create_clean_dir
 from ..utils import pull_minio_bucket, push_minio_bucket, minio_object_exists
@@ -28,7 +28,7 @@ class Shepherd:
     Manages creation and access to a configured set of sheep
     """
 
-    def __init__(self, zmq_context: zmq.Context, registry_config: Optional[RegistryConfig],
+    def __init__(self, registry_config: Optional[RegistryConfig],
                  sheep_config: Mapping[str, Dict[str, Any]], data_root: str, minio: Minio):
         """
         Create mighty Shepherd.
@@ -45,7 +45,7 @@ class Shepherd:
         self.notifier = JobDoneNotifier()
 
         for sheep_id, config in sheep_config.items():
-            socket = zmq_context.socket(zmq.DEALER)
+            socket = zmq.Context.instance().socket(zmq.DEALER)
             sheep_type = config["type"]
             sheep_data_root = create_clean_dir(path.join(data_root, sheep_id))
             common_kwargs = {'socket': socket, 'sheep_data_root': sheep_data_root}
