@@ -25,6 +25,7 @@ setup(name='cxworker',
       license='MIT',
       packages=['cxworker',
                 'runner',
+                'cxworker.comm'
                 ],
       include_package_data=True,
       zip_safe=False,
