@@ -51,12 +51,16 @@ class BaseSheep(metaclass=abc.ABCMeta):
         :return: True if there was an update, False otherwise
         """
 
-    def start(self, model_name: str, model_version: str):
-        logging.info('Starting sheep with model `%s:%s`', model_name, model_version)
+    def start(self, model_name: str, model_version: str) -> None:
+        """
+        (Re)start the sheep with the given model name and version.
+        Any unfinished jobs will be lost, socket connection will be reset.
 
+        :param model_name: model name
+        :param model_version: model version
+        """
         if self.running:
             self.slaughter()
-
         self.load_model(model_name, model_version)
         self.in_progress = set()
         self.socket.connect("tcp://0.0.0.0:{}".format(self.config.port))
@@ -71,6 +75,4 @@ class BaseSheep(metaclass=abc.ABCMeta):
     @property
     @abc.abstractmethod
     def running(self) -> bool:
-        """
-        Is the sheep running, i.e. capable of accepting computation requests?
-        """
+        """Is the sheep running, i.e. capable of accepting computation requests?"""

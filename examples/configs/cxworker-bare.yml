@@ -1,6 +1,6 @@
 data_root: /tmp/worker-data
 logging:
-  level: debug
+  level: info
 registry:
   url: http://0.0.0.0:6000
 storage:
@@ -9,7 +9,7 @@ storage:
   secret_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
 containers:
-  container_a:
+  bare_sheep:
     port: 9001
     type: bare
     model_name: cxflow-test

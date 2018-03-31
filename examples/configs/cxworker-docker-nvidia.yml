@@ -1,4 +1,6 @@
 data_root: /tmp/worker-data
+logging:
+  level: info
 registry:
   url: http://0.0.0.0:6000
 storage:
@@ -7,12 +9,12 @@ storage:
   secret_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
 containers:
-  container_a:
+  gpu_sheep_1:
     port: 9001
     type: nvidia
     devices:
       - /dev/nvidia0
-  container_b:
+  gpu_sheep_2:
     port: 9002
     type: nvidia
     devices:

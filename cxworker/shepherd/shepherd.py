@@ -33,7 +33,6 @@ class Shepherd:
         """
         Create mighty Shepherd.
 
-        :param zmq_context: zmq context
         :param registry_config: optional docker registry config
         :param sheep_config: sheep config
         :param data_root: directory where the task/sheep directories will be managed
@@ -71,7 +70,7 @@ class Shepherd:
 
         :param sheep_id: sheep id
         :return: sheep with the given ``sheep_id``
-        :raise UnknownContainerError: if the given ``sheep_id`` is not known to this registry
+        :raise UnknownSheepError: if the given ``sheep_id`` is not known to this shepherd
         """
         if sheep_id not in self.sheep:
             raise UnknownSheepError('Unknown sheep id `{}`'.format(sheep_id))
@@ -115,7 +114,7 @@ class Shepherd:
 
     def health_check(self, sheep_id: str) -> None:
         """
-        Check sheep's health and resolve it's in-progress jobs if it is not running.
+        Periodically check if the specified sheep is running and resolve its in-progress jobs if not.
 
         :param sheep_id: id of the sheep to be checked
         """
@@ -136,7 +135,7 @@ class Shepherd:
 
     def dequeue_and_feed_jobs(self, sheep_id: str) -> None:
         """
-        De-queue jobs and, prepare working directories and send ``InputMessage`` to the specified sheep in an end-less
+        De-queue jobs, prepare working directories and send ``InputMessage`` to the specified sheep in an end-less
         loop.
 
         :param sheep_id: sheep id to be fed
@@ -144,7 +143,7 @@ class Shepherd:
         while True:
             sheep = self[sheep_id]
             job_id = sheep.jobs_queue.get()
-            logging.info('De-queueing job `%s` for sheep `%s`', job_id, sheep_id)
+            logging.info('Preparing working directory for job `%s` on `%s`', job_id, sheep_id)
 
             # prepare working directory
             working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
@@ -163,6 +162,7 @@ class Shepherd:
             # send the InputMessage to the sheep
             sheep.in_progress.add(job_id)
             sheep.jobs_meta.pop(job_id)
+            logging.info('Sending InputMessage for job `%s` on `%s`', job_id, sheep_id)
             Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
 
     def listen(self) -> None:

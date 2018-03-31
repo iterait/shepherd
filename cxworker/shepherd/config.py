@@ -63,7 +63,7 @@ class WorkerConfig(Model):
     registry: Optional[RegistryConfig] = ModelType(RegistryConfig, required=False)
 
 
-def load_config(config_stream) -> WorkerConfig:
+def load_worker_config(config_stream) -> WorkerConfig:
     config_object = yaml.load(config_stream)
     config = WorkerConfig(config_object)
     config.validate()

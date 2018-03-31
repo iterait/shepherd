@@ -77,8 +77,7 @@ class DockerContainer:
         command.append(self.image.full_name)
 
         # Launch the container and wait until the "run" commands finishes
-        logging.debug("Running command %s", str(command))
-        print(' '.join(command))
+        logging.info("Running command %s", ' '.join(command))
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         rc = process.wait()
         stderr = process.stderr.read()
