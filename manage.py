@@ -1,4 +1,4 @@
-from gevent import monkey; monkey.patch_all()
+from gevent import monkey; monkey.patch_all(sys=True, Event=True)
 import click
 from flask.cli import shell_command
 

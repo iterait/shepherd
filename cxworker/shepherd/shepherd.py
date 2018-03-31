@@ -1,22 +1,26 @@
 import logging
-import zmq.green as zmq
-from typing import Mapping, Generator, Tuple, Dict, Any, Optional
-from minio import Minio
-import gevent
-import os.path as path
-from functools import partial
 import shutil
+import os.path as path
 from io import BytesIO
+from functools import partial
+from typing import Mapping, Generator, Tuple, Dict, Any, Optional
 
-from cxworker.api.models import SheepModel
-from cxworker.sheep import *
-from cxworker.errors import SheepConfigurationError
-from ..api.errors import UnknownSheepError, UnknownJobError
+import gevent
+import zmq.green as zmq
+from minio import Minio
+
 from .config import RegistryConfig
-from ..utils import pull_minio_bucket, push_minio_bucket, minio_object_exists
-from cxworker.utils import create_clean_dir
-from ..comm import Messenger, InputMessage, DoneMessage, ErrorMessage, JobDoneNotifier
+from ..sheep import *
+from ..api.models import SheepModel
 from ..api.models import ModelModel
+from ..errors import SheepConfigurationError
+from ..api.errors import UnknownSheepError, UnknownJobError
+from ..utils import create_clean_dir
+from ..utils import pull_minio_bucket, push_minio_bucket, minio_object_exists
+from ..comm import Messenger, InputMessage, DoneMessage, ErrorMessage, JobDoneNotifier
+
+
+__all__ = ['Shepherd']
 
 
 class Shepherd:
@@ -73,14 +77,34 @@ class Shepherd:
         return self.sheep[sheep_id]
 
     def start_sheep(self, sheep_id: str, model: str, version: str) -> None:
+        """
+        (Re)Start the sheep with the given ``sheep_id`` and configure it to run the specified ``model``:``version``.
+
+        :param sheep_id: sheep id to be (re)started
+        :param model: model name to be loaded
+        :param version: mode version to be loaded
+        """
         logging.info('Starting sheep `%s` with model `%s:%s`', sheep_id, model, version)
         self[sheep_id].start(model, version)
 
     def slaughter_sheep(self, sheep_id: str) -> None:
+        """
+        Slaughter (kill) the specified sheep. In particular, it's container and socked are going to be terminated,
+
+        :param sheep_id:
+        :return:
+        """
         logging.info('Slaughtering sheep `%s`', sheep_id)
         self[sheep_id].slaughter()
 
     def enqueue_job(self, job_id: str, job_meta: ModelModel, sheep_id: Optional[str]=None) -> None:
+        """
+        En-queue the given job for execution. If specified, use a certain sheep.
+
+        :param job_id: job id
+        :param job_meta: job meta data (model name and version)
+        :param sheep_id: optional sheep id, if not specified use first sheep available
+        """
         logging.info('En-queueing job `%s` for sheep `%s`', job_id, sheep_id)
         if sheep_id is None:
             sheep_id = next(iter(self.sheep.keys()))
@@ -89,6 +113,12 @@ class Shepherd:
         self[sheep_id].jobs_queue.put(job_id)
 
     def dequeue_and_feed_jobs(self, sheep_id: str) -> None:
+        """
+        De-queue jobs and, prepare working directories and send ``InputMessage`` to the specified sheep in an end-less
+        loop.
+
+        :param sheep_id: sheep id to be fed
+        """
         while True:
             sheep = self[sheep_id]
             job_id = sheep.jobs_queue.get()
@@ -107,6 +137,9 @@ class Shepherd:
             sheep.in_progress.add(job_id)
 
     def listen(self) -> None:
+        """
+        Poll the sheep output sockets, process sheep outputs and clean-up working directories in an end-less loop.
+        """
         while True:
             result = self.poller.poll()
             sheep_ids = (sheep_id for sheep_id, sheep in self.sheep.items() if (sheep.socket, zmq.POLLIN) in result)
@@ -147,10 +180,18 @@ class Shepherd:
             })
 
     def slaughter_all(self) -> None:
+        """Slaughter all sheep."""
         for sheep_id in self.sheep.keys():
             self.slaughter_sheep(sheep_id)
 
     def is_job_done(self, job_id: str) -> bool:
+        """
+        Check if the specified job is already done.
+
+        :param job_id: id of the job to be checked
+        :raise UnknownJobError: if the job is not ready nor it is known to this shepherd
+        :return: job ready flag
+        """
         if minio_object_exists(self.minio, job_id, 'done') or minio_object_exists(self.minio, job_id, 'error'):
             return True
         else:

@@ -1,12 +1,13 @@
+import sys
+import logging
+
 import gevent
-from gevent.wsgi import WSGIServer
 import zmq.green as zmq
 from minio import Minio
-import logging
-import sys
+from gevent.wsgi import WSGIServer
 from urllib3.exceptions import MaxRetryError
 
-from cxworker.shepherd.shepherd import Shepherd
+from .shepherd import Shepherd
 from .api.views import create_worker_blueprint
 from .api import create_app
 from .shepherd.config import load_config, WorkerConfig
@@ -37,7 +38,7 @@ class Worker:
         if self.config is None:
             raise RuntimeError("Configuration has not been loaded yet")
 
-        self.app.register_blueprint(create_worker_blueprint(self.shepherd, self.minio, self.zmq_context))
+        self.app.register_blueprint(create_worker_blueprint(self.shepherd, self.minio))
 
         api_server = WSGIServer((host, port), self.app)
 
@@ -60,3 +61,4 @@ class Worker:
         except KeyboardInterrupt:
             logging.info("Interrupt caught, slaughtering all the sheep")
             self.shepherd.slaughter_all()
+

@@ -49,11 +49,12 @@ def serialize_response(response: Model) -> Response:
     return jsonify(response.to_primitive())
 
 
-def create_worker_blueprint(shepherd: Shepherd, minio: Minio, zmq_context):
+def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
     worker = Blueprint('worker', __name__)
 
     @worker.route('/start-job', methods=['POST'])
     def start_job():
+        """Start a new job."""
         start_job_request = load_request(StartJobRequest)
         check_job_exists(minio, start_job_request.job_id)
         shepherd.enqueue_job(start_job_request.job_id, start_job_request.model, start_job_request.sheep_id)
@@ -62,13 +63,12 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio, zmq_context):
     @worker.route("/jobs/<job_id>/ready", methods=["GET"])
     def is_ready(job_id):
         """
-        Check if a request has already been processed.
-        A request that ended with an error is considered ready.
+        Check if a job has already been processed.
+        A job that ended with an error is considered ready.
 
         :param job_id: An identifier of the queried job
         """
         check_job_exists(minio, job_id)
-
         return serialize_response(JobStatusResponse({'ready': shepherd.is_job_done(job_id)}))
 
     @worker.route("/jobs/<job_id>/wait_ready", methods=["GET"])
@@ -84,6 +84,7 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio, zmq_context):
 
     @worker.route('/status', methods=['GET'])
     def get_status():
+        """Get status of all the sheep available."""
         response = StatusResponse()
         response.containers = dict(shepherd.get_status())
         return serialize_response(response)
