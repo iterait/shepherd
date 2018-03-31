@@ -124,7 +124,10 @@ class Shepherd:
             sheep = self[sheep_id]
             if not sheep.running:
                 for job_id in sheep.in_progress:
+                    # clean-up the working directory
                     shutil.rmtree(path.join(self[sheep_id].sheep_data_root, job_id))
+
+                    # save the error
                     error = b'Sheep container died without notice'
                     logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep_id, job_id, error)
                     self.minio.put_object(job_id, 'error', BytesIO(error), len(error))
@@ -142,16 +145,22 @@ class Shepherd:
             sheep = self[sheep_id]
             job_id = sheep.jobs_queue.get()
             logging.info('De-queueing job `%s` for sheep `%s`', job_id, sheep_id)
+
+            # prepare working directory
             working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
             pull_minio_bucket(self.minio, job_id, working_directory)
             create_clean_dir(path.join(working_directory, 'outputs'))
+
+            # (re)start the sheep if needed
             model = sheep.jobs_meta[job_id]
             if model.name != sheep.model_name or model.version != sheep.model_version or not sheep.running:
                 logging.info('Job `%s` requires model `%s:%s` on `%s`', job_id, model.name, model.version, sheep_id)
+                # we need to wait for the in-progress jobs which are already in the socket
                 self.notifier.wait_for(lambda: len(sheep.in_progress) == 0)
                 self.slaughter_sheep(sheep_id)
                 self.start_sheep(sheep_id, model.name, model.version)
 
+            # send the InputMessage to the sheep
             sheep.in_progress.add(job_id)
             sheep.jobs_meta.pop(job_id)
             Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
@@ -161,17 +170,22 @@ class Shepherd:
         Poll the sheep output sockets, process sheep outputs and clean-up working directories in an end-less loop.
         """
         while True:
+            # poll the output sockets
             result = self.poller.poll()
             sheep_ids = (sheep_id for sheep_id, sheep in self.sheep.items() if (sheep.socket, zmq.POLLIN) in result)
+
+            # process the sheep with pending outputs
             for sheep_id in sheep_ids:
                 sheep = self[sheep_id]
                 message = Messenger.recv(sheep.socket, [DoneMessage, ErrorMessage])
                 job_id = message.job_id
 
+                # clean-up the working directory and upload the results
                 working_directory = path.join(self[sheep_id].sheep_data_root, job_id)
                 push_minio_bucket(self.minio, job_id, working_directory)
                 shutil.rmtree(working_directory)
 
+                # save the done/error file
                 if isinstance(message, DoneMessage):
                     self.minio.put_object(job_id, 'done', BytesIO(b''), 0)
                     logging.info('Job `%s` from sheep `%s` done', job_id, sheep_id)
@@ -179,6 +193,8 @@ class Shepherd:
                     error = (message.short_error + '\n' + message.long_error).encode()
                     self.minio.put_object(job_id, 'error', BytesIO(error), len(error))
                     logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep_id, message.short_error)
+
+                # notify about the finished job
                 sheep.in_progress.remove(job_id)
                 self.notifier.notify()
 

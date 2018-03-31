@@ -4,13 +4,11 @@ from minio.error import MinioError
 from schematics import Model
 from schematics.exceptions import DataError, FieldError
 from typing import TypeVar, Type
-import gevent
-import zmq.green as zmq
 
 from cxworker.shepherd.shepherd import Shepherd
 from .requests import StartJobRequest
 from .responses import StartJobResponse, StatusResponse, JobStatusResponse
-from .errors import ClientActionError, StorageError
+from .errors import ClientActionError, StorageError, UnknownJobError
 
 
 T = TypeVar('T', bound=Model)
@@ -57,6 +55,12 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
         """Start a new job."""
         start_job_request = load_request(StartJobRequest)
         check_job_exists(minio, start_job_request.job_id)
+        try:
+            shepherd.is_job_done(start_job_request.job_id)
+            # job is either done or being computed, no need to do anything
+            return serialize_response(StartJobResponse())
+        except UnknownJobError:
+            pass
         shepherd.enqueue_job(start_job_request.job_id, start_job_request.model, start_job_request.sheep_id)
         return serialize_response(StartJobResponse())
 
