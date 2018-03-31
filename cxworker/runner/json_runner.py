@@ -8,9 +8,6 @@ import numpy as np
 from .base_runner import BaseRunner
 
 
-__all__ = ['JSONRunner', 'to_json_serializable']
-
-
 def to_json_serializable(data):
     """Make an object containing numpy arrays/scalars JSON serializable."""
 

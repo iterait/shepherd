@@ -40,6 +40,7 @@ setup(name='cxworker',
       install_requires=[str(ir.req) for ir in parse_requirements('requirements.txt', session='hack')],
       entry_points={
           'console_scripts': [
+              'cxworker=cxworker.manage:cli',
               'cxworker-runner=cxworker.runner.runner_entry_point:run'
           ]
       }

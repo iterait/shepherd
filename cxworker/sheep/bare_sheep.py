@@ -12,9 +12,6 @@ from .docker_sheep import extract_gpu_number
 from cxworker.sheep.errors import SheepConfigurationError
 
 
-__all__ = ['BareSheep']
-
-
 class BareSheep(BaseSheep):
     """
     An adapter that running models on bare metal with ``cxworker-runner``.
@@ -41,7 +38,7 @@ class BareSheep(BaseSheep):
 
     def _load_model(self, model_name: str, model_version: str) -> None:
         """
-        Set up runner config path to ``working_directory`` / ``model_name`` / ``model_version`` / ``config.yaml.
+        Set up runner config path to ``working_directory`` / ``model_name`` / ``model_version`` / ``config.yaml``.
 
         :param model_name: model name
         :param model_version: model version

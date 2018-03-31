@@ -15,9 +15,6 @@ from cxflow.utils import load_config
 from cxworker.comm import *
 
 
-__all__ = ['BaseRunner']
-
-
 class BaseRunner:
     """
     Base **cxflow** runner class suitable for inheritance when implementing a runner with custom behavior.

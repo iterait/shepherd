@@ -11,9 +11,6 @@ from schematics.types import StringType, IntType, ListType
 from ..api.models import ModelModel
 
 
-__all__ = ['BaseSheep']
-
-
 class BaseSheep(metaclass=abc.ABCMeta):
     """
     A base class for container adapters - classes that allow launching different kinds of containers.

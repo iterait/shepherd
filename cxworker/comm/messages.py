@@ -4,8 +4,6 @@ from schematics import Model
 from schematics.types import StringType, serializable, PolyModelType
 from typing import List
 
-__all__ = ['Message', 'InputMessage', 'DoneMessage', 'ErrorMessage', 'encode_message', 'decode_message']
-
 
 class Message(Model):
     identity = StringType(default='')

@@ -7,8 +7,6 @@ from .base_sheep import BaseSheep
 from ..docker import DockerContainer, DockerImage
 from ..shepherd.config import RegistryConfig
 
-__all__ = ['DockerSheep', 'extract_gpu_number']
-
 
 def extract_gpu_number(device_name: str) -> Optional[str]:
     """

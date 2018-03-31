@@ -1,6 +1,5 @@
 from gevent import monkey; monkey.patch_all(sys=True, Event=True)
 import click
-from flask.cli import shell_command
 
 from cxworker.worker import Worker
 from cxworker.shepherd.config import load_worker_config
@@ -17,8 +16,8 @@ def cli(ctx):
 @click.command()
 @click.option("-h", "--host", default="0.0.0.0", help="The host name to which the HTTP API should bind")
 @click.option("-p", "--port", default=5000, help="The port to which the HTTP API should bind")
-@click.option("-c", "--config", "config_file", default="cxworker.yml", help="Path to a configuration file")
-def run_worker(host, port, config_file) -> None:
+@click.option("-c", "--config", "config_file", required=True, help="Path to a configuration file")
+def run(host, port, config_file) -> None:
     """
     Run worker configured from the given ``config_file`` and listen for the API call on the given ``host`` and ``port``.
 
@@ -33,8 +32,7 @@ def run_worker(host, port, config_file) -> None:
     worker.run(host, port)
 
 
-cli.add_command(shell_command)
-cli.add_command(run_worker)
+cli.add_command(run)
 
 if __name__ == "__main__":
     cli()

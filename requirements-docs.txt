@@ -1,0 +1,5 @@
+sphinx
+autoapi
+sphinx-argparse
+sphinx-autodoc-typehints
+sphinx-bootstrap-theme

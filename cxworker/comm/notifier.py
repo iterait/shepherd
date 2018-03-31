@@ -3,8 +3,6 @@ from typing import Callable
 import zmq.green as zmq
 import gevent
 
-__all__ = ['JobDoneNotifier']
-
 
 class JobDoneNotifier:
     """

@@ -14,6 +14,9 @@ from .api.views import create_worker_blueprint
 from .shepherd.config import WorkerConfig
 
 
+__all__ = ['Worker']
+
+
 class Worker:
     """
     Create and manage worker API, shepherd and minio handle.

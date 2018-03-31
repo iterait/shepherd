@@ -9,7 +9,7 @@ from minio.error import MinioError
 from ..api.errors import StorageError
 
 _MINIO_FOLDER_DELIMITER = '/'
-
+"""Minio folder delimiter."""
 
 def pull_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
     """

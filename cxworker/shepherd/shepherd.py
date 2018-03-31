@@ -20,9 +20,6 @@ from ..utils import pull_minio_bucket, push_minio_bucket, minio_object_exists
 from ..comm import Messenger, InputMessage, DoneMessage, ErrorMessage, JobDoneNotifier
 
 
-__all__ = ['Shepherd']
-
-
 class Shepherd:
     """
     Manages creation and access to a configured set of sheep

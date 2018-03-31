@@ -9,20 +9,30 @@ import cxflow as cx
 __all__ = ['run']
 
 
+def get_argparser():
+    """Create and return argument parser."""
+    parser = ArgumentParser('cxworker runner')
+    parser.add_argument('-p', '--port', dest="port", default=9999, type=int, help='Socket port to bind to')
+    parser.add_argument('-s', '--stream', default='predict', help='Dataset stream name')
+    parser.add_argument('-r', '--runner', default='cxworker.runner.JSONRunner', help='Fully qualified runner class')
+    parser.add_argument('config_path', help='cxflow configuration file path')
+    return parser
+
+
 def run() -> None:
-    """Create a runner and list on the configured port for job ``InputMessage`s."""
+    """
+    Create a runner and list on the configured port for job ``InputMessage`` s.
+
+    Can be invoked with installed ``cxworker-runner`` command.
+    """
 
     # parse args
     sys.path.insert(0, os.getcwd())
     logging.basicConfig(level=logging.DEBUG,
                         format=cx.constants.CXF_LOG_FORMAT,
                         datefmt=cx.constants.CXF_LOG_DATE_FORMAT)
-    parser = ArgumentParser('cxworker runner')
-    parser.add_argument('-p', '--port', dest="port", default=9999, type=int, help='Socket port to bind to')
-    parser.add_argument('-s', '--stream', default='predict', help='Dataset stream name')
-    parser.add_argument('-r', '--runner', default='cxworker.runner.JSONRunner', help='Fully qualified runner class')
-    parser.add_argument('config_path', help='cxflow configuration file path')
-    args = parser.parse_args()
+
+    args = get_argparser().parse_args()
 
     # create runner
     module, class_ = cx.utils.parse_fully_qualified_name(args.runner)
