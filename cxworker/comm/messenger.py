@@ -27,7 +27,7 @@ class Messenger:
             raise TypeError('`{}` is not a message'.format(str(type(message))))
 
         # serialize and send the message
-        serialized_message = encode_message(message)
+        serialized_message = [encode_message(message)]
         if response_to is not None and response_to.identity != '':
             serialized_message = [response_to.identity] + serialized_message
         try:

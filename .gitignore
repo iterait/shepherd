@@ -104,3 +104,4 @@ ENV/
 
 ssh
 cxworker.*.rst
+docs/cxworker/cxworker.rst
