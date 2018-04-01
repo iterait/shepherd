@@ -2,6 +2,16 @@ version: 2
 
 references:
 
+  ubuntu_deps: &ubuntu_install
+    run:
+      name: Install dependencies on Ubuntu.
+      command: |
+        apt-get update -qy
+        apt-get install -y git python3-dev python3-pip curl
+        pip3 install -r requirements.txt
+        pip3 install .
+        echo "$(tail -n +2 cxworker/manage.py)" > cxworker/manage.py  # remove gevent monkey patch (it breaks sphinx)
+
   install: &install
     run:
       name: Install dependencies and cxworker
@@ -12,12 +22,22 @@ references:
         pip install -r requirements.txt
         pip install .
 
+  add_rw_key: &add_rw_key
+    add_ssh_keys:
+      fingerprints:
+        - "bd:18:69:44:c4:97:94:f2:03:ba:db:dd:29:2e:cf:f2"
 
   test: &test
     run:
       name: Run tests.
       command: |
         tests/overall/test_bare.sh
+
+  doc: &doc
+    run:
+      name: Generate documentation
+      command: |
+        bash <(curl -fsSL https://raw.githubusercontent.com/Cognexa/ci-utils/master/doc_deploy.sh)
 
 jobs:
 
@@ -30,8 +50,24 @@ jobs:
       - *install
       - *test
 
+  generate_documentation:
+    docker:
+      - image: ubuntu:rolling
+    working_directory: ~/cxworker
+    steps:
+      - checkout
+      - *ubuntu_install
+      - *add_rw_key
+      - *doc
+
 workflows:
   version: 2
   test:
     jobs:
       - test_archlinux
+      - generate_documentation:
+#          filters:
+#            branches:
+#              only: master
+          requires:
+            - test_archlinux
