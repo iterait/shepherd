@@ -7,7 +7,7 @@ cd ../../../
 python manage.py run_worker -h 0.0.0.0 -p 5000 -c examples/configs/cxworker-docker-cpu.yml &
 worker_pid=$!
 
-# test]
+# test
 python tests/overall/one_shot_test.py
 
 # tear-down

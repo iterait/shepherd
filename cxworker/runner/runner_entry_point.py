@@ -9,7 +9,7 @@ import cxflow as cx
 __all__ = ['run']
 
 
-def get_argparser():
+def create_argparser():
     """Create and return argument parser."""
     parser = ArgumentParser('cxworker runner')
     parser.add_argument('-p', '--port', dest="port", default=9999, type=int, help='Socket port to bind to')
@@ -32,7 +32,7 @@ def run() -> None:
                         format=cx.constants.CXF_LOG_FORMAT,
                         datefmt=cx.constants.CXF_LOG_DATE_FORMAT)
 
-    args = get_argparser().parse_args()
+    args = create_argparser().parse_args()
 
     # create runner
     module, class_ = cx.utils.parse_fully_qualified_name(args.runner)

@@ -98,7 +98,7 @@ class BaseRunner:
         pass
 
     def process_all(self) -> None:
-        """List on the ``self._socket`` and process the incoming jobs in an endless loop."""
+        """Listen on the ``self._socket`` and process the incoming jobs in an endless loop."""
         self._load_config()
         logging.info('Starting the loop')
         while True:

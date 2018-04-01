@@ -9,7 +9,7 @@ All the runners may be invoked with ``cxworker-runner`` command.
 cxworker-runner
 ---------------
 .. argparse::
-   :ref: cxworker.runner.runner_entry_point.get_argparser
+   :ref: cxworker.runner.runner_entry_point.create_argparser
    :prog: cxworker-runner
 
 Custom Runners
