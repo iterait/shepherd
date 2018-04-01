@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 # set-up
-rm -rf rm /tmp/minio
+rm -rf /tmp/minio
 mkdir /tmp/minio
 export MINIO_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE
 export MINIO_SECRET_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY

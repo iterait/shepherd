@@ -16,7 +16,7 @@ class DummyModel(cx.AbstractModel):
         pass
 
     def run(self, batch: cx.Batch, train: bool, stream):
-        batch['output'] = [999]
+        batch['output'] = [batch['key'][0]*2]
         return batch
 
     @property
