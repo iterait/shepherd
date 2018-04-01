@@ -47,15 +47,15 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
         start_job_request = load_request(StartJobRequest)
 
         try:
-            payload = minio.get_object(start_job_request.id, start_job_request.source_url).read()
+            if not minio.bucket_exists(start_job_request.job_id):
+                raise StorageError('Minio bucket `{}` does not exist'.format(start_job_request.job_id))
         except MinioError as me:
-            raise StorageError('Can not obtain job payload from minio storage {}:{} ({})'
-                               .format(start_job_request.id, start_job_request.source_url, str(me))) from me
+            raise StorageError('Failed to check minio bucket `{}`'.format(start_job_request.job_id)) from me
 
         if start_job_request.refresh_model:
-            shepherd.refresh_model(start_job_request.container_id)
+            shepherd.refresh_model(start_job_request.sheep_id)
 
-        shepherd.send_input(start_job_request.container_id, start_job_request, payload)
+        shepherd.enqueue_job(start_job_request.sheep_id, start_job_request.job_id)
 
         return serialize_response(StartJobResponse())
 
@@ -63,7 +63,7 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
     def interrupt_job():
         interrupt_job_request = load_request(InterruptJobRequest)
 
-        shepherd.slaughter_sheep(interrupt_job_request.container_id)
+        shepherd.slaughter_sheep(interrupt_job_request.sheep_id)
 
         return serialize_response(InterruptJobResponse())
 
@@ -71,7 +71,7 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
     def reconfigure():
         reconfigure_request = load_request(ReconfigureRequest)
 
-        shepherd.start_sheep(reconfigure_request.container_id, reconfigure_request.model.name,
+        shepherd.start_sheep(reconfigure_request.sheep_id, reconfigure_request.model.name,
                              reconfigure_request.model.version)
 
         return serialize_response(ReconfigureResponse())
