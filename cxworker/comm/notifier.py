@@ -16,7 +16,7 @@ class JobDoneNotifier:
         """Create new JobDoneNotifier."""
         self._zmq_context = zmq.Context.instance()
         self._socket = self._zmq_context.socket(zmq.PUB)
-        self._port = self._socket.bind_to_random_port("tcp://0.0.0.0")
+        self._socket.bind("inproc://job-done")
 
     def notify(self) -> None:
         """Notify all the waiting greenlets that yet another job is finished."""
@@ -27,7 +27,7 @@ class JobDoneNotifier:
         def wait_for_test():
             notification_listener = self._zmq_context.socket(zmq.SUB)
             notification_listener.setsockopt(zmq.SUBSCRIBE, b'')
-            notification_listener.connect("tcp://0.0.0.0:{}".format(self._port))
+            notification_listener.connect("inproc://job-done")
             while not test():
                 notification_listener.recv()
             notification_listener.close()
