@@ -12,10 +12,6 @@ class Messenger:
     Static helper class for sending and receiving messages through zmq sockets.
     """
 
-    _MESSAGE_TYPES_MAPPING = {InputMessage.__name__: InputMessage,
-                              DoneMessage.__name__: DoneMessage,
-                              ErrorMessage.__name__: ErrorMessage}
-
     @staticmethod
     def send(socket: zmq.Socket, message: Message, response_to: Optional[Message]=None) -> None:
         """
@@ -27,10 +23,9 @@ class Messenger:
         :raise MessengerError: if it fails
         :raise UnknownMessageTypeError: if the message to be send is of unknown type
         """
-        # check if the message type is known
-        if type(message) not in Messenger._MESSAGE_TYPES_MAPPING.values():
-            raise UnknownMessageTypeError('Unknown message type `{}`. Known message types are {}.'
-                                          .format(str(type(message)), list(Messenger._MESSAGE_TYPES_MAPPING.keys())))
+        if not isinstance(message, Message):
+            raise TypeError('`{}` is not a message'.format(str(type(message))))
+
         # serialize and send the message
         serialized_message = encode_message(message)
         if response_to is not None and response_to.identity != '':
@@ -64,14 +59,11 @@ class Messenger:
         except ZMQBaseError as zmq_error:
             raise MessageError('Failed to receive message') from zmq_error
 
-        # check if message type is known
-        if message.message_type not in Messenger._MESSAGE_TYPES_MAPPING.keys():
-            raise UnknownMessageTypeError('Unknown message type `{}`. Known message types are {}.'
-                                          .format(message.message_type, list(Messenger._MESSAGE_TYPES_MAPPING.keys())))
+        if not isinstance(message, Message):
+            raise TypeError('`{}` is not a message'.format(str(type(message))))
 
         # check if message type is expected
-        message_class = Messenger._MESSAGE_TYPES_MAPPING[message.message_type]
-        if expected_message_types is not None and message_class not in expected_message_types:
+        if expected_message_types is not None and type(message) not in expected_message_types:
             raise UnexpectedMessageTypeError('Unexpected message type `{}`. Expected message types are {}.'
                                              .format(message.message_type, expected_message_types))
         # create and return the message
