@@ -102,3 +102,6 @@ ENV/
 # mypy
 .mypy_cache/
 
+ssh
+cxworker.*.rst
+docs/cxworker/cxworker.rst

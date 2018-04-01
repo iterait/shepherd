@@ -11,5 +11,5 @@ worker_pid=$!
 python tests/overall/one_shot_test.py
 
 # tear-down
-kill $worker_pid
 docker-compose -f examples/docker/docker-compose-sandbox.yml stop
+kill $worker_pid

@@ -14,13 +14,9 @@ class StatusResponse(Model):
     containers: Dict[str, SheepModel] = DictType(ModelType(SheepModel), required=True)
 
 
-class InterruptJobResponse(Model):
-    success: bool = BooleanType(default=True, required=True)
-
-
 class StartJobResponse(Model):
     success: bool = BooleanType(default=True, required=True)
 
 
-class ReconfigureResponse(Model):
-    success: bool = BooleanType(default=True, required=True)
+class JobStatusResponse(Model):
+    ready: bool = BooleanType(required=True)

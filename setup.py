@@ -1,5 +1,5 @@
 from pip.req import parse_requirements
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='cxworker',
       version='0.1.0',
@@ -23,9 +23,7 @@ setup(name='cxworker',
       author='Cognexa Solutions s.r.o.',
       author_email='info@cognexa.com',
       license='MIT',
-      packages=['cxworker',
-                'runner',
-                ],
+      packages=['cxworker']+['.'.join(('cxworker', package)) for package in find_packages('cxworker')],
       include_package_data=True,
       zip_safe=False,
       setup_requires=['pytest-runner'],
@@ -33,7 +31,8 @@ setup(name='cxworker',
       install_requires=[str(ir.req) for ir in parse_requirements('requirements.txt', session='hack')],
       entry_points={
           'console_scripts': [
-              'cxworker-runner=runner.runner:runner'
+              'cxworker=cxworker.manage:cli',
+              'cxworker-runner=cxworker.runner.runner_entry_point:run'
           ]
       }
 )

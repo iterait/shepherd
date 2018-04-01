@@ -1,59 +1,89 @@
-import gevent
-from gevent.wsgi import WSGIServer
-import zmq.green as zmq
-from minio import Minio
-import logging
 import sys
+import logging
+from typing import Optional
+
+import gevent
+import cxflow as cx
+from minio import Minio
+from gevent.wsgi import WSGIServer
 from urllib3.exceptions import MaxRetryError
 
-from cxworker.manager.shepherd import Shepherd
-from .api.views import create_worker_blueprint
+from .shepherd import Shepherd
 from .api import create_app
-from .manager.config import load_config, WorkerConfig
-from .manager.output_listener import OutputListener
+from .api.views import create_worker_blueprint
+from .shepherd.config import WorkerConfig
 from .sheep.welcome import welcome
 
 
+__all__ = ['Worker']
+
+
 class Worker:
+    """
+    Create and manage worker API, shepherd and minio handle.
+    """
+
     def __init__(self):
-        self.zmq_context = zmq.Context()
-        self.app = create_app(__name__)
-        self.shepherd = None
-        self.minio = None
-        self.config: WorkerConfig = None
+        """Create new Worker."""
+        self._minio: Optional[Minio] = None
+        self._shepherd: Optional[Shepherd] = None
+        self._config: Optional[WorkerConfig] = None
+        self._app = create_app(__name__)
 
-    def load_config(self, config_stream):
-        self.config = load_config(config_stream)
-        logging.basicConfig(level=self.config.logging.log_level)
+    @property
+    def app(self):
+        """Flask app serving the worker API."""
+        return self._app
+
+    def load_config(self, config: WorkerConfig) -> None:
+        """
+        Load the given configuration and create minio and shepherd handles.
+
+        :param config: worker configuration to be loaded
+        """
+        self._config = config
+        logging.basicConfig(level=self._config.logging.log_level,
+                            format=cx.constants.CXF_LOG_FORMAT,
+                            datefmt=cx.constants.CXF_LOG_DATE_FORMAT)
+        logging.getLogger("urllib3").setLevel(logging.WARNING)
         welcome()
-        self.shepherd = Shepherd(self.zmq_context, self.config.registry, self.config.containers)
-        self.minio = Minio(self.config.storage.schemeless_url, self.config.storage.access_key,
-                           self.config.storage.secret_key, self.config.storage.secure)
 
-    def run(self, host: str, port: int):
-        if self.config is None:
+        logging.debug('Creating minio handle')
+        self._minio = Minio(self._config.storage.schemeless_url, self._config.storage.access_key,
+                            self._config.storage.secret_key, self._config.storage.secure)
+
+        logging.debug('Creating shepherd')
+        self._shepherd = Shepherd(self._config.registry, self._config.sheep, self._config.data_root, self._minio)
+
+    def run(self, host: str, port: int) -> None:
+        """
+        Run the API server, and shepherd.
+        The worker has to be previously configured with :py:meth:`load_config`.
+
+        :param host: API host
+        :param port: API port
+        """
+        if self._config is None:
             raise RuntimeError("Configuration has not been loaded yet")
 
-        self.app.register_blueprint(create_worker_blueprint(self.shepherd, self.minio))
+        self._app.register_blueprint(create_worker_blueprint(self._shepherd, self._minio))
 
-        api_server = WSGIServer((host, port), self.app)
-        output_listener = OutputListener(self.shepherd, self.minio)
+        api_server = WSGIServer((host, port), self._app, log=logging.getLogger(''))
 
-        api = gevent.spawn(api_server.start)
-        output = gevent.spawn(output_listener.listen)
+        api_handler = gevent.spawn(api_server.start)
+        sheep_listener = gevent.spawn(self._shepherd.listen)
 
         # everything should be ready, lets check if minio works
         try:
-            self.minio.list_buckets()
+            self._minio.list_buckets()
             logging.info('Minio storage appears to be up and running')
         except MaxRetryError:
-            logging.error('Could not list minio buckets. Verify minio url ({}) and credentials'
-                          .format(self.config.storage.url))
+            logging.error('Cannot connect to minio at (%s)',self._config.storage.url)
             sys.exit(1)
 
         try:
-            logging.info('Listening for API calls at http://%s:%s (send a keyboard interrupt to stop the worker)',
-                         host, port)
-            gevent.joinall([api, output])
+            logging.info('Worker API is available at http://%s:%s', host, port)
+            gevent.joinall([api_handler, sheep_listener])
         except KeyboardInterrupt:
-            self.shepherd.slaughter_all()
+            logging.info("Interrupt caught, slaughtering all the sheep")
+            self._shepherd.slaughter_all()

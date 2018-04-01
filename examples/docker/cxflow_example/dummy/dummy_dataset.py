@@ -8,4 +8,4 @@ class DummyDataset(cx.BaseDataset):
         pass
 
     def predict_stream(self, payload):
-        yield json.loads(payload)
+        yield payload

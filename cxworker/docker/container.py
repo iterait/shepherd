@@ -11,26 +11,26 @@ class DockerContainer:
         self.image = image
         self.autoremove = autoremove
         self.ports = {}
-        self.volumes = []
         self.devices = []
         self.container_id = None
         self.runtime = runtime
         self.env = env or {}
+        self.mounts = {}
 
     def add_port_mapping(self, host_port, container_port):
         """
         Map a port on the host machine to given port on the container
+
         :param host_port:
         :param container_port:
         """
-
         self.ports[host_port] = container_port
+
+    def add_bind_mount(self, host_path, container_path):
+        self.mounts[host_path] = container_path
 
     def add_device(self, name):
         self.devices.append(name)
-
-    def add_volume(self, volume_spec):
-        self.volumes.append(volume_spec)
 
     def start(self):
         """
@@ -42,7 +42,8 @@ class DockerContainer:
 
         # Add configured port mappings
         for host_port, container_port in self.ports.items():
-            command += ['-p', '127.0.0.1:{host}:{container}'.format(host=host_port, container=container_port)]
+            command += ['-p', '0.0.0.0:{host}:{container}'.format(host=host_port, container=container_port)]
+            DockerContainer.kill_blocking_container(host_port)
 
         # Set environment variables
         if self.env:
@@ -59,10 +60,13 @@ class DockerContainer:
         if self.runtime:
             command.append("--runtime={}".format(self.runtime))
 
-        # Bind volumes
-        for volume_spec in self.volumes:
-            command.append("--volume")
-            command.append(volume_spec)
+        # Bind mount
+        for host_path, container_path in self.mounts.items():
+            command.append("--mount")
+            command.append(','.join(['='.join([key, value])
+                                     for key, value in (('type', 'bind'),
+                                                        ('source', host_path),
+                                                        ('target', container_path))]))
 
         # Bind devices
         for device in self.devices:
@@ -73,7 +77,7 @@ class DockerContainer:
         command.append(self.image.full_name)
 
         # Launch the container and wait until the "run" commands finishes
-        logging.debug("Running command %s", str(command))
+        logging.info("Running command %s", ' '.join(command))
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         rc = process.wait()
         stderr = process.stderr.read()
@@ -127,3 +131,27 @@ class DockerContainer:
 
         # If the command output contains more than one line, the container was found (the first line is a header)
         return len(process.stdout.readlines()) > 1
+
+    @staticmethod
+    def kill_blocking_container(host_port: int) -> None:
+        """
+        List all the running docker container mapping and attempt kill any container holding the given port.
+
+        :param host_port: host port to be freed
+        """
+        host_port = str(host_port)
+        process = subprocess.Popen(["docker", "ps", "--format", "{{.Ports}}\t{{.Names}}"],
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process.wait()
+        ps_info = process.stdout.read().decode()
+        for ps_line in ps_info.split('\n'):
+            if len(ps_line.strip()) == 0:
+                continue
+            port_mappings, name = ps_line.split('\t')
+            for port_mapping in port_mappings.split(','):
+                host_port_held = port_mapping.split(':')[1].split('->')[0]
+                if host_port_held == host_port:
+                    logging.info('Killing docker container `%s` as it holds port %s', name, host_port)
+                    killing_process = subprocess.Popen(['docker', 'kill', name])
+                    killing_process.wait()
+                    return

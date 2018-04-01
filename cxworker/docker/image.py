@@ -1,7 +1,7 @@
 import subprocess
 import logging
 
-from cxworker.manager.config import RegistryConfig
+from cxworker.shepherd.config import RegistryConfig
 from .errors import DockerError
 
 

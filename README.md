@@ -31,7 +31,7 @@ your needs.
 Finally, you need to run the following command to start the worker:
 
 ```
-python manage.py run_worker -h 0.0.0.0 -p 5000 -c examples/configs/cxworker-docker-cpu.yml
+cxworker run -c examples/configs/cxworker-docker-cpu.yml
 ```
 
 Be sure to adjust the command line parameters according to your needs (`-h` is 
@@ -47,9 +47,7 @@ To process a request for debugging purposes, you need to:
 
 - choose a request id
 - create a bucket on your Minio server with a name same as your request id
-- put the payload (input for the model) in `<yourbucket>/payload.json`
-- load the desired model on your worker (if you use the docker container type, 
-  the model has to be in your registry) using the API
+- put the payload (input for the model) in `<yourbucket>/inputs/input.json`
 - invoke the `/start-job` API endpoint with your chosen request id
 - after the job is processed, the result should be stored in Minio, in 
-  `<yourbucket>/result.json`
+  `<yourbucket>/outputs.json`

@@ -6,7 +6,7 @@ ADD ssh /root/.ssh
 RUN chmod 600 -R /root/.ssh
 RUN ssh-keyscan -H github.com >> /root/.ssh/known_hosts
 
-RUN pip install git+ssh://git@github.com/cognexa/cxworker.git
+RUN pip install git+ssh://git@github.com/cognexa/cxworker.git@dir
 
 ENV LD_LIBRARY_PATH /usr/local/lib
 
@@ -17,6 +17,6 @@ WORKDIR /project
 ADD . .
 
 # Replace this with your model of choice
-ADD config.yaml /project/config.yaml
+ADD cxflow-test/latest/config.yaml /project/config.yaml
 
 CMD cxworker-runner /project

@@ -56,13 +56,14 @@ class LoggingConfig(Model):
 
 
 class WorkerConfig(Model):
+    data_root: str = StringType(required=True)
     storage: StorageConfig = ModelType(StorageConfig, required=True)
-    logging: LoggingConfig = ModelType(LoggingConfig, required=True)
-    containers: Dict[str, Dict[str, Any]] = DictType(DictType(BaseType), required=True)
+    logging: LoggingConfig = ModelType(LoggingConfig, required=False, default=LoggingConfig(dict(level='info')))
+    sheep: Dict[str, Dict[str, Any]] = DictType(DictType(BaseType), required=True)
     registry: Optional[RegistryConfig] = ModelType(RegistryConfig, required=False)
 
 
-def load_config(config_stream) -> WorkerConfig:
+def load_worker_config(config_stream) -> WorkerConfig:
     config_object = yaml.load(config_stream)
     config = WorkerConfig(config_object)
     config.validate()
