@@ -15,7 +15,7 @@ autoapi_modules = {
 # General information about the project.
 project = 'cxworker'
 copyright = '2017, Cognexa Solutions s.r.o.'
-author = 'Petr Belohlavek, Adam Blazek, Filip Matzner'
+author = 'Jan Buchar, Adam Blazek, Petr Belohlavek'
 
 # The short X.Y version.
 version = '.'.join(pkg_resources.get_distribution("cxworker").version.split('.')[:2])
