@@ -10,14 +10,13 @@ from cxworker.manager.shepherd import Shepherd
 from .api.views import create_worker_blueprint
 from .api import create_app
 from .manager.config import load_config, WorkerConfig
-from .manager.output_listener import OutputListener
 
 
 class Worker:
     def __init__(self):
         self.zmq_context = zmq.Context()
         self.app = create_app(__name__)
-        self.shepherd = None
+        self.shepherd: Shepherd = None
         self.minio = None
         self.config: WorkerConfig = None
 
@@ -40,10 +39,10 @@ class Worker:
         self.app.register_blueprint(create_worker_blueprint(self.shepherd, self.minio))
 
         api_server = WSGIServer((host, port), self.app)
-        output_listener = OutputListener(self.shepherd, self.minio)
 
-        api = gevent.spawn(api_server.start)
-        output = gevent.spawn(output_listener.listen)
+        api_handler = gevent.spawn(api_server.start)
+        sheep_listener = gevent.spawn(self.shepherd.listen)
+        sheep_feeder = self.shepherd.spawn_feeders()
 
         # everything should be ready, lets check if minio works
         try:
@@ -57,6 +56,7 @@ class Worker:
         try:
             logging.info('Listening for API calls at http://%s:%s (send a keyboard interrupt to stop the worker)',
                          host, port)
-            gevent.joinall([api, output])
+            gevent.joinall([api_handler, sheep_listener]+sheep_feeder)
         except KeyboardInterrupt:
+            logging.info("Interrupt caught, slaughtering all the sheep")
             self.shepherd.slaughter_all()

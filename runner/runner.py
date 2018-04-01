@@ -5,6 +5,7 @@ import json
 import logging
 import numpy as np
 import os
+import os.path as path
 import sys
 
 import traceback
@@ -44,7 +45,9 @@ def runner():
     parser.add_argument('-p', dest="port", default=9999, type=int)
     args = parser.parse_args()
 
-    # socket magic
+    logging.info('Starting cxflow runner from `%s` listening on port %s', args.config_path, args.port)
+
+    # bind to the socket
     context = zmq.Context()
     socket = context.socket(zmq.ROUTER)
     socket.setsockopt(zmq.IDENTITY, b"container")
@@ -77,13 +80,15 @@ def runner():
 
     while True:
         logging.info('Waiting for payload')
-        identity, message_type, payload, *_ = socket.recv_multipart()
+        identity, message_type, job_id, io_path, *_ = socket.recv_multipart()
 
         if message_type == b"input":
             try:
-                payload = payload.decode()
-
-                logging.info('Payload accepted')
+                job_id = job_id.decode()
+                io_path = io_path.decode()
+                logging.info('Processing job `%s`', job_id)
+                input_path = path.join(io_path, job_id, 'input.json')
+                payload = json.load(open(input_path))
                 result = defaultdict(list)
                 for input_batch in dataset.predict_stream(payload):
                     logging.info('Another batch (%s)', list(input_batch.keys()))
@@ -102,13 +107,14 @@ def runner():
 
                 logging.info('JSONify')
                 result_json = to_json_serializable(result)
-                encoded_result = json.dumps(result_json).encode()
+                json.dump(result_json, open(path.join(io_path, job_id, 'output.json'), 'w'))
 
                 logging.info('Sending result')
-                socket.send_multipart([identity, b"output", encoded_result])
+                socket.send_multipart([identity, b"output", job_id.encode()])
             except BaseException as e:
                 logging.exception(e)
-                send_error(socket, identity, "{}: {}".format(type(e).__name__, str(e), traceback.format_tb(e.__traceback__)).encode())
+                send_error(socket, identity, "{}: {}".format(type(e).__name__, str(e),
+                                                             traceback.format_tb(e.__traceback__)).encode())
         else:
             send_error(socket, identity, b"Unknown message type received")
 

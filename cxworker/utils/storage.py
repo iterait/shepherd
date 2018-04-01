@@ -1,6 +1,7 @@
 import os
 import logging
-import os.path as path
+import shutil
+from os import path as path
 
 from minio import Minio
 from minio.error import MinioError
@@ -25,7 +26,7 @@ def pull_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
             filepath = path.join(*object.object_name.split(_MINIO_FOLDER_DELIMITER))
             filedir = path.join(dir_name, path.dirname(filepath))
             os.makedirs(filedir, exist_ok=True)
-            minio.fget_object(bucket_name, object.object_name, filepath)
+            minio.fget_object(bucket_name, object.object_name, path.join(filedir, filepath))
     except MinioError as me:
         raise StorageError('Failed to pull minio bucket `{}`'.format(bucket_name)) from me
 
@@ -48,3 +49,11 @@ def push_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
                 minio.fput_object(bucket_name, object_name, path.join(dir_name, filepath))
     except MinioError as me:
         raise StorageError('Failed to push minio bucket `{}`'.format(bucket_name)) from me
+
+
+def create_clean_dir(dir_path) -> str:
+    logging.debug('Creating clean dir dir `%s`', dir_path)
+    if path.exists(dir_path):
+        shutil.rmtree(dir_path)
+    os.makedirs(dir_path)
+    return dir_path
