@@ -12,6 +12,7 @@ from .shepherd import Shepherd
 from .api import create_app
 from .api.views import create_worker_blueprint
 from .shepherd.config import WorkerConfig
+from .sheep.welcome import welcome
 
 
 __all__ = ['Worker']
@@ -45,6 +46,7 @@ class Worker:
                             format=cx.constants.CXF_LOG_FORMAT,
                             datefmt=cx.constants.CXF_LOG_DATE_FORMAT)
         logging.getLogger("urllib3").setLevel(logging.WARNING)
+        welcome()
 
         logging.debug('Creating minio handle')
         self._minio = Minio(self._config.storage.schemeless_url, self._config.storage.access_key,
