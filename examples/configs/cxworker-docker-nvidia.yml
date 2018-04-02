@@ -9,11 +9,6 @@ storage:
 sheep:
   gpu_sheep_1:
     port: 9001
-    type: nvidia
+    type: docker
     devices:
       - /dev/nvidia0
-  gpu_sheep_2:
-    port: 9002
-    type: nvidia
-    devices:
-      - /dev/nvidia1
