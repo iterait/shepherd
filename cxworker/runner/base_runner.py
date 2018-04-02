@@ -29,7 +29,7 @@ class BaseRunner:
         logging.debug('Creating socket')
         self._socket: zmq.Socket = zmq.Context().instance().socket(zmq.ROUTER)
         self._socket.setsockopt(zmq.IDENTITY, b"runner")
-        self._socket.connect("tcp://0.0.0.0:{}".format(port))
+        self._socket.bind("tcp://*:{}".format(port))
 
         self._config_path: str = config_path
         self._stream_name: str = stream_name
