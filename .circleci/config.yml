@@ -66,8 +66,8 @@ workflows:
     jobs:
       - test_archlinux
       - generate_documentation:
-#          filters:
-#            branches:
-#              only: master
+          filters:
+            branches:
+              only: dev
           requires:
             - test_archlinux
