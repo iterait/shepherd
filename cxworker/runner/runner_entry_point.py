@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import os.path as path
 from argparse import ArgumentParser
 
 import cxflow as cx
@@ -34,8 +35,19 @@ def run() -> None:
 
     args = create_argparser().parse_args()
 
+    runner_fqn = args.runner
+    config_dir = args.config_path
+    if path.isfile(args.config_path):
+        config_dir = path.dirname(args.config_path)
+
+    runner_config_file = path.join(config_dir, 'runner.yaml')
+    if path.exists(runner_config_file):
+        logging.info('Using custom runner configuration file')
+        runner_config = cx.utils.load_config(path.join(runner_config_file))
+        runner_fqn = runner_config['runner']['class']
+
     # create runner
-    module, class_ = cx.utils.parse_fully_qualified_name(args.runner)
+    module, class_ = cx.utils.parse_fully_qualified_name(runner_fqn)
     runner = cx.utils.create_object(module, class_, args=(args.config_path, args.port, args.stream))
 
     # listen for input messages
