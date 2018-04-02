@@ -39,11 +39,8 @@ def run() -> None:
     runner = cx.utils.create_object(module, class_, args=(args.config_path, args.port, args.stream))
 
     # listen for input messages
-    try:
-        runner.process_all()
-    except KeyboardInterrupt:
-        logging.info('Keyboard interrupt caught. Stopping.')
+    runner.process_all()
 
 
 if __name__ == '__main__':
-    run()
+    run()  # pragma: no cover

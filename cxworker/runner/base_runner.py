@@ -29,7 +29,7 @@ class BaseRunner:
         logging.debug('Creating socket')
         self._socket: zmq.Socket = zmq.Context().instance().socket(zmq.ROUTER)
         self._socket.setsockopt(zmq.IDENTITY, b"runner")
-        self._socket.bind("tcp://*:{}".format(port))
+        self._socket.connect("tcp://0.0.0.0:{}".format(port))
 
         self._config_path: str = config_path
         self._stream_name: str = stream_name
@@ -95,7 +95,6 @@ class BaseRunner:
         :param input_path: input directory path
         :param output_path: output directory path
         """
-        pass
 
     def process_all(self) -> None:
         """Listen on the ``self._socket`` and process the incoming jobs in an endless loop."""
