@@ -31,7 +31,7 @@ references:
     run:
       name: Run tests.
       command: |
-        tests/overall/test_bare.sh
+        python setup.py test
 
   doc: &doc
     run:
