@@ -2,6 +2,7 @@ import sys
 import json
 import pytest
 import os.path as path
+from pytest_mock import mock
 
 import gevent
 import subprocess
@@ -65,19 +66,15 @@ def test_cli_runner(job, feeding_socket, runner_setup):
     assert output == {'key': [42], 'output': [expected]}
 
 
-def test_cli_runner_from_python(job, feeding_socket, runner_setup):  # for coverage reporting
+def test_cli_runner_from_python(job, feeding_socket, runner_setup, mocker):  # for coverage reporting
     socket, port = feeding_socket
     job_id, job_dir = job
     version, stream, expected = runner_setup
     config_path = path.join('examples', 'docker', 'cxflow_example', 'cxflow-test', version)
-    original_argv = sys.argv
-    sys.argv = ['cxworker-runner', '-p', str(port), '-s', stream, config_path]  # fooling arg parser
-
+    mocker.patch('sys.argv', ['cxworker-runner', '-p', str(port), '-s', stream, config_path])
     greenlet = gevent.spawn(run)
     Messenger.send(socket, InputMessage(dict(job_id=job_id, io_data_root=job_dir)))
     Messenger.recv(socket, [DoneMessage])
     greenlet.kill()
     output = json.load(open(path.join(job_dir, job_id, 'outputs', 'output.json')))
     assert output == {'key': [42], 'output': [expected]}
-
-    sys.argv = original_argv

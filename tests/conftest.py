@@ -26,7 +26,7 @@ def minio():
 
 @pytest.fixture()
 def bucket(minio: Minio):
-    request_id = 'test-request-'+(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
+    request_id = 'test-request-' + (''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
     if minio.bucket_exists(request_id):
         for obj in minio.list_objects_v2(request_id, recursive=True):
             minio.remove_object(request_id, obj.object_name)

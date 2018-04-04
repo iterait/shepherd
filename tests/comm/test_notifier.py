@@ -1,12 +1,11 @@
 import gevent
 
-jobs_done = 2
-
 
 def test_notifier(notifier):
+    jobs_done = 2
 
     def work():
-        global jobs_done
+        nonlocal jobs_done
         gevent.sleep(0.5)
         jobs_done -= 1
         notifier.notify()

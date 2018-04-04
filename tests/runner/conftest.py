@@ -6,10 +6,10 @@ import os.path as path
 import numpy as np
 
 original_data = [{'a': np.array([1, 2, 3])}, [np.array(1), np.array(2)]]
-json_rerializable = [{'a': [1, 2, 3]}, [1, 2]]
+serializable_data = [{'a': [1, 2, 3]}, [1, 2]]
 
 
-@pytest.fixture(params=zip(original_data, json_rerializable))
+@pytest.fixture(params=zip(original_data, serializable_data))
 def json_data(request):
     yield request.param
 

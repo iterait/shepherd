@@ -1,34 +1,9 @@
 import logging
 import subprocess
-from typing import Dict, Optional, Sequence
+from typing import Dict, Optional, List
 
 from cxworker.docker import DockerImage
 from .errors import DockerError
-
-
-def run_docker_command(command: Sequence[str]) -> str:
-    """
-    Run and wait the given docker command. Return its stdout.
-
-    :param command: docker command to be run as a lex list
-    :raise DockerError: on failure
-    :return: command stdout
-    """
-    assert command[0] == 'docker'
-    plain_command = ' '.join(command)
-    logging.debug('Running command `%s`', plain_command)
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return_code = process.wait()
-    stderr = process.stderr.read().decode()
-
-    if len(stderr):
-        logging.warning("Non-empty stderr when running command `%s`: %s", plain_command, stderr)
-    if return_code != 0:
-        raise DockerError('Running command `{}` failed.'.format(plain_command), return_code, stderr)
-
-    stdout = process.stdout.read().decode().strip()
-    logging.debug("Running command `%s` yielded output: %s", plain_command, stdout)
-    return stdout
 
 
 class DockerContainer:
@@ -69,7 +44,7 @@ class DockerContainer:
         """
 
         # Run given image in detached mode
-        command = ['docker', 'run', '-d']
+        command = ['run', '-d']
 
         # Add configured port mappings
         for host_port, container_port in self._ports.items():
@@ -102,7 +77,7 @@ class DockerContainer:
         # Positional args - the image of the container
         command.append(self._image.full_name)
 
-        self._container_id = run_docker_command(command)
+        self._container_id = DockerContainer.run_docker_command(command)
 
     def kill(self):
         """
@@ -110,7 +85,7 @@ class DockerContainer:
         """
         if self._container_id is None:
             raise DockerError('The container was not started yet')
-        run_docker_command(['docker', 'kill', self._container_id])
+        DockerContainer.run_docker_command(['kill', self._container_id])
         self._container_id = None
 
     @property
@@ -120,7 +95,7 @@ class DockerContainer:
         """
         if self._container_id is None:
             raise DockerError('The container was not started yet')
-        output = run_docker_command(['docker', 'ps', '--filter', 'id={}'.format(self._container_id)])
+        output = DockerContainer.run_docker_command(['ps', '--filter', 'id={}'.format(self._container_id)])
         # If the command output contains more than one line, the container was found (the first line is a header)
         return len(output.split('\n')) > 1
 
@@ -147,3 +122,28 @@ class DockerContainer:
                     killing_process = subprocess.Popen(['docker', 'kill', name])
                     killing_process.wait()
                     return
+
+    @staticmethod
+    def run_docker_command(command: List[str]) -> str:
+        """
+        Run and wait the given docker command. Return its stdout.
+
+        :param command: docker command to be run as a lex list
+        :raise DockerError: on failure
+        :return: command stdout
+        """
+        command = ['docker'] + command
+        plain_command = ' '.join(command)
+        logging.debug('Running command `%s`', plain_command)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return_code = process.wait()
+        stderr = process.stderr.read().decode()
+
+        if len(stderr):
+            logging.warning("Non-empty stderr when running command `%s`: %s", plain_command, stderr)
+        if return_code != 0:
+            raise DockerError('Running command `{}` failed.'.format(plain_command), return_code, stderr)
+
+        stdout = process.stdout.read().decode().strip()
+        logging.debug("Running command `%s` yielded output: %s", plain_command, stdout)
+        return stdout

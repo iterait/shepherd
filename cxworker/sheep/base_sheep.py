@@ -59,8 +59,9 @@ class BaseSheep(metaclass=abc.ABCMeta):
         self.socket.bind("tcp://0.0.0.0:{}".format(self._config.port))
 
     def slaughter(self) -> None:
+        zmq_address = 'tcp://0.0.0.0:{}'.format(self._config.port)
         try:
-            self.socket.close()
+            self.socket.disconnect(zmq_address)
         except ZMQBaseError:
             logging.warning('Failed to disconnect socket (perhaps it was not started/connected)')
 
