@@ -59,9 +59,6 @@ class Messenger:
         except ZMQBaseError as zmq_error:
             raise MessageError('Failed to receive message') from zmq_error
 
-        if not isinstance(message, Message):
-            raise TypeError('`{}` is not a message'.format(str(type(message))))
-
         # check if message type is expected
         if expected_message_types is not None and type(message) not in expected_message_types:
             raise UnexpectedMessageTypeError('Unexpected message type `{}`. Expected message types are {}.'

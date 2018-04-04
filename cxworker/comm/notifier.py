@@ -30,7 +30,7 @@ class JobDoneNotifier:
             notification_listener.connect("inproc://job-done")
             while not test():
                 notification_listener.recv()
-            notification_listener.close()
+            notification_listener.close()   # pragma: no cover
         gevent.spawn(wait_for_test).join()
 
     def close(self):

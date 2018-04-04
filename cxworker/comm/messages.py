@@ -30,7 +30,6 @@ def claim(field, data) -> Optional[type]:
     for name, cls in get_message_classes():
         if data["message_type"] == name:
             return cls
-    return None
 
 
 class InputMessage(Message):

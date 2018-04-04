@@ -1,0 +1,15 @@
+dataset:
+  class: examples.docker.cxflow_example.dummy.PostProcessDataset
+
+
+model:
+  name: Dummy
+  class: examples.docker.cxflow_example.dummy.DummyModel
+
+eval:
+  production:
+    model:
+      factor: 10
+    dataset:
+      post_process_factor: 2
+    hooks: []

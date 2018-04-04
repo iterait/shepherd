@@ -31,7 +31,7 @@ references:
     run:
       name: Run tests.
       command: |
-        tests/overall/test_bare.sh
+        python setup.py test
 
   doc: &doc
     run:
@@ -66,8 +66,8 @@ workflows:
     jobs:
       - test_archlinux
       - generate_documentation:
-#          filters:
-#            branches:
-#              only: master
+          filters:
+            branches:
+              only: dev
           requires:
             - test_archlinux
