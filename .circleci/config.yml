@@ -16,6 +16,11 @@ references:
     run:
       name: Install dependencies and cxworker
       command: |
+        set -x
+        VER="17.03.0-ce"
+        curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
+        tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+        mv /tmp/docker/* /usr/bin
         pacman --noconfirm --needed -Syu minio
         mkdir examples/docker/cxflow_example/ssh
         echo $PRIVATE_SSH_KEY_PRIVATE | tr ' ' '\n' | base64 -d > examples/docker/cxflow_example/ssh/id_rsa
@@ -46,6 +51,8 @@ jobs:
       - image: cognexa/cxflow:latest
     working_directory: ~/cxworker
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
       - checkout
       - *install
       - *test
