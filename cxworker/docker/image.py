@@ -41,12 +41,10 @@ class DockerImage:
                 'login',
                 '-u',
                 self._registry.username,
-                '--password-stdin',
+                '-p',
+                self._registry.password,
                 self._registry.url
-            ], stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
-
-            process.stdin.write(self._registry.password.encode())
-            process.stdin.close()
+            ], stderr=subprocess.PIPE)
 
             rc = process.wait()
 

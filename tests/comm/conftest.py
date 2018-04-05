@@ -19,6 +19,7 @@ def dealer_socket():
     sock = zmq.Context.instance().socket(zmq.DEALER)
     sock.bind('inproc://protocol')
     yield sock
+    sock.disconnect('inproc://protocol')
     sock.close()
 
 
@@ -28,6 +29,7 @@ def router_socket():
     sock.setsockopt(zmq.IDENTITY, b'router')
     sock.connect('inproc://protocol')
     yield sock
+    sock.disconnect('inproc://protocol')
     sock.close()
 
 
