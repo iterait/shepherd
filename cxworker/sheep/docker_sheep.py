@@ -79,8 +79,8 @@ class DockerSheep(BaseSheep):
 
         # create and start :py:class:`DockerContainer`
         self._container = DockerContainer(self._image, self._config.autoremove_containers, env=env, runtime=runtime,
-                                          bind_mounts={self.sheep_data_root: self.sheep_data_root})
-        self._container.add_port_mapping(self._config.port, self._CONTAINER_POINT)
+                                          bind_mounts={self.sheep_data_root: self.sheep_data_root},
+                                          ports={self._config.port: self._CONTAINER_POINT})
         self._container.start()
 
     def slaughter(self) -> None:
