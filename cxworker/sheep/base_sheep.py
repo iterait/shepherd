@@ -56,7 +56,7 @@ class BaseSheep(metaclass=abc.ABCMeta):
             self.slaughter()
         self._load_model(model_name, model_version)
         self.in_progress = set()
-        self.socket.bind("tcp://0.0.0.0:{}".format(self._config.port))
+        self.socket.connect("tcp://0.0.0.0:{}".format(self._config.port))
 
     def slaughter(self) -> None:
         zmq_address = 'tcp://0.0.0.0:{}'.format(self._config.port)

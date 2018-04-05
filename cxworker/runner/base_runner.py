@@ -26,10 +26,8 @@ class BaseRunner:
         logging.info('Creating cxflow runner from `%s` listening on port %s', config_path, port)
 
         # bind to the socket
-        logging.debug('Creating socket')
-        self._socket: zmq.Socket = zmq.Context().instance().socket(zmq.ROUTER)
-        self._socket.setsockopt(zmq.IDENTITY, b"runner")
-        self._socket.connect("tcp://0.0.0.0:{}".format(port))
+        self._port = port
+        self._socket = None
 
         self._config_path: str = config_path
         self._stream_name: str = stream_name
@@ -100,24 +98,31 @@ class BaseRunner:
         """Listen on the ``self._socket`` and process the incoming jobs in an endless loop."""
         self._load_config()
         logging.info('Starting the loop')
-        while True:
-            logging.info('Waiting for a job')
-            input_message: InputMessage = Messenger.recv(self._socket, [InputMessage])
-            job_id = input_message.job_id
-            io_data_root = input_message.io_data_root
-            logging.info('Received job `%s` with io data root `%s`', job_id, io_data_root)
-            try:
-                input_path = path.join(io_data_root, job_id, 'inputs')
-                output_path = path.join(io_data_root, job_id, 'outputs')
-                self._process_job(input_path, output_path)
-                logging.info('Job `%s` done, sending DoneMessage', job_id)
-                Messenger.send(self._socket, DoneMessage(dict(job_id=job_id)), input_message)
+        try:
+            logging.debug('Creating socket')
+            self._socket: zmq.Socket = zmq.Context().instance().socket(zmq.ROUTER)
+            self._socket.setsockopt(zmq.IDENTITY, b"runner")
+            self._socket.bind("tcp://0.0.0.0:{}".format(self._port))
+            while True:
+                logging.info('Waiting for a job')
+                input_message: InputMessage = Messenger.recv(self._socket, [InputMessage])
+                job_id = input_message.job_id
+                io_data_root = input_message.io_data_root
+                logging.info('Received job `%s` with io data root `%s`', job_id, io_data_root)
+                try:
+                    input_path = path.join(io_data_root, job_id, 'inputs')
+                    output_path = path.join(io_data_root, job_id, 'outputs')
+                    self._process_job(input_path, output_path)
+                    logging.info('Job `%s` done, sending DoneMessage', job_id)
+                    Messenger.send(self._socket, DoneMessage(dict(job_id=job_id)), input_message)
 
-            except BaseException as e:
-                logging.exception(e)
+                except BaseException as e:
+                    logging.exception(e)
 
-                logging.error('Sending ErrorMessage for job `%s`', job_id)
-                short_erorr = "{}: {}".format(type(e).__name__, str(e))
-                long_error = str(traceback.format_tb(e.__traceback__))
-                error_message = ErrorMessage(dict(job_id=job_id, short_error=short_erorr, long_error=long_error))
-                Messenger.send(self._socket, error_message, input_message)
+                    logging.error('Sending ErrorMessage for job `%s`', job_id)
+                    short_erorr = "{}: {}".format(type(e).__name__, str(e))
+                    long_error = str(traceback.format_tb(e.__traceback__))
+                    error_message = ErrorMessage(dict(job_id=job_id, short_error=short_erorr, long_error=long_error))
+                    Messenger.send(self._socket, error_message, input_message)
+        finally:
+            self._socket.close(0)

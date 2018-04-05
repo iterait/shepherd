@@ -17,8 +17,9 @@ def json_data(request):
 @pytest.fixture()
 def feeding_socket():
     sock = zmq.Context.instance().socket(zmq.DEALER)
-    port = sock.bind_to_random_port('tcp://0.0.0.0')
-    yield sock, port
+    sock.connect('tcp://0.0.0.0:9009')
+    yield sock, 9009
+    sock.disconnect('tcp://0.0.0.0:9009')
     sock.close()
 
 
