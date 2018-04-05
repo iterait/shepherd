@@ -15,7 +15,7 @@ def kill_blocking_container(host_port: int) -> None:
     ps_info = run_docker_command(["ps", "--format", "{{.Ports}}\t{{.Names}}"])
     for ps_line in ps_info.split('\n'):
         if len(ps_line.strip()) == 0:
-            continue
+            continue  # pragma: no cover
         port_mappings, name = ps_line.split('\t')
         for port_mapping in port_mappings.split(','):
             host_port_held = port_mapping.split(':')[1].split('->')[0]
