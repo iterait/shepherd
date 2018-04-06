@@ -1,4 +1,5 @@
-from typing import Dict, Optional
+import logging
+from typing import Dict, Optional, List
 
 from .image import DockerImage
 from .errors import DockerError
@@ -35,11 +36,12 @@ class DockerContainer:
         self._ports: Dict = ports or {}
         self._command: Optional[str] = command
 
-    def start(self):
+    def _build_run_command(self) -> List[str]:
         """
-        Run the container
-        """
+        Build docker container run command.
 
+        :return: built command
+        """
         # Run given image in detached mode
         command = ['run', '-d']
 
@@ -55,11 +57,11 @@ class DockerContainer:
             for key, value in self._env.items():
                 command.append("{}={}".format(key, value))
 
-        # If desired, remove the container when it exits
+        # If specified, remove the container when it exits
         if self._autoremove:
             command.append("--rm")
 
-        # Set runtime
+        # If specified, set the runtime (e.g. `nvidia`)
         if self._runtime:
             command.append("--runtime={}".format(self._runtime))
 
@@ -74,27 +76,41 @@ class DockerContainer:
         # Positional args - the image of the container
         command.append(self._image.full_name)
 
+        # If specified, append the run command
         if self._command is not None:
             command.append(self._command)
 
-        self._container_id = run_docker_command(command).strip()
+        return command
 
-    def kill(self):
+    def start(self) -> None:
+        """Run the container."""
+        command = self._build_run_command()
+        logging.info('Starting docker container with `%s`', ' '.join(command))
+        self._container_id = run_docker_command(command).strip()
+        logging.info('Started docker container `%s`', self._container_id )
+
+    def kill(self) -> None:
         """
-        Kill the container.
+        Kill the underlying docker container.
+
+        :raise DockerError: if the container was not started yet (i.e., its ``container_id`` is not known)
         """
         if self._container_id is None:
             raise DockerError('The container was not started yet')
+        logging.info('Killing container `%s`', self._container_id)
         run_docker_command(['kill', self._container_id])
         self._container_id = None
 
     @property
-    def running(self):
+    def running(self) -> bool:
         """
-        :return: True when the container is running, False otherwise
+        Check if the underlying docker container is still up and running.
+        Returns ``False`` if the container was not even started.
+
+        :return: docker container running flag
         """
         if self._container_id is None:
-            raise DockerError('The container was not started yet')
+            return False
         output = run_docker_command(['ps', '--filter', 'id={}'.format(self._container_id)])
         # If the command output contains more than one line, the container was found (the first line is a header)
         return len(output.split('\n')) > 1

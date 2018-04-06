@@ -1,8 +1,6 @@
 import logging
-import subprocess
 
 from cxworker.shepherd.config import RegistryConfig
-from .errors import DockerError
 from .utils import run_docker_command
 
 
@@ -36,17 +34,5 @@ class DockerImage:
         """If the registry configuration contains a username, log-in to the registry."""
         if self._registry.username is not None:
             logging.info('Logging to docker registry `%s` as `%s`', self._registry.url, self._registry.username)
-            process = subprocess.Popen([
-                'docker',
-                'login',
-                '-u',
-                self._registry.username,
-                '-p',
-                self._registry.password,
-                self._registry.url
-            ], stderr=subprocess.PIPE)
-
-            rc = process.wait()
-
-            if rc != 0:
-                raise DockerError('Logging in to the registry failed', rc, process.stderr.read())
+            run_docker_command(['login', '-u', self._registry.username, '-p', self._registry.password,
+                                self._registry.url])
