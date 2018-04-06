@@ -1,7 +1,9 @@
 import pytest
+import gevent
 
 
-from cxworker.docker import DockerContainer, DockerImage
+from cxworker.docker import DockerContainer, DockerImage, DockerError
+from cxworker.docker.utils import run_docker_command
 
 docker_container_kwargs = [{},
                            {'autoremove': False},
@@ -11,7 +13,7 @@ docker_container_kwargs = [{},
                            {'ports': {42: 84, 999: 9000}},
                            {'autoremove': False, 'runtime': 'nvidia', 'env': {'my_env': 'my_value'},
                             'bind_mounts': {'/tmp': '/tmp/host'}, 'ports': {42: 84, 999: 9000},
-                            'command': 'echo'}]
+                            'command': ['echo']}]
 docker_commands = ['run -d --rm <<IMAGE>>',
                    'run -d <<IMAGE>>',
                    'run -d --rm --runtime=nvidia <<IMAGE>>',
@@ -30,3 +32,24 @@ def test_commands(command, kwargs, registry_config):
     command = command.replace('<<IMAGE>>', image.full_name).split(' ')
     container = DockerContainer(image=image, **kwargs)
     assert command == container._build_run_command()
+
+
+def test_docker_container(registry_config):
+    image = DockerImage('pritunl/archlinux', 'latest', registry_config)
+    image.pull()
+
+    num_running_before = len(run_docker_command(['ps']).split('\n'))
+    container = DockerContainer(image, command=['sleep', '10'])
+    assert not container.running
+    container.start()
+    gevent.sleep(0.2)
+    num_running_now = len(run_docker_command(['ps']).split('\n'))
+    assert num_running_before + 1 == num_running_now
+    assert container.running
+    container.kill()
+    gevent.sleep(0.2)
+    num_running_final = len(run_docker_command(['ps']).split('\n'))
+    assert num_running_final == num_running_before
+
+    with pytest.raises(DockerError):
+        container.kill()

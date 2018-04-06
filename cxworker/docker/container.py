@@ -16,7 +16,7 @@ class DockerContainer:
                  env: Optional[Dict[str, str]]=None,
                  bind_mounts: Optional[Dict[str, str]]=None,
                  ports: Optional[Dict[int, int]]=None,
-                 command: Optional[str]=None):
+                 command: Optional[List[str]]=None):
         """
         Initialize :py:class`DockerContainer`.
 
@@ -26,6 +26,7 @@ class DockerContainer:
         :param env: additional environment variables
         :param bind_mounts: optional host->container bind mounts mapping
         :param ports: optional host->container port mapping
+        :param command: optional docker container run command
         """
         self._image = image
         self._autoremove = autoremove
@@ -34,7 +35,7 @@ class DockerContainer:
         self._env: Dict = env or {}
         self._mounts: Dict = bind_mounts or {}
         self._ports: Dict = ports or {}
-        self._command: Optional[str] = command
+        self._command: Optional[List[str]] = command
 
     def _build_run_command(self) -> List[str]:
         """
@@ -78,7 +79,7 @@ class DockerContainer:
 
         # If specified, append the run command
         if self._command is not None:
-            command.append(self._command)
+            command += self._command
 
         return command
 
@@ -87,7 +88,7 @@ class DockerContainer:
         command = self._build_run_command()
         logging.info('Starting docker container with `%s`', ' '.join(command))
         self._container_id = run_docker_command(command).strip()
-        logging.info('Started docker container `%s`', self._container_id )
+        logging.info('Started docker container `%s`', self._container_id)
 
     def kill(self) -> None:
         """
