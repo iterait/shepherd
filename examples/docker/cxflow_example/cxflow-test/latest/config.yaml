@@ -5,6 +5,3 @@ dataset:
 model:
   name: Dummy
   class: examples.docker.cxflow_example.dummy.DummyModel
-
-predict:
-  dummy: false

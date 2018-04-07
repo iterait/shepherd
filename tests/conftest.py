@@ -3,11 +3,18 @@ from minio import Minio
 import subprocess
 import os
 import random
-import sys
 import string
 import os.path as path
 
 from cxworker.utils import create_clean_dir
+
+from cxworker.shepherd.config import RegistryConfig
+
+
+@pytest.fixture()
+def registry_config():
+    yield RegistryConfig(dict(url='https://registry.hub.docker.com', username='cxworkertestdocker',
+                              password='abc321321'))
 
 
 @pytest.fixture(scope='session')

@@ -5,6 +5,3 @@ dataset:
 model:
   name: Dummy
   class: dummy.DummyModel
-
-predict:
-  dummy: false

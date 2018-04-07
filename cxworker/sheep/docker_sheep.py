@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 from schematics.types import BooleanType
 
@@ -38,12 +38,14 @@ class DockerSheep(BaseSheep):
     class Config(BaseSheep.Config):
         autoremove_containers: bool = BooleanType(default=False)
 
-    def __init__(self, config: Dict[str, Any], registry_config: RegistryConfig, **kwargs):
+    def __init__(self, config: Dict[str, Any], registry_config: RegistryConfig,
+                 command: Optional[List[str]]=None, **kwargs):
         """
         Create new :py:class:`DockerSheep`.
 
         :param config: docker sheep configuration
         :param registry_config: docker registry configuration
+        :param command: optional docker container run command
         :param kwargs: :py:class:`BaseSheep`'s kwargs
         """
         super().__init__(**kwargs)
@@ -51,6 +53,7 @@ class DockerSheep(BaseSheep):
         self._registry_config = registry_config
         self._container: Optional[DockerContainer] = None
         self._image: Optional[DockerImage] = None
+        self._command: Optional[List[str]] = command
 
     def _load_model(self, model_name: str, model_version: str) -> None:
         """
@@ -80,7 +83,7 @@ class DockerSheep(BaseSheep):
         # create and start :py:class:`DockerContainer`
         self._container = DockerContainer(self._image, self._config.autoremove_containers, env=env, runtime=runtime,
                                           bind_mounts={self.sheep_data_root: self.sheep_data_root},
-                                          ports={self._config.port: self._CONTAINER_POINT})
+                                          ports={self._config.port: self._CONTAINER_POINT}, command=self._command)
         self._container.start()
 
     def slaughter(self) -> None:

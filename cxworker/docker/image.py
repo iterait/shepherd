@@ -22,7 +22,13 @@ class DockerImage:
     @property
     def full_name(self) -> str:
         """Return docker image full name including registry url. E.g.: ``docker.cognexa.com/isletnet:latest``."""
-        return '{registry}/{name}:{tag}'.format(registry=self._registry.schemeless_url, name=self._name, tag=self._tag)
+        registry = self._registry.schemeless_url.strip()
+        if len(registry) > 0:
+            registry += '/'
+        tag = self._tag.strip()
+        if len(tag) > 0:
+            tag = ':' + tag
+        return registry+self._name+tag
 
     def pull(self) -> None:
         """Pull the underlying docker image."""
