@@ -126,7 +126,8 @@ class Shepherd:
 
                         # save the error
                         error = b'Sheep container died without notice'
-                        logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep_id, job_id, error)
+                        logging.error('Sheep `%s` encountered error when processing job `%s`: %s',
+                                      sheep_id, job_id, error)
                         self.minio.put_object(job_id, 'error', BytesIO(error), len(error))
                     sheep.in_progress = set()
                     self.notifier.notify()

@@ -4,7 +4,7 @@ from ..sheep.errors import SheepError
 
 
 class DockerError(SheepError):
-    """Error in execution a docker command."""
+    """Error in execution of a docker command."""
 
     def __init__(self, msg: str, rc: Optional[int]=None, output: Optional[str]=None):
         """

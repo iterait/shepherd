@@ -125,4 +125,5 @@ class BaseRunner:
                     error_message = ErrorMessage(dict(job_id=job_id, short_error=short_erorr, long_error=long_error))
                     Messenger.send(self._socket, error_message, input_message)
         finally:
-            self._socket.close(0)
+            if self._socket is not None:
+                self._socket.close(0)

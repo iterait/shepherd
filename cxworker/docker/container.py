@@ -49,7 +49,6 @@ class DockerContainer:
         # Add configured port mappings
         for host_port, container_port in self._ports.items():
             command += ['-p', '0.0.0.0:{host}:{container}'.format(host=host_port, container=container_port)]
-            kill_blocking_container(host_port)
 
         # Set environment variables
         if self._env:
@@ -86,6 +85,8 @@ class DockerContainer:
     def start(self) -> None:
         """Run the container."""
         command = self._build_run_command()
+        for host_port in self._ports.keys():
+            kill_blocking_container(host_port)
         logging.info('Starting docker container with `%s`', ' '.join(command))
         self._container_id = run_docker_command(command).strip()
         logging.info('Started docker container `%s`', self._container_id)

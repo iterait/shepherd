@@ -34,5 +34,6 @@ class DockerImage:
         """If the registry configuration contains a username, log-in to the registry."""
         if self._registry.username is not None:
             logging.info('Logging to docker registry `%s` as `%s`', self._registry.url, self._registry.username)
+            # the following command exposes docker registry username nad password!
             run_docker_command(['login', '-u', self._registry.username, '-p', self._registry.password,
                                 self._registry.url])
