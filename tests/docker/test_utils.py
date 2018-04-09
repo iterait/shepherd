@@ -6,7 +6,10 @@ import pytest
 from cxworker.docker import DockerError
 from cxworker.docker.utils import run_docker_command, kill_blocking_container
 
+from .docker_not_available import docker_not_available
 
+
+@pytest.mark.skipif(docker_not_available(), reason='Docker is not available.')
 def test_run_command(caplog):
 
     out = run_docker_command(['ps'])
@@ -17,6 +20,7 @@ def test_run_command(caplog):
     assert 'Error' in caplog.text
 
 
+@pytest.mark.skipif(docker_not_available(), reason='Docker is not available.')
 def test_kill_blocking_container():
     # warm-up (pulling the image)
     proc = subprocess.Popen(['docker', 'run', '--rm', '-p' '9999:9999', 'pritunl/archlinux', 'echo', 'hello'])
