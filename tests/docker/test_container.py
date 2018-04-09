@@ -5,6 +5,8 @@ import gevent
 from cxworker.docker import DockerContainer, DockerImage, DockerError
 from cxworker.docker.utils import run_docker_command
 
+from .docker_not_available import docker_not_available
+
 docker_container_kwargs = [{},
                            {'autoremove': False},
                            {'runtime': 'nvidia'},
@@ -26,6 +28,7 @@ docker_commands = ['run -d --rm <<IMAGE>>',
 assert len(docker_container_kwargs) == len(docker_commands)
 
 
+@pytest.mark.skipif(docker_not_available(), reason='Docker is not available.')
 @pytest.mark.parametrize('command,kwargs', zip(docker_commands, docker_container_kwargs))
 def test_commands(command, kwargs, registry_config):
     image = DockerImage('pritunl/archlinux', 'latest', registry_config)
@@ -34,6 +37,7 @@ def test_commands(command, kwargs, registry_config):
     assert command == container._build_run_command()
 
 
+@pytest.mark.skipif(docker_not_available(), reason='Docker is not available.')
 def test_docker_container(registry_config):
     image = DockerImage('pritunl/archlinux', 'latest', registry_config)
     image.pull()
