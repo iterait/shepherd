@@ -1,15 +1,13 @@
 import logging
-import subprocess
 from typing import Dict, Optional, List
 
-from cxworker.docker import DockerImage
+from .image import DockerImage
 from .errors import DockerError
+from .utils import run_docker_command, kill_blocking_container
 
 
 class DockerContainer:
-    """
-    Helper class for running and managing docker containers.
-    """
+    """Helper class for running and managing docker containers."""
 
     def __init__(self,
                  image: DockerImage,
@@ -17,7 +15,8 @@ class DockerContainer:
                  runtime: Optional[str]=None,
                  env: Optional[Dict[str, str]]=None,
                  bind_mounts: Optional[Dict[str, str]]=None,
-                 ports: Optional[Dict[str, str]]=None):
+                 ports: Optional[Dict[int, int]]=None,
+                 command: Optional[List[str]]=None):
         """
         Initialize :py:class`DockerContainer`.
 
@@ -26,6 +25,8 @@ class DockerContainer:
         :param runtime: docker runtime flag (e.g. ``nvidia``)
         :param env: additional environment variables
         :param bind_mounts: optional host->container bind mounts mapping
+        :param ports: optional host->container port mapping
+        :param command: optional docker container run command
         """
         self._image = image
         self._autoremove = autoremove
@@ -34,22 +35,20 @@ class DockerContainer:
         self._env: Dict = env or {}
         self._mounts: Dict = bind_mounts or {}
         self._ports: Dict = ports or {}
+        self._command: Optional[List[str]] = command
 
-    def add_port_mapping(self, host_port, container_port):
-        self._ports[host_port] = container_port
-
-    def start(self):
+    def _build_run_command(self) -> List[str]:
         """
-        Run the container
-        """
+        Build docker container run command.
 
+        :return: built command
+        """
         # Run given image in detached mode
         command = ['run', '-d']
 
         # Add configured port mappings
         for host_port, container_port in self._ports.items():
             command += ['-p', '0.0.0.0:{host}:{container}'.format(host=host_port, container=container_port)]
-            DockerContainer.kill_blocking_container(host_port)
 
         # Set environment variables
         if self._env:
@@ -58,11 +57,11 @@ class DockerContainer:
             for key, value in self._env.items():
                 command.append("{}={}".format(key, value))
 
-        # If desired, remove the container when it exits
+        # If specified, remove the container when it exits
         if self._autoremove:
             command.append("--rm")
 
-        # Set runtime
+        # If specified, set the runtime (e.g. `nvidia`)
         if self._runtime:
             command.append("--runtime={}".format(self._runtime))
 
@@ -77,73 +76,43 @@ class DockerContainer:
         # Positional args - the image of the container
         command.append(self._image.full_name)
 
-        self._container_id = DockerContainer.run_docker_command(command)
+        # If specified, append the run command
+        if self._command is not None:
+            command += self._command
 
-    def kill(self):
+        return command
+
+    def start(self) -> None:
+        """Run the container."""
+        command = self._build_run_command()
+        for host_port in self._ports.keys():
+            kill_blocking_container(host_port)
+        logging.info('Starting docker container with `%s`', ' '.join(command))
+        self._container_id = run_docker_command(command).strip()
+        logging.info('Started docker container `%s`', self._container_id)
+
+    def kill(self) -> None:
         """
-        Kill the container.
+        Kill the underlying docker container.
+
+        :raise DockerError: if the container was not started yet (i.e., its ``container_id`` is not known)
         """
         if self._container_id is None:
             raise DockerError('The container was not started yet')
-        DockerContainer.run_docker_command(['kill', self._container_id])
+        logging.info('Killing container `%s`', self._container_id)
+        run_docker_command(['kill', self._container_id])
         self._container_id = None
 
     @property
-    def running(self):
+    def running(self) -> bool:
         """
-        :return: True when the container is running, False otherwise
+        Check if the underlying docker container is still up and running.
+        Returns ``False`` if the container was not even started.
+
+        :return: docker container running flag
         """
         if self._container_id is None:
-            raise DockerError('The container was not started yet')
-        output = DockerContainer.run_docker_command(['ps', '--filter', 'id={}'.format(self._container_id)])
+            return False
+        output = run_docker_command(['ps', '--filter', 'id={}'.format(self._container_id)])
         # If the command output contains more than one line, the container was found (the first line is a header)
         return len(output.split('\n')) > 1
-
-    @staticmethod
-    def kill_blocking_container(host_port: int) -> None:
-        """
-        List all the running docker container mapping and attempt kill any container holding the given port.
-
-        :param host_port: host port to be freed
-        """
-        host_port = str(host_port)
-        process = subprocess.Popen(["docker", "ps", "--format", "{{.Ports}}\t{{.Names}}"],
-                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        process.wait()
-        ps_info = process.stdout.read().decode()
-        for ps_line in ps_info.split('\n'):
-            if len(ps_line.strip()) == 0:
-                continue
-            port_mappings, name = ps_line.split('\t')
-            for port_mapping in port_mappings.split(','):
-                host_port_held = port_mapping.split(':')[1].split('->')[0]
-                if host_port_held == host_port:
-                    logging.info('Killing docker container `%s` as it holds port %s', name, host_port)
-                    killing_process = subprocess.Popen(['docker', 'kill', name])
-                    killing_process.wait()
-                    return
-
-    @staticmethod
-    def run_docker_command(command: List[str]) -> str:
-        """
-        Run and wait the given docker command. Return its stdout.
-
-        :param command: docker command to be run as a lex list
-        :raise DockerError: on failure
-        :return: command stdout
-        """
-        command = ['docker'] + command
-        plain_command = ' '.join(command)
-        logging.debug('Running command `%s`', plain_command)
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return_code = process.wait()
-        stderr = process.stderr.read().decode()
-
-        if len(stderr):
-            logging.warning("Non-empty stderr when running command `%s`: %s", plain_command, stderr)
-        if return_code != 0:
-            raise DockerError('Running command `{}` failed.'.format(plain_command), return_code, stderr)
-
-        stdout = process.stdout.read().decode().strip()
-        logging.debug("Running command `%s` yielded output: %s", plain_command, stdout)
-        return stdout

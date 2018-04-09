@@ -1,8 +1,6 @@
-import sys
 import json
 import pytest
 import os.path as path
-from pytest_mock import mock
 
 import gevent
 import subprocess
