@@ -28,9 +28,9 @@ def bare_sheep(sheep_socket, tmpdir):
 
 
 @pytest.fixture()
-def docker_sheep(sheep_socket, tmpdir):
+def docker_sheep(sheep_socket):
     registry_config = RegistryConfig(dict(url=''))
     sheep = DockerSheep({'port': 9001, 'type': 'docker'}, registry_config,
-                        socket=sheep_socket, sheep_data_root=str(tmpdir), command=['sleep', '2'])
+                        socket=sheep_socket, sheep_data_root='/tmp', command=['sleep', '2'])
     yield sheep
     sheep.slaughter()
