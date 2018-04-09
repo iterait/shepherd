@@ -22,3 +22,16 @@ def test_docker_sheep_start_stop(docker_sheep: DockerSheep):
     assert not docker_sheep.running
     docker_sheep.start('base/archlinux', '')
     docker_sheep.start('base/archlinux', '')
+
+
+def test_configuration_error(docker_sheep: DockerSheep, bare_sheep: BareSheep):
+
+    with pytest.raises(SheepConfigurationError):  # path does not exist
+        bare_sheep.start('cxflow-test', 'i-do-not-exist')
+
+    with pytest.raises(SheepConfigurationError):  # image pull should fail
+        docker_sheep.start('missing/image-sosjshd', 'latest')
+
+    docker_sheep.sheep_data_root = 'i-do-not/exist'
+    with pytest.raises(SheepConfigurationError):  # container start should fail
+        docker_sheep.start('pritunl/archlinux', 'latest')

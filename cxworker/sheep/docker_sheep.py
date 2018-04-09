@@ -4,7 +4,8 @@ from typing import Dict, Any, Optional, List
 from schematics.types import BooleanType
 
 from .base_sheep import BaseSheep
-from ..docker import DockerContainer, DockerImage
+from .errors import SheepConfigurationError
+from ..docker import DockerContainer, DockerImage, DockerError
 from ..shepherd.config import RegistryConfig
 
 
@@ -64,7 +65,11 @@ class DockerSheep(BaseSheep):
         """
         super()._load_model(model_name, model_version)
         self._image = DockerImage(model_name, model_version, self._registry_config)
-        self._image.pull()
+        try:
+            self._image.pull()
+        except DockerError as de:
+            raise SheepConfigurationError('Specified model name `{}` (version `{}`) cannot be loaded.'
+                                          .format(model_name, model_version)) from de
 
     def start(self, model_name: str, model_version: str) -> None:
         """
@@ -84,13 +89,19 @@ class DockerSheep(BaseSheep):
         self._container = DockerContainer(self._image, self._config.autoremove_containers, env=env, runtime=runtime,
                                           bind_mounts={self.sheep_data_root: self.sheep_data_root},
                                           ports={self._config.port: self._CONTAINER_POINT}, command=self._command)
-        self._container.start()
+        try:
+            self._container.start()
+        except DockerError as de:
+            self._container = None
+            raise SheepConfigurationError('Specified model name `{}` (version `{}`) cannot be started.'
+                                          .format(model_name, model_version)) from de
 
     def slaughter(self) -> None:
         """Kill the underlying docker container."""
         super().slaughter()
         if self._container is not None:
             self._container.kill()
+            self._container = None
 
     @property
     def running(self) -> bool:
