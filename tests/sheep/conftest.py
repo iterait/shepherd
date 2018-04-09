@@ -12,7 +12,7 @@ def sheep_socket():
     yield sock
     try:
         sock.disconnect('tcp://0.0.0.0:9001')
-    except ZMQError:  # the socked may have been disconnected
+    except ZMQError:  # the socket may have been disconnected
         pass
     sock.close()
 

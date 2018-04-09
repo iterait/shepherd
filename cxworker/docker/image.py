@@ -28,7 +28,7 @@ class DockerImage:
         tag = self._tag.strip()
         if len(tag) > 0:
             tag = ':' + tag
-        return registry+self._name+tag
+        return registry + self._name + tag
 
     def pull(self) -> None:
         """Pull the underlying docker image."""
