@@ -77,6 +77,7 @@ class BareSheep(BaseSheep):
         super().slaughter()
         if self._runner is not None:
             self._runner.kill()
+            self._runner = None
 
     @property
     def running(self) -> bool:
