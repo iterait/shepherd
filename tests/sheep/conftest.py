@@ -20,8 +20,8 @@ def sheep_socket():
 @pytest.fixture()
 def bare_sheep(sheep_socket, tmpdir):
     sheep = BareSheep({'port': 9001, 'type': 'bare', 'working_directory': 'examples/docker/cxflow_example',
-                       'stdout_file': '/tmp/bare-cxworker-runner-stdout.txt',
-                       'stderr_file': '/tmp/bare-cxworker-runner-stderr.txt'},
+                       'stdout_file': '/tmp/i-dont-exists/bare-cxworker-runner-stdout.txt',
+                       'stderr_file': '/tmp/i-dont-exists/bare-cxworker-runner-stderr.txt'},
                       socket=sheep_socket, sheep_data_root=str(tmpdir))
     yield sheep
     sheep.slaughter()
