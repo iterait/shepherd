@@ -64,8 +64,14 @@ class BareSheep(BaseSheep):
         # prepare env. variables for GPU computation and stdout/stderr files
         env = os.environ.copy()
         env["CUDA_VISIBLE_DEVICES"] = ",".join(filter(None, map(extract_gpu_number, self._config.devices)))
-        stdout = open(self._config.stdout_file, 'a') if self._config.stdout_file is not None else subprocess.DEVNULL
-        stderr = open(self._config.stderr_file, 'a') if self._config.stderr_file is not None else subprocess.DEVNULL
+        stdout = subprocess.DEVNULL
+        if self._config.stdout_file is not None:
+            os.makedirs(os.path.dirname(self._config.stdout_file), exist_ok=True)
+            stdout = open(self._config.stdout_file, 'a')
+        stderr = subprocess.DEVNULL
+        if self._config.stderr_file is not None:
+            os.makedirs(os.path.dirname(self._config.stderr_file), exist_ok=True)
+            stderr = open(self._config.stderr_file, 'a')
 
         # start the runner in a new sub-process
         self._runner = subprocess.Popen(
