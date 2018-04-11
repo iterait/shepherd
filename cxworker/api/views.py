@@ -1,3 +1,5 @@
+from io import StringIO, BytesIO
+
 from flask import Blueprint, request, jsonify, Response
 from minio import Minio
 from minio.error import MinioError
@@ -37,7 +39,7 @@ def load_request(schema_class: Type[T]) -> T:
 def check_job_exists(minio, job_id):
     try:
         if not minio.bucket_exists(job_id):
-            raise StorageError('Minio bucket `{}` does not exist'.format(job_id))
+            raise ClientActionError('Minio bucket `{}` does not exist'.format(job_id))
     except MinioError as me:
         raise StorageError('Failed to check minio bucket `{}`'.format(job_id)) from me
 
@@ -54,10 +56,19 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
     def start_job():
         """Start a new job."""
         start_job_request = load_request(StartJobRequest)
-        check_job_exists(minio, start_job_request.job_id)
+
+        if not start_job_request.payload:
+            check_job_exists(minio, start_job_request.job_id)
+        else:
+            minio.make_bucket(start_job_request.job_id)
+            payload_data = start_job_request.payload.encode()
+            payload = BytesIO(payload_data)
+            minio.put_object(start_job_request.job_id, start_job_request.payload_name,
+                             payload, len(start_job_request.payload))
+
         try:
             shepherd.is_job_done(start_job_request.job_id)
-            # job is either done or being computed, no need to do anything
+            # if the call didn't throw, the job is either done or being computed, no need to enqueue it
             return serialize_response(StartJobResponse())
         except UnknownJobError:
             pass
