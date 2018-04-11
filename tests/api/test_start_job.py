@@ -10,7 +10,7 @@ from cxworker.api.errors import UnknownJobError
 from cxworker.shepherd import Shepherd
 
 
-def test_start_job_with_payload(minio: Minio, client: Client, mock_shepherd: Union[Mock, Shepherd]):
+def test_start_job_with_payload(minio_scoped: Minio, client: Client, mock_shepherd: Union[Mock, Shepherd]):
     mock_shepherd.is_job_done.side_effect = UnknownJobError()
 
     response = client.post("/start-job", content_type="application/json", data=json.dumps({
@@ -25,9 +25,9 @@ def test_start_job_with_payload(minio: Minio, client: Client, mock_shepherd: Uni
     }))
 
     assert response.status_code == 200
-    assert minio.bucket_exists("uuid-1")
+    assert minio_scoped.bucket_exists("uuid-1")
 
-    payload = minio.get_object("uuid-1", "payload.json")
+    payload = minio_scoped.get_object("uuid-1", "payload.json")
     assert payload.data == b"Payload content"
 
     mock_shepherd.enqueue_job.assert_called()
@@ -46,12 +46,12 @@ def test_start_job_no_payload(client):
     assert response.status_code == 400
 
 
-def test_start_job_with_payload_in_minio(minio: Minio, client: Client, mock_shepherd: Union[Mock, Shepherd]):
+def test_start_job_with_payload_in_minio(minio_scoped: Minio, client: Client, mock_shepherd: Union[Mock, Shepherd]):
     mock_shepherd.is_job_done.side_effect = UnknownJobError()
 
     payload = b"Payload content"
-    minio.make_bucket("uuid-3")
-    minio.put_object("uuid-3", "payload.json", BytesIO(payload), len(payload))
+    minio_scoped.make_bucket("uuid-3")
+    minio_scoped.put_object("uuid-3", "payload.json", BytesIO(payload), len(payload))
 
     response = client.post("/start-job", content_type="application/json", data=json.dumps({
         "job_id": "uuid-3",
