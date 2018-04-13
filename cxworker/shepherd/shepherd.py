@@ -25,8 +25,11 @@ class Shepherd:
     Manages creation and access to a configured set of sheep
     """
 
-    def __init__(self, registry_config: Optional[RegistryConfig],
-                 sheep_config: Mapping[str, Dict[str, Any]], data_root: str, minio: Minio):
+    def __init__(self,
+                 sheep_config: Mapping[str, Dict[str, Any]],
+                 data_root: str,
+                 minio: Minio,
+                 registry_config: Optional[RegistryConfig]=None):
         """
         Create mighty Shepherd.
 
@@ -38,7 +41,6 @@ class Shepherd:
         self.minio = minio
         self.poller = zmq.Poller()
         self.sheep: Dict[str, BaseSheep] = {}
-        self.notifier = JobDoneNotifier()
 
         for sheep_id, config in sheep_config.items():
             socket = zmq.Context.instance().socket(zmq.DEALER)
@@ -60,6 +62,8 @@ class Shepherd:
             self.poller.register(socket, zmq.POLLIN)
             gevent.spawn(partial(self.dequeue_and_feed_jobs, sheep_id))
             gevent.spawn(partial(self.health_check, sheep_id))
+
+        self.notifier = JobDoneNotifier()
 
     def __getitem__(self, sheep_id: str) -> BaseSheep:
         """
