@@ -44,11 +44,6 @@ class BaseRunner:
             logging.debug('Loading config from `%s', self._config_path)
             # load config
             self._config = load_config(config_file=find_config(self._config_path))
-            if self._stream_name == cx.constants.CXF_PREDICT_STREAM and self._stream_name in self._config:
-                logging.warning('Old style ``predict`` configuration section is deprecated and will not be supported, '
-                                'use ``eval.predict`` section instead.')
-                self._config['eval'] = {'predict': self._config['predict']}
-
             if 'eval' in self._config and self._stream_name in self._config['eval']:
                 logging.debug('Applying eval config updates for stream `%s`', self._stream_name)
                 update_section = self._config['eval'][self._stream_name]
