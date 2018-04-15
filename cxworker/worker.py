@@ -53,7 +53,7 @@ class Worker:
                             self._config.storage.secret_key, self._config.storage.secure)
 
         logging.debug('Creating shepherd')
-        self._shepherd = Shepherd(self._config.registry, self._config.sheep, self._config.data_root, self._minio)
+        self._shepherd = Shepherd(self._config.sheep, self._config.data_root, self._minio, self._config.registry)
 
     def run(self, host: str, port: int) -> None:
         """
@@ -71,19 +71,18 @@ class Worker:
         api_server = WSGIServer((host, port), self._app, log=logging.getLogger(''))
 
         api_handler = gevent.spawn(api_server.start)
-        sheep_listener = gevent.spawn(self._shepherd.listen)
 
         # everything should be ready, lets check if minio works
         try:
             self._minio.list_buckets()
             logging.info('Minio storage appears to be up and running')
         except MaxRetryError:
-            logging.error('Cannot connect to minio at (%s)',self._config.storage.url)
+            logging.error('Cannot connect to minio at (%s)', self._config.storage.url)
             sys.exit(1)
 
         try:
             logging.info('Worker API is available at http://%s:%s', host, port)
-            gevent.joinall([api_handler, sheep_listener])
+            api_handler.join()
         except KeyboardInterrupt:
             logging.info("Interrupt caught, slaughtering all the sheep")
-            self._shepherd.slaughter_all()
+            self._shepherd.close()

@@ -64,6 +64,7 @@ class Shepherd:
             gevent.spawn(partial(self.health_check, sheep_id))
 
         self.notifier = JobDoneNotifier()
+        self._listener = gevent.spawn(self.listen)
 
     def __getitem__(self, sheep_id: str) -> BaseSheep:
         """
@@ -136,7 +137,8 @@ class Shepherd:
                     sheep.in_progress = set()
                     self.notifier.notify()
             except SheepError as se:
-                logging.warning('Failed to check sheep\'s health due to the following exception: %s', str(se))
+                logging.warning('Failed to check sheep\'s health '  # pragma: no cover
+                                'due to the following exception: %s', str(se))
 
     def dequeue_and_feed_jobs(self, sheep_id: str) -> None:
         """
@@ -246,3 +248,8 @@ class Shepherd:
                     return False
             else:
                 raise UnknownJobError('Job `{}` is not know to this worker'.format(job_id))
+
+    def close(self):
+        self.slaughter_all()
+        self.notifier.close()
+        self._listener.kill()
