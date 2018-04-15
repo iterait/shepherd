@@ -1,4 +1,3 @@
-from pip.req import parse_requirements
 from setuptools import setup, find_packages
 
 setup(name='cxworker',
@@ -28,10 +27,10 @@ setup(name='cxworker',
       zip_safe=False,
       setup_requires=['pytest-runner'],
       tests_require=['pytest'],
-      install_requires=[str(ir.req) for ir in parse_requirements('requirements.txt', session='hack')],
+      install_requires=[line for line in open('requirements.txt', 'r').readlines() if not line.startswith('#')],
       entry_points={
           'console_scripts': [
-              'cxworker=cxworker.manage:cli',
+              'cxworker=cxworker.manage:run',
               'cxworker-runner=cxworker.runner.runner_entry_point:run'
           ]
       }

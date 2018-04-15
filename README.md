@@ -31,7 +31,7 @@ your needs.
 Finally, you need to run the following command to start the worker:
 
 ```
-cxworker run -c examples/configs/cxworker-docker-cpu.yml
+cxworker -c examples/configs/cxworker-docker-cpu.yml
 ```
 
 Be sure to adjust the command line parameters according to your needs (`-h` is 
