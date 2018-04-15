@@ -2,19 +2,18 @@ version: 2
 
 references:
 
-  ubuntu_deps: &ubuntu_install
+  ubuntu_install: &ubuntu_install
     run:
       name: Install dependencies on Ubuntu.
       command: |
         apt-get update -qy
         apt-get install -y git python3-dev python3-pip curl
-        pip3 install -r requirements.txt
-        pip install -e .
+        pip3 install -e .
         echo "$(tail -n +2 cxworker/manage.py)" > cxworker/manage.py  # remove gevent monkey patch (it breaks sphinx)
 
   install: &install
     run:
-      name: Install dependencies and cxworker
+      name: Install dependencies and cxworker on Archlinux
       command: |
         set -x
         VER="17.11.0-ce"
@@ -24,7 +23,6 @@ references:
         pacman --noconfirm --needed -Syu minio
         mkdir examples/docker/cxflow_example/ssh
         echo $PRIVATE_SSH_KEY_PRIVATE | tr ' ' '\n' | base64 -d > examples/docker/cxflow_example/ssh/id_rsa
-        pip install -r requirements.txt
         pip install -e .
 
   add_rw_key: &add_rw_key
