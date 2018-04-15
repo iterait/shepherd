@@ -5,3 +5,7 @@ dataset:
 model:
   name: Dummy
   class: examples.docker.cxflow_example.dummy.DummyModel
+
+eval:
+  predict:
+    hooks: [LogProfile]
