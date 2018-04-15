@@ -1,6 +1,8 @@
+import logging
 from typing import Callable
 
 import zmq.green as zmq
+from zmq.error import ZMQError
 import gevent
 
 
@@ -20,7 +22,10 @@ class JobDoneNotifier:
 
     def notify(self) -> None:
         """Notify all the waiting greenlets that yet another job is finished."""
-        self._socket.send(b'')
+        try:
+            self._socket.send(b'')
+        except ZMQError:
+            logging.warning('Failed to notify about a finished job (perhaps the notifier was closed).')
 
     def wait_for(self, test: Callable[[], bool]) -> None:
         """Wait until the test callback can be evaluated to true."""
