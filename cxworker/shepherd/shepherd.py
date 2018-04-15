@@ -38,6 +38,10 @@ class Shepherd:
         :param data_root: directory where the task/sheep directories will be managed
         :param minio: Minio handle
         """
+        for config in sheep_config.values():
+            if config["type"] == "docker" and registry_config is None:
+                raise SheepConfigurationError("To use docker sheep, you need to configure a registry URL")
+
         self.minio = minio
         self.poller = zmq.Poller()
         self.sheep: Dict[str, BaseSheep] = {}
@@ -47,10 +51,7 @@ class Shepherd:
             sheep_type = config["type"]
             sheep_data_root = create_clean_dir(path.join(data_root, sheep_id))
             common_kwargs = {'socket': socket, 'sheep_data_root': sheep_data_root}
-
             if sheep_type == "docker":
-                if registry_config is None:
-                    raise SheepConfigurationError("To use docker sheep, you need to configure a registry URL")
                 sheep = DockerSheep(config=config, registry_config=registry_config, **common_kwargs)
             elif sheep_type == "bare":
                 sheep = BareSheep(config=config, **common_kwargs)
