@@ -64,7 +64,7 @@ def test_start_job_no_payload(client):
         }
     }))
 
-    assert response.status_code == 400
+    assert response.status_code == 400  # Neither the request nor minio contains a payload -> error
 
 
 def test_start_job_with_payload_in_minio(minio_scoped: Minio, client: Client, mock_shepherd: Union[Mock, Shepherd]):
