@@ -15,8 +15,12 @@ def valid_config_file():
 
 
 @pytest.fixture()
-def invalid_config_file():
-    yield path.join('examples', 'docker', 'docker-compose-sandbox.yml')
+def invalid_config_file(tmpdir):
+    """Invalid worker configuration with missing mandatory sections."""
+    invalid_config_filepath = path.join(str(tmpdir), 'config.yml')
+    with open(invalid_config_filepath, 'w') as file:
+        file.write('logging:\n  level: debug')
+    yield invalid_config_filepath
 
 
 @pytest.fixture()
@@ -27,6 +31,7 @@ def valid_config(valid_config_file):
 
 @pytest.fixture()
 def shepherd(valid_config, minio):
+    """Shepherd with a single bare sheep which runs a cxflow runner that doubles its inputs."""
     shepherd = Shepherd(valid_config.sheep, valid_config.data_root, minio, valid_config.registry)
     yield shepherd
     shepherd.close()

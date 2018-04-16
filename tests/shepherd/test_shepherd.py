@@ -12,25 +12,30 @@ from cxworker.utils.storage import minio_object_exists
 
 
 def test_shepherd_init(valid_config: WorkerConfig, minio):
-    shepherd = Shepherd(valid_config.sheep, valid_config.data_root, minio, valid_config.registry)
 
+    # test valid shepherd creation
+    shepherd = Shepherd(valid_config.sheep, valid_config.data_root, minio, valid_config.registry)
     assert isinstance(shepherd['bare_sheep'], BareSheep)
 
+    # test sheep getter
     with pytest.raises(UnknownSheepError):
         _ = shepherd['UnknownSheep']
     shepherd.close()
 
+    # test multiple sheep and created sheep type
     valid_config.sheep['docker_sheep'] = {'port': 9002, 'type': 'docker'}
     shepherd = Shepherd(valid_config.sheep, valid_config.data_root, minio, valid_config.registry)
     assert isinstance(shepherd['docker_sheep'], DockerSheep)
     shepherd.close()
 
+    # test missing docker registry raises an Exception when creating docker sheep
     with pytest.raises(SheepConfigurationError):
-        Shepherd(valid_config.sheep, valid_config.data_root, minio)  # missing docker registry
+        Shepherd(valid_config.sheep, valid_config.data_root, minio)
 
+    # test unknown sheep type raises an Exception
     valid_config.sheep['my_sheep'] = {'type': 'unknown'}
     with pytest.raises(SheepConfigurationError):
-        Shepherd(valid_config.sheep, valid_config.data_root, minio, valid_config.registry)  # unknown sheep type
+        Shepherd(valid_config.sheep, valid_config.data_root, minio, valid_config.registry)
 
 
 def test_shepherd_status(shepherd):
@@ -39,7 +44,7 @@ def test_shepherd_status(shepherd):
     assert sheep_name == 'bare_sheep'
 
 
-def test_job(shepherd, job, minio):
+def test_job(shepherd: Shepherd, job, minio):
     job_id, job_meta = job
 
     with pytest.raises(UnknownJobError):
@@ -47,7 +52,7 @@ def test_job(shepherd, job, minio):
 
     shepherd.enqueue_job(job_id, job_meta)
     assert not shepherd.is_job_done(job_id)
-    gevent.sleep(3)
+    shepherd.notifier.wait_for(lambda: shepherd.is_job_done(job_id))
     assert shepherd['bare_sheep'].running
     assert shepherd.is_job_done(job_id)
     assert minio_object_exists(minio, job_id, 'outputs/output.json')
@@ -60,7 +65,7 @@ def test_job(shepherd, job, minio):
 def test_failed_job(shepherd, bad_job, minio):
     job_id, job_meta = bad_job
     shepherd.enqueue_job(job_id, job_meta)  # runner should fail to process the job (and send an ErrorMessage)
-    gevent.sleep(3)
+    shepherd.notifier.wait_for(lambda: shepherd.is_job_done(job_id))
     assert shepherd['bare_sheep'].running
     assert shepherd.is_job_done(job_id)
     assert minio_object_exists(minio, job_id, 'error')

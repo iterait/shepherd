@@ -22,10 +22,7 @@ class JobDoneNotifier:
 
     def notify(self) -> None:
         """Notify all the waiting greenlets that yet another job is finished."""
-        try:
-            self._socket.send(b'')
-        except ZMQError:
-            logging.warning('Failed to notify about a finished job (perhaps the notifier was closed).')
+        self._socket.send(b'')
 
     def wait_for(self, test: Callable[[], bool]) -> None:
         """Wait until the test callback can be evaluated to true."""

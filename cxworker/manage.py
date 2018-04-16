@@ -29,9 +29,11 @@ def run(host, port, config_file) -> None:
     :param port: API port
     :param config_file: worker config file
     """
-    # load worker configuration and set-up logging
+    # load worker configuration
     with open(config_file, "r") as config_stream:
         config = load_worker_config(config_stream)
+
+    # set-up logging
     logging.basicConfig(level=config.logging.log_level,
                         format=cx.constants.CXF_LOG_FORMAT,
                         datefmt=cx.constants.CXF_LOG_DATE_FORMAT)
@@ -42,14 +44,12 @@ def run(host, port, config_file) -> None:
     logging.debug('Creating minio handle')
     minio = Minio(config.storage.schemeless_url, config.storage.access_key, config.storage.secret_key,
                   config.storage.secure)
-
     logging.debug('Creating shepherd')
     shepherd = Shepherd(config.sheep, config.data_root, minio, config.registry)
+
     app = create_app(__name__)
     app.register_blueprint(create_worker_blueprint(shepherd, minio))
-
     api_server = WSGIServer((host, port), app, log=logging.getLogger(''))
-
     api_handler = gevent.spawn(api_server.serve_forever)
 
     # everything should be ready, lets check if minio works
