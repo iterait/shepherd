@@ -49,30 +49,35 @@ def test_json_runner_exception(job, feeding_socket):
     assert error.short_error == 'AttributeError: \'DummyDataset\' object has no attribute \'does_not_exist_stream\''
 
 
-def test_cli_runner(job, feeding_socket, runner_setup):
+def start_cli(command, mocker):
+    return subprocess.Popen(command)
+
+
+def start_greenlet(command, mocker):
+    mocker.patch('sys.argv', command)
+    return gevent.spawn(run)
+
+
+@pytest.mark.parametrize('start', (start_cli, start_greenlet))
+def test_runner(job, feeding_socket, runner_setup, mocker, start):  # for coverage reporting
     socket, port = feeding_socket
     job_id, job_dir = job
     version, stream, expected = runner_setup
-    config_path = path.join('examples', 'docker', 'cxflow_example', 'cxflow-test', version)
+    base_config_path = path.join('examples', 'docker', 'cxflow_example', 'cxflow-test', version)
 
-    proc = subprocess.Popen(['cxworker-runner', '-p', str(port), '-s', stream, config_path])
-    Messenger.send(socket, InputMessage(dict(job_id=job_id, io_data_root=job_dir)))
-    Messenger.recv(socket, [DoneMessage])
-    proc.kill()
-    output = json.load(open(path.join(job_dir, job_id, 'outputs', 'output.json')))
+    # test both config by dir and config by file
+    for config_path in [base_config_path, path.join(base_config_path, 'config.yaml')]:
+        command = ['cxworker-runner', '-p', str(port), '-s', stream, config_path]
+        handle = start(command, mocker)
+        Messenger.send(socket, InputMessage(dict(job_id=job_id, io_data_root=job_dir)))
+        Messenger.recv(socket, [DoneMessage])
+        handle.kill()
+        output = json.load(open(path.join(job_dir, job_id, 'outputs', 'output.json')))
+        assert output['output'] == [expected]
 
-    assert output == {'key': [42], 'output': [expected]}
 
-
-def test_cli_runner_from_python(job, feeding_socket, runner_setup, mocker):  # for coverage reporting
-    socket, port = feeding_socket
-    job_id, job_dir = job
-    version, stream, expected = runner_setup
-    config_path = path.join('examples', 'docker', 'cxflow_example', 'cxflow-test', version)
-    mocker.patch('sys.argv', ['cxworker-runner', '-p', str(port), '-s', stream, config_path])
-    greenlet = gevent.spawn(run)
-    Messenger.send(socket, InputMessage(dict(job_id=job_id, io_data_root=job_dir)))
-    Messenger.recv(socket, [DoneMessage])
-    greenlet.kill()
-    output = json.load(open(path.join(job_dir, job_id, 'outputs', 'output.json')))
-    assert output == {'key': [42], 'output': [expected]}
+def test_runner_configuration(mocker):
+    config_path = path.join('examples', 'docker', 'cxflow_example', 'cxflow-test', 'test')
+    mocker.patch('sys.argv', ['cxworker-runner', '-p', '8888', config_path])
+    with pytest.raises(ModuleNotFoundError):
+        run()  # runner is configured to a non-existent module; thus, we expect a failure

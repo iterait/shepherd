@@ -12,4 +12,3 @@ eval:
       factor: 10
     dataset:
       post_process_factor: 2
-    hooks: []
