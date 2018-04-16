@@ -25,8 +25,11 @@ class Shepherd:
     Manages creation and access to a configured set of sheep
     """
 
-    def __init__(self, registry_config: Optional[RegistryConfig],
-                 sheep_config: Mapping[str, Dict[str, Any]], data_root: str, minio: Minio):
+    def __init__(self,
+                 sheep_config: Mapping[str, Dict[str, Any]],
+                 data_root: str,
+                 minio: Minio,
+                 registry_config: Optional[RegistryConfig]=None):
         """
         Create mighty Shepherd.
 
@@ -35,20 +38,20 @@ class Shepherd:
         :param data_root: directory where the task/sheep directories will be managed
         :param minio: Minio handle
         """
+        for config in sheep_config.values():
+            if config["type"] == "docker" and registry_config is None:
+                raise SheepConfigurationError("To use docker sheep, you need to configure a registry URL")
+
         self.minio = minio
         self.poller = zmq.Poller()
         self.sheep: Dict[str, BaseSheep] = {}
-        self.notifier = JobDoneNotifier()
 
         for sheep_id, config in sheep_config.items():
             socket = zmq.Context.instance().socket(zmq.DEALER)
             sheep_type = config["type"]
             sheep_data_root = create_clean_dir(path.join(data_root, sheep_id))
             common_kwargs = {'socket': socket, 'sheep_data_root': sheep_data_root}
-
             if sheep_type == "docker":
-                if registry_config is None:
-                    raise SheepConfigurationError("To use docker sheep, you need to configure a registry URL")
                 sheep = DockerSheep(config=config, registry_config=registry_config, **common_kwargs)
             elif sheep_type == "bare":
                 sheep = BareSheep(config=config, **common_kwargs)
@@ -60,6 +63,9 @@ class Shepherd:
             self.poller.register(socket, zmq.POLLIN)
             gevent.spawn(partial(self.dequeue_and_feed_jobs, sheep_id))
             gevent.spawn(partial(self.health_check, sheep_id))
+
+        self.notifier: JobDoneNotifier = JobDoneNotifier()
+        self._listener = gevent.spawn(self.listen)
 
     def __getitem__(self, sheep_id: str) -> BaseSheep:
         """
@@ -132,7 +138,8 @@ class Shepherd:
                     sheep.in_progress = set()
                     self.notifier.notify()
             except SheepError as se:
-                logging.warning('Failed to check sheep\'s health due to the following exception: %s', str(se))
+                logging.warning('Failed to check sheep\'s health '  # pragma: no cover
+                                'due to the following exception: %s', str(se))
 
     def dequeue_and_feed_jobs(self, sheep_id: str) -> None:
         """
@@ -242,3 +249,8 @@ class Shepherd:
                     return False
             else:
                 raise UnknownJobError('Job `{}` is not know to this worker'.format(job_id))
+
+    def close(self):
+        self.slaughter_all()
+        self.notifier.close()
+        self._listener.kill()

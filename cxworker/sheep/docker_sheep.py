@@ -19,7 +19,6 @@ def extract_gpu_number(device_name: str) -> Optional[str]:
     >>> extract_gpu_number("/dev/nvidiactl") is None
     True
     """
-
     match = re.match(r'/dev/nvidia([0-9]+)$', device_name)
     if match is not None:
         return match.group(1)

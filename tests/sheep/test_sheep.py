@@ -1,8 +1,18 @@
 import pytest
+import logging
 
 from cxworker.sheep import BareSheep, DockerSheep, SheepConfigurationError
+from cxworker.sheep.docker_sheep import extract_gpu_number
+from cxworker.sheep.welcome import welcome
 
 from ..docker.docker_not_available import docker_not_available
+
+
+def test_extract_gpu_number():
+    assert extract_gpu_number('/dev/null') is None
+    assert extract_gpu_number('/dev/nvidiactl') is None
+    assert extract_gpu_number('/dev/nvidia1') == '1'
+    assert extract_gpu_number('/dev/nvidia3') == '3'
 
 
 def test_bare_sheep_start_stop(bare_sheep: BareSheep):
@@ -38,3 +48,9 @@ def test_docker_configuration_error(docker_sheep: DockerSheep):
     docker_sheep.sheep_data_root = 'i-do-not/exist'
     with pytest.raises(SheepConfigurationError):  # container start should fail
         docker_sheep.start('pritunl/archlinux', 'latest')
+
+
+def test_welcome(caplog):
+    caplog.set_level(logging.INFO)
+    welcome()
+    assert len(caplog.text) > 0
