@@ -28,7 +28,7 @@ def test_start_job_with_payload(minio_scoped: Minio, client: Client, mock_shephe
     assert response.status_code == 200
     assert minio_scoped.bucket_exists("uuid-1")
 
-    payload = minio_scoped.get_object("uuid-1", "payload.json")
+    payload = minio_scoped.get_object("uuid-1", "inputs/payload.json")
     assert payload.data == b"Payload content"
 
     mock_shepherd.enqueue_job.assert_called()

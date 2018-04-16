@@ -68,7 +68,7 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
 
             payload_data = start_job_request.payload.encode()
             payload = BytesIO(payload_data)
-            minio.put_object(start_job_request.job_id, start_job_request.payload_name,
+            minio.put_object(start_job_request.job_id, "inputs/" + start_job_request.payload_name,
                              payload, len(start_job_request.payload))
 
         try:
