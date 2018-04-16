@@ -1,6 +1,7 @@
-from io import StringIO, BytesIO
+from io import BytesIO
 
-from flask import Blueprint, request, jsonify, Response
+import mimetypes
+from flask import Blueprint, request, jsonify, Response, send_file
 from minio import Minio
 from minio.error import MinioError
 from schematics import Model
@@ -8,8 +9,9 @@ from schematics.exceptions import DataError, FieldError
 from typing import TypeVar, Type
 
 from cxworker.shepherd.shepherd import Shepherd
+from cxworker.utils import minio_object_exists
 from .requests import StartJobRequest
-from .responses import StartJobResponse, StatusResponse, JobStatusResponse
+from .responses import StartJobResponse, StatusResponse, JobStatusResponse, ErrorResponse
 from .errors import ClientActionError, StorageError, UnknownJobError
 
 
@@ -96,6 +98,29 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
         check_job_exists(minio, job_id)
         shepherd.notifier.wait_for(lambda: shepherd.is_job_done(job_id))
         return serialize_response(JobStatusResponse({'ready': shepherd.is_job_done(job_id)}))
+
+    @worker.route("/jobs/<job_id>/result/<result_file>", methods=["GET"])
+    def get_job_result(job_id, result_file):
+        """
+        Get the result of the specified job.
+
+        :param job_id: An identifier of the job
+        :param result_file: Name of the requested file
+        """
+        check_job_exists(minio, job_id)
+
+        if minio_object_exists(minio, job_id, "error"):
+            message = minio.get_object(job_id, "error")
+            return serialize_response(ErrorResponse(dict(message=message.read()))), 500
+
+        if not minio_object_exists(minio, job_id, "done"):
+            return serialize_response(JobStatusResponse(dict(ready=False))), 202
+
+        if not minio_object_exists(minio, job_id, result_file):
+            return serialize_response(ErrorResponse(dict(message="Requested file does not exist"))), 404
+
+        mime = mimetypes.guess_type(result_file)[0] or "application/octet-stream"
+        return send_file(minio.get_object(job_id, result_file), mimetype=mime)
 
     @worker.route('/status', methods=['GET'])
     def get_status():
