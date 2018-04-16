@@ -64,7 +64,7 @@ class Shepherd:
             gevent.spawn(partial(self.dequeue_and_feed_jobs, sheep_id))
             gevent.spawn(partial(self.health_check, sheep_id))
 
-        self.notifier = JobDoneNotifier()
+        self.notifier: JobDoneNotifier = JobDoneNotifier()
         self._listener = gevent.spawn(self.listen)
 
     def __getitem__(self, sheep_id: str) -> BaseSheep:
