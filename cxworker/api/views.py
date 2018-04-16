@@ -3,7 +3,7 @@ from io import BytesIO
 import mimetypes
 from flask import Blueprint, request, jsonify, Response, send_file
 from minio import Minio
-from minio.error import MinioError
+from minio.error import MinioError, BucketAlreadyExists, BucketAlreadyOwnedByYou
 from schematics import Model
 from schematics.exceptions import DataError, FieldError
 from typing import TypeVar, Type
@@ -12,8 +12,7 @@ from cxworker.shepherd.shepherd import Shepherd
 from cxworker.utils import minio_object_exists
 from .requests import StartJobRequest
 from .responses import StartJobResponse, StatusResponse, JobStatusResponse, ErrorResponse
-from .errors import ClientActionError, StorageError, UnknownJobError
-
+from .errors import ClientActionError, StorageError, UnknownJobError, NameConflictError
 
 T = TypeVar('T', bound=Model)
 
@@ -62,7 +61,11 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
         if not start_job_request.payload:
             check_job_exists(minio, start_job_request.job_id)
         else:
-            minio.make_bucket(start_job_request.job_id)
+            try:
+                minio.make_bucket(start_job_request.job_id)
+            except (BucketAlreadyExists, BucketAlreadyOwnedByYou) as e:
+                raise NameConflictError("A job with this ID was already submitted") from e
+
             payload_data = start_job_request.payload.encode()
             payload = BytesIO(payload_data)
             minio.put_object(start_job_request.job_id, start_job_request.payload_name,

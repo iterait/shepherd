@@ -2,11 +2,12 @@ import json
 from io import BytesIO
 from typing import Union
 
+import pytest
 from minio import Minio
 from unittest.mock import Mock
 from werkzeug.test import Client
 
-from cxworker.api.errors import UnknownJobError
+from cxworker.api.errors import UnknownJobError, NameConflictError
 from cxworker.shepherd import Shepherd
 
 
@@ -31,6 +32,27 @@ def test_start_job_with_payload(minio_scoped: Minio, client: Client, mock_shephe
     assert payload.data == b"Payload content"
 
     mock_shepherd.enqueue_job.assert_called()
+
+
+def test_start_job_with_payload_conflict(minio_scoped: Minio, client: Client, mock_shepherd: Union[Mock, Shepherd]):
+    mock_shepherd.is_job_done.side_effect = UnknownJobError()
+
+    minio_scoped.make_bucket("uuid-1")
+
+    response = client.post("/start-job", content_type="application/json", data=json.dumps({
+        "job_id": "uuid-1",
+        "sheep_id": "sheep_1",
+        "model": {
+            "name": "model_1",
+            "version": "latest"
+        },
+        "payload_name": "payload.json",
+        "payload": "Payload content"
+    }))
+
+    assert response.status_code == 409
+
+    mock_shepherd.enqueue_job.assert_not_called()
 
 
 def test_start_job_no_payload(client):
