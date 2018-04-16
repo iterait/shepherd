@@ -4,6 +4,7 @@ import os.path as path
 from io import BytesIO
 import os.path as path
 
+from cxworker.constants import DEFAULT_PAYLOAD_PATH, INPUT_DIR
 from cxworker.shepherd.config import load_worker_config
 from cxworker.shepherd import Shepherd
 from cxworker.api.models import ModelModel
@@ -41,7 +42,7 @@ def shepherd(valid_config, minio):
 def job(bucket, minio):
     job_id = bucket
     data = json.dumps({'key': [1000]}).encode()
-    minio.put_object(bucket, 'inputs/input.json', BytesIO(data), len(data))
+    minio.put_object(bucket, DEFAULT_PAYLOAD_PATH, BytesIO(data), len(data))
     yield job_id, ModelModel(dict(name='cxflow-test', version='latest'))
 
 
@@ -50,7 +51,7 @@ def bad_job(bucket, minio):
     """Job with wrong input name should cause recoverable runner runtime error."""
     job_id = bucket
     data = json.dumps({'key': [1000]}).encode()
-    minio.put_object(bucket, 'inputs/some_other_file.json', BytesIO(data), len(data))
+    minio.put_object(bucket, INPUT_DIR + '/some_other_file.json', BytesIO(data), len(data))
     yield job_id, ModelModel(dict(name='cxflow-test', version='latest'))
 
 
@@ -59,7 +60,7 @@ def bad_configuration_job(bucket, minio):
     """Job with wrong model name should cause sheep configuration error."""
     job_id = bucket
     data = json.dumps({'key': [1000]}).encode()
-    minio.put_object(bucket, 'inputs/input.json', BytesIO(data), len(data))
+    minio.put_object(bucket, DEFAULT_PAYLOAD_PATH, BytesIO(data), len(data))
     yield job_id, ModelModel(dict(name='wrong-model', version='latest'))
 
 
@@ -68,5 +69,5 @@ def bad_runner_job(bucket, minio):
     """cxflow-test:test model has bad runner configuration; thus, the runner should fail (and stop)."""
     job_id = bucket
     data = json.dumps({'key': [1000]}).encode()
-    minio.put_object(bucket, 'inputs/input.json', BytesIO(data), len(data))
+    minio.put_object(bucket, DEFAULT_PAYLOAD_PATH, BytesIO(data), len(data))
     yield job_id, ModelModel(dict(name='cxflow-test', version='test'))

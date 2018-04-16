@@ -9,6 +9,7 @@ import gevent
 import zmq.green as zmq
 from minio import Minio
 
+from cxworker.constants import OUTPUT_DIR, DONE_FILE, ERROR_FILE
 from .config import RegistryConfig
 from ..sheep import *
 from ..api.models import SheepModel
@@ -134,7 +135,7 @@ class Shepherd:
                         error = b'Sheep container died without notice'
                         logging.error('Sheep `%s` encountered error when processing job `%s`: %s',
                                       sheep_id, job_id, error)
-                        self.minio.put_object(job_id, 'error', BytesIO(error), len(error))
+                        self.minio.put_object(job_id, ERROR_FILE, BytesIO(error), len(error))
                     sheep.in_progress = set()
                     self.notifier.notify()
             except SheepError as se:
@@ -156,7 +157,7 @@ class Shepherd:
             # prepare working directory
             working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
             pull_minio_bucket(self.minio, job_id, working_directory)
-            create_clean_dir(path.join(working_directory, 'outputs'))
+            create_clean_dir(path.join(working_directory, OUTPUT_DIR))
 
             # (re)start the sheep if needed
             model = sheep.jobs_meta[job_id]
@@ -172,7 +173,7 @@ class Shepherd:
                     error = 'Failed to start sheep for this job ({})'.format(str(sce))
                     logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep_id, job_id, error)
                     error = error.encode()
-                    self.minio.put_object(job_id, 'error', BytesIO(error), len(error))
+                    self.minio.put_object(job_id, ERROR_FILE, BytesIO(error), len(error))
                     continue
             # send the InputMessage to the sheep
             sheep.in_progress.add(job_id)
@@ -202,11 +203,11 @@ class Shepherd:
 
                 # save the done/error file
                 if isinstance(message, DoneMessage):
-                    self.minio.put_object(job_id, 'done', BytesIO(b''), 0)
+                    self.minio.put_object(job_id, DONE_FILE, BytesIO(b''), 0)
                     logging.info('Job `%s` from sheep `%s` done', job_id, sheep_id)
                 elif isinstance(message, ErrorMessage):
                     error = (message.short_error + '\n' + message.long_error).encode()
-                    self.minio.put_object(job_id, 'error', BytesIO(error), len(error))
+                    self.minio.put_object(job_id, ERROR_FILE, BytesIO(error), len(error))
                     logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep_id, message.short_error)
 
                 # notify about the finished job
@@ -241,7 +242,7 @@ class Shepherd:
         :raise UnknownJobError: if the job is not ready nor it is known to this shepherd
         :return: job ready flag
         """
-        if minio_object_exists(self.minio, job_id, 'done') or minio_object_exists(self.minio, job_id, 'error'):
+        if minio_object_exists(self.minio, job_id, DONE_FILE) or minio_object_exists(self.minio, job_id, ERROR_FILE):
             return True
         else:
             for sheep in self.sheep.values():

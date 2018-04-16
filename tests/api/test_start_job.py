@@ -2,12 +2,13 @@ import json
 from io import BytesIO
 from typing import Union
 
-import pytest
 from minio import Minio
 from unittest.mock import Mock
 from werkzeug.test import Client
 
-from cxworker.api.errors import UnknownJobError, NameConflictError
+from cxworker.api.errors import UnknownJobError
+
+from cxworker.constants import DEFAULT_PAYLOAD_PATH
 from cxworker.shepherd import Shepherd
 
 
@@ -21,14 +22,13 @@ def test_start_job_with_payload(minio_scoped: Minio, client: Client, mock_shephe
             "name": "model_1",
             "version": "latest"
         },
-        "payload_name": "payload.json",
         "payload": "Payload content"
     }))
 
     assert response.status_code == 200
     assert minio_scoped.bucket_exists("uuid-1")
 
-    payload = minio_scoped.get_object("uuid-1", "inputs/payload.json")
+    payload = minio_scoped.get_object("uuid-1", DEFAULT_PAYLOAD_PATH)
     assert payload.data == b"Payload content"
 
     mock_shepherd.enqueue_job.assert_called()
@@ -46,7 +46,6 @@ def test_start_job_with_payload_conflict(minio_scoped: Minio, client: Client, mo
             "name": "model_1",
             "version": "latest"
         },
-        "payload_name": "payload.json",
         "payload": "Payload content"
     }))
 

@@ -18,12 +18,12 @@ Custom Runners
 In most cases, you can just inherit from :py:class:`cxworker.runner.BaseRunner` and override
 :py:meth:`cxworker.runner.BaseRunner._process_job`.
 
-This is exactly what is done by :py:class:`cxworker.runner.JSONRunner` method.
+This is exactly what is done by the :py:class:`cxworker.runner.JSONRunner` class.
 
 .. code-block:: python
 
     def _process_job(self, input_path: str, output_path: str) -> None:   # simplified
-        payload = json.load(open(path.join(input_path, 'input.json')))
+        payload = json.load(open(path.join(input_path, 'input')))
         result = defaultdict(list)
         for input_batch in self._get_stream(payload):
             logging.info('Another batch (%s)', list(input_batch.keys()))
@@ -41,7 +41,7 @@ This is exactly what is done by :py:class:`cxworker.runner.JSONRunner` method.
 
         logging.info('JSONify')
         result_json = to_json_serializable(result)
-        json.dump(result_json, open(path.join(output_path, 'output.json'), 'w'))
+        json.dump(result_json, open(path.join(output_path, 'output'), 'w'))
 
-``JSONRunner`` simple loads a JSON from ``inputs/input.json`` file, creates a stream from it and writes the output
-batches to ``outputs/output.json``.
+``JSONRunner`` simply loads JSON from ``inputs/input`` file, creates a stream from it and writes the output
+batches to ``outputs/output``.
