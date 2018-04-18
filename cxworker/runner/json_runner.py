@@ -5,6 +5,7 @@ from collections import defaultdict
 
 import numpy as np
 
+from cxworker.constants import DEFAULT_PAYLOAD_FILE, DEFAULT_OUTPUT_FILE
 from .base_runner import BaseRunner
 
 
@@ -32,17 +33,17 @@ class JSONRunner(BaseRunner):
     def _process_job(self, input_path: str, output_path: str) -> None:
         """
         Process a JSON job
-            - load ``input_path``/``input.json``
+            - load ``input_path``/``input``
             - create dataset stream with the loaded JSON
             - run the model
-            - save the output to ``output_path``/``output.json``
+            - save the output to ``output_path``/``output``
 
         :param input_path: input data directory
         :param output_path: output data directory
         """
         self._load_dataset()
         self._load_model()
-        payload = json.load(open(path.join(input_path, 'input.json')))
+        payload = json.load(open(path.join(input_path, DEFAULT_PAYLOAD_FILE)))
         result = defaultdict(list)
         for input_batch in self._get_stream(payload):
             logging.info('Another batch (%s)', list(input_batch.keys()))
@@ -60,4 +61,4 @@ class JSONRunner(BaseRunner):
 
         logging.info('JSONify')
         result_json = to_json_serializable(result)
-        json.dump(result_json, open(path.join(output_path, 'output.json'), 'w'))
+        json.dump(result_json, open(path.join(output_path, DEFAULT_OUTPUT_FILE), 'w'))

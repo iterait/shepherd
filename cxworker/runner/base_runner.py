@@ -13,6 +13,7 @@ from cxflow.cli.common import create_dataset, create_model
 from cxflow.cli.util import validate_config, find_config
 from cxflow.utils import load_config
 from cxworker.comm import *
+from cxworker.constants import INPUT_DIR, OUTPUT_DIR
 
 
 class BaseRunner:
@@ -105,8 +106,8 @@ class BaseRunner:
                 io_data_root = input_message.io_data_root
                 logging.info('Received job `%s` with io data root `%s`', job_id, io_data_root)
                 try:
-                    input_path = path.join(io_data_root, job_id, 'inputs')
-                    output_path = path.join(io_data_root, job_id, 'outputs')
+                    input_path = path.join(io_data_root, job_id, INPUT_DIR)
+                    output_path = path.join(io_data_root, job_id, OUTPUT_DIR)
                     self._process_job(input_path, output_path)
                     logging.info('Job `%s` done, sending DoneMessage', job_id)
                     Messenger.send(self._socket, DoneMessage(dict(job_id=job_id)), input_message)

@@ -16,3 +16,7 @@ class UnknownJobError(ClientActionError):
 
 class StorageError(AppError):
     """Exception raised when application encounters some issue with the minio storage."""
+
+
+class NameConflictError(ClientActionError):
+    """Exception raised when a client chooses a job ID that was already used"""

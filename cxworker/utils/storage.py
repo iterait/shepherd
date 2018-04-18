@@ -6,6 +6,7 @@ from os import path as path
 from minio import Minio
 from minio.error import MinioError
 
+from cxworker.constants import INPUT_DIR, OUTPUT_DIR
 from ..api.errors import StorageError
 
 _MINIO_FOLDER_DELIMITER = '/'
@@ -24,7 +25,7 @@ def pull_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
     try:
         pulled_count = 0
         for object in minio.list_objects_v2(bucket_name, recursive=True):
-            if object.object_name.startswith('inputs'+_MINIO_FOLDER_DELIMITER):
+            if object.object_name.startswith(INPUT_DIR + _MINIO_FOLDER_DELIMITER):
                 filepath = path.join(*object.object_name.split(_MINIO_FOLDER_DELIMITER))
                 os.makedirs(path.join(dir_name, path.dirname(filepath)), exist_ok=True)
                 minio.fget_object(bucket_name, object.object_name, path.join(dir_name, filepath))
@@ -48,9 +49,9 @@ def push_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
     logging.debug('Pushing dir `%s` to minio bucket `%s`', dir_name, bucket_name)
     try:
         pushed_count = 0
-        for prefix, _, files in os.walk(path.join(dir_name, 'outputs')):
+        for prefix, _, files in os.walk(path.join(dir_name, OUTPUT_DIR)):
             for file in files:
-                filepath = path.relpath(path.join('outputs', prefix, file), dir_name)
+                filepath = path.relpath(path.join(OUTPUT_DIR, prefix, file), dir_name)
                 object_name = filepath.replace(path.sep, _MINIO_FOLDER_DELIMITER)
                 minio.fput_object(bucket_name, object_name, path.join(dir_name, filepath))
                 pushed_count += 1
