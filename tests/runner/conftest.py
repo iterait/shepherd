@@ -5,6 +5,8 @@ import json
 import os.path as path
 import numpy as np
 
+from cxworker.constants import INPUT_DIR, OUTPUT_DIR, DEFAULT_PAYLOAD_FILE
+
 original_data = [{'a': np.array([1, 2, 3])}, [np.array(1), np.array(2)]]
 serializable_data = [{'a': [1, 2, 3]}, [1, 2]]
 
@@ -27,10 +29,10 @@ def feeding_socket():
 def job(request, tmpdir_factory):
     dir_ = tmpdir_factory.mktemp('data')
     job_id = request.param
-    input_dir = path.join(dir_, job_id, 'inputs')
+    input_dir = path.join(dir_, job_id, INPUT_DIR)
     os.makedirs(input_dir)
-    os.makedirs(path.join(dir_, job_id, 'outputs'))
-    json.dump({'key': [42]}, open(path.join(input_dir, 'input.json'), 'w'))
+    os.makedirs(path.join(dir_, job_id, OUTPUT_DIR))
+    json.dump({'key': [42]}, open(path.join(input_dir, DEFAULT_PAYLOAD_FILE), 'w'))
     yield job_id, str(dir_)
 
 

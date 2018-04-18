@@ -5,6 +5,7 @@ import os.path as path
 import gevent
 import subprocess
 
+from cxworker.constants import OUTPUT_DIR, DEFAULT_OUTPUT_FILE
 from cxworker.runner import *
 from cxworker.runner.runner_entry_point import run
 from cxworker.comm import *
@@ -30,7 +31,7 @@ def test_json_runner(job, feeding_socket, runner_setup):
     Messenger.send(socket, InputMessage(dict(job_id=job_id, io_data_root=job_dir)))
     Messenger.recv(socket, [DoneMessage])
     greenlet.kill()
-    output = json.load(open(path.join(job_dir, job_id, 'outputs', 'output.json')))
+    output = json.load(open(path.join(job_dir, job_id, OUTPUT_DIR, DEFAULT_OUTPUT_FILE)))
 
     assert output == {'key': [42], 'output': [expected]}
 
@@ -72,7 +73,7 @@ def test_runner(job, feeding_socket, runner_setup, mocker, start):  # for covera
         Messenger.send(socket, InputMessage(dict(job_id=job_id, io_data_root=job_dir)))
         Messenger.recv(socket, [DoneMessage])
         handle.kill()
-        output = json.load(open(path.join(job_dir, job_id, 'outputs', 'output.json')))
+        output = json.load(open(path.join(job_dir, job_id, OUTPUT_DIR, DEFAULT_OUTPUT_FILE)))
         assert output['output'] == [expected]
 
 

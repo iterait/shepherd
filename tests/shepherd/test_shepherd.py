@@ -3,7 +3,7 @@ import json
 import gevent
 import pytest
 
-
+from cxworker.constants import ERROR_FILE, DEFAULT_OUTPUT_PATH, DONE_FILE
 from cxworker.sheep import BareSheep, DockerSheep, SheepConfigurationError
 from cxworker.shepherd import Shepherd
 from cxworker.api.errors import UnknownSheepError, UnknownJobError
@@ -55,9 +55,9 @@ def test_job(shepherd: Shepherd, job, minio):
     shepherd.notifier.wait_for(lambda: shepherd.is_job_done(job_id))
     assert shepherd['bare_sheep'].running
     assert shepherd.is_job_done(job_id)
-    assert minio_object_exists(minio, job_id, 'outputs/output.json')
-    assert minio_object_exists(minio, job_id, 'done')
-    output = json.loads(minio.get_object(job_id, 'outputs/output.json').read().decode())
+    assert minio_object_exists(minio, job_id, DEFAULT_OUTPUT_PATH)
+    assert minio_object_exists(minio, job_id, DONE_FILE)
+    output = json.loads(minio.get_object(job_id, DEFAULT_OUTPUT_PATH).read().decode())
     assert output['key'] == [1000]
     assert output['output'] == [1000*2]
 
@@ -68,7 +68,7 @@ def test_failed_job(shepherd, bad_job, minio):
     shepherd.notifier.wait_for(lambda: shepherd.is_job_done(job_id))
     assert shepherd['bare_sheep'].running
     assert shepherd.is_job_done(job_id)
-    assert minio_object_exists(minio, job_id, 'error')
+    assert minio_object_exists(minio, job_id, ERROR_FILE)
 
 
 def test_bad_configuration_job(shepherd, bad_configuration_job, minio):
@@ -77,7 +77,7 @@ def test_bad_configuration_job(shepherd, bad_configuration_job, minio):
     gevent.sleep(1)
     assert not shepherd['bare_sheep'].running
     assert shepherd.is_job_done(job_id)
-    assert minio_object_exists(minio, job_id, 'error')
+    assert minio_object_exists(minio, job_id, ERROR_FILE)
 
 
 def test_bad_runner_job(shepherd, bad_runner_job, minio):
@@ -86,4 +86,4 @@ def test_bad_runner_job(shepherd, bad_runner_job, minio):
     gevent.sleep(3)
     assert not shepherd['bare_sheep'].running
     assert shepherd.is_job_done(job_id)
-    assert minio_object_exists(minio, job_id, 'error')
+    assert minio_object_exists(minio, job_id, ERROR_FILE)

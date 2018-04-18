@@ -31,6 +31,18 @@ def minio():
     proc.kill()
 
 
+@pytest.fixture(scope='function')
+def minio_scoped(minio: Minio):
+    assert not minio.list_buckets()
+
+    yield minio
+
+    for bucket in minio.list_buckets():
+        for obj in minio.list_objects_v2(bucket.name, recursive=True):
+            minio.remove_object(obj.bucket_name, obj.object_name)
+        minio.remove_bucket(bucket.name)
+
+
 @pytest.fixture()
 def bucket(minio: Minio):
     request_id = 'test-request-' + (''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
