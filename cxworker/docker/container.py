@@ -1,129 +1,118 @@
 import logging
-import subprocess
-from typing import Dict
+from typing import Dict, Optional, List
 
-from cxworker.docker import DockerImage
+from .image import DockerImage
 from .errors import DockerError
+from .utils import run_docker_command, kill_blocking_container
 
 
 class DockerContainer:
-    def __init__(self, image: DockerImage, autoremove: bool, runtime: str = None, env: Dict[str, str] = None):
-        self.image = image
-        self.autoremove = autoremove
-        self.ports = {}
-        self.volumes = []
-        self.devices = []
-        self.container_id = None
-        self.runtime = runtime
-        self.env = env or {}
+    """Helper class for running and managing docker containers."""
 
-    def add_port_mapping(self, host_port, container_port):
+    def __init__(self,
+                 image: DockerImage,
+                 autoremove: bool=True,
+                 runtime: Optional[str]=None,
+                 env: Optional[Dict[str, str]]=None,
+                 bind_mounts: Optional[Dict[str, str]]=None,
+                 ports: Optional[Dict[int, int]]=None,
+                 command: Optional[List[str]]=None):
         """
-        Map a port on the host machine to given port on the container
-        :param host_port:
-        :param container_port:
+        Initialize :py:class`DockerContainer`.
+
+        :param image: container :py:class:`DockerImage`
+        :param autoremove: remove the container after it is stopped
+        :param runtime: docker runtime flag (e.g. ``nvidia``)
+        :param env: additional environment variables
+        :param bind_mounts: optional host->container bind mounts mapping
+        :param ports: optional host->container port mapping
+        :param command: optional docker container run command
         """
+        self._image = image
+        self._autoremove = autoremove
+        self._container_id: Optional[str] = None
+        self._runtime: Optional[str] = runtime
+        self._env: Dict = env or {}
+        self._mounts: Dict = bind_mounts or {}
+        self._ports: Dict = ports or {}
+        self._command: Optional[List[str]] = command
 
-        self.ports[host_port] = container_port
-
-    def add_device(self, name):
-        self.devices.append(name)
-
-    def add_volume(self, volume_spec):
-        self.volumes.append(volume_spec)
-
-    def start(self):
+    def _build_run_command(self) -> List[str]:
         """
-        Run the container
-        """
+        Build docker container run command.
 
+        :return: built command
+        """
         # Run given image in detached mode
-        command = ['docker', 'run', '-d']
+        command = ['run', '-d']
 
         # Add configured port mappings
-        for host_port, container_port in self.ports.items():
-            command += ['-p', '127.0.0.1:{host}:{container}'.format(host=host_port, container=container_port)]
+        for host_port, container_port in self._ports.items():
+            command += ['-p', '0.0.0.0:{host}:{container}'.format(host=host_port, container=container_port)]
 
         # Set environment variables
-        if self.env:
+        if self._env:
             command.append("-e")
 
-            for key, value in self.env.items():
+            for key, value in self._env.items():
                 command.append("{}={}".format(key, value))
 
-        # If desired, remove the container when it exits
-        if self.autoremove:
+        # If specified, remove the container when it exits
+        if self._autoremove:
             command.append("--rm")
 
-        # Set runtime
-        if self.runtime:
-            command.append("--runtime={}".format(self.runtime))
+        # If specified, set the runtime (e.g. `nvidia`)
+        if self._runtime:
+            command.append("--runtime={}".format(self._runtime))
 
-        # Bind volumes
-        for volume_spec in self.volumes:
-            command.append("--volume")
-            command.append(volume_spec)
-
-        # Bind devices
-        for device in self.devices:
-            command.append("--device")
-            command.append(device)
+        # Bind mount
+        for host_path, container_path in self._mounts.items():
+            command.append("--mount")
+            command.append(','.join(['='.join([key, value])
+                                     for key, value in (('type', 'bind'),
+                                                        ('source', host_path),
+                                                        ('target', container_path))]))
 
         # Positional args - the image of the container
-        command.append(self.image.full_name)
+        command.append(self._image.full_name)
 
-        # Launch the container and wait until the "run" commands finishes
-        logging.debug("Running command %s", str(command))
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        rc = process.wait()
-        stderr = process.stderr.read()
+        # If specified, append the run command
+        if self._command is not None:
+            command += self._command
 
-        if len(stderr):
-            logging.warning("Non-empty stderr when starting container: %s", stderr)
-        if rc != 0:
-            raise DockerError('Running the container failed', rc, stderr)
+        return command
 
-        # Read the container ID from the standard output
-        stdout = process.stdout.read().strip()
-        logging.debug("Received '%s' from docker", stdout)
+    def start(self) -> None:
+        """Run the container."""
+        command = self._build_run_command()
+        for host_port in self._ports.keys():
+            kill_blocking_container(host_port)
+        logging.info('Starting docker container with `%s`', ' '.join(command))
+        self._container_id = run_docker_command(command).strip()
+        logging.info('Started docker container `%s`', self._container_id)
 
-        self.container_id = stdout
-
-    def kill(self):
+    def kill(self) -> None:
         """
-        Kill the container
-        """
+        Kill the underlying docker container.
 
-        if self.container_id is None:
+        :raise DockerError: if the container was not started yet (i.e., its ``container_id`` is not known)
+        """
+        if self._container_id is None:
             raise DockerError('The container was not started yet')
-
-        command = ['docker', 'kill', self.container_id]
-        process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
-        rc = process.wait()
-        stderr = process.stderr.read()
-
-        if len(stderr):
-            logging.warning("Non-empty stderr when killing container: %s", stderr)
-        if rc != 0:
-            raise DockerError('Killing the container failed', rc, stderr)
-
-        self.container_id = None
+        logging.info('Killing container `%s`', self._container_id)
+        run_docker_command(['kill', self._container_id])
+        self._container_id = None
 
     @property
-    def running(self):
+    def running(self) -> bool:
         """
-        :return: True when the container is running, False otherwise
+        Check if the underlying docker container is still up and running.
+        Returns ``False`` if the container was not even started.
+
+        :return: docker container running flag
         """
-
-        if self.container_id is None:
-            raise DockerError('The container was not started yet')
-
-        command = ['docker', 'ps', '--filter', 'id={}'.format(self.container_id.decode())]
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        rc = process.wait()
-
-        if rc != 0:
-            raise DockerError('Checking the status of the container failed', rc, process.stderr.read())
-
+        if self._container_id is None:
+            return False
+        output = run_docker_command(['ps', '--filter', 'id={}'.format(self._container_id)])
         # If the command output contains more than one line, the container was found (the first line is a header)
-        return len(process.stdout.readlines()) > 1
+        return len(output.split('\n')) > 1

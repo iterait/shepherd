@@ -1,5 +1,4 @@
-logging:
-  level: debug
+data_root: /tmp/worker-data
 registry:
   url: http://0.0.0.0:6000
 storage:
@@ -7,13 +6,10 @@ storage:
   access_key: AKIAIOSFODNN7EXAMPLE
   secret_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
-containers:
-  container_a:
+sheep:
+  bare_sheep:
     port: 9001
     type: bare
-    model_name: cxflow-test
-    model_version: latest
-    config_path: config.yaml
+    working_directory: examples/docker/cxflow_example
     stdout_file: /tmp/bare-cxworker-runner-stdout.txt
     stderr_file: /tmp/bare-cxworker-runner-stderr.txt
-    working_directory: examples/docker/cxflow_example

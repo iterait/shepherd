@@ -1,71 +1,45 @@
-import subprocess
 import logging
 
-from cxworker.manager.config import RegistryConfig
-from .errors import DockerError
+from cxworker.shepherd.config import RegistryConfig
+from .utils import run_docker_command
 
 
 class DockerImage:
-    def __init__(self, name, tag, registry: RegistryConfig):
-        self.name = name
-        self.tag = tag
-        self.registry = registry
+    """Helper class for running and managing docker images."""
+
+    def __init__(self, name: str, tag: str, registry: RegistryConfig):
+        """
+        Initialize new :py:class:`DockerImage`.
+
+        :param name: image name, e.g.: ``cognexa/cxflow``
+        :param tag: image tag, e.g.: ``latest`` or ``stable``
+        :param registry: docker registry config
+        """
+        self._name: str = name
+        self._tag: str = tag
+        self._registry: RegistryConfig = registry
 
     @property
-    def full_name(self):
-        return "{}/{}".format(self.registry.schemeless_url, self.name)
+    def full_name(self) -> str:
+        """Return docker image full name including registry url. E.g.: ``docker.cognexa.com/isletnet:latest``."""
+        registry = self._registry.schemeless_url.strip()
+        if len(registry) > 0:
+            registry += '/'
+        tag = self._tag.strip()
+        if len(tag) > 0:
+            tag = ':' + tag
+        return registry + self._name + tag
 
-    def pull(self):
+    def pull(self) -> None:
+        """Pull the underlying docker image."""
         self._login()
-        image_url = '{registry}/{name}:{tag}'.format(registry=self.registry.schemeless_url, tag=self.tag, name=self.name)
-        logging.info('Pulling %s', image_url)
+        logging.info('Pulling %s', self.full_name)
+        run_docker_command(['pull', self.full_name])
 
-        process = subprocess.Popen([
-            'docker',
-            'pull',
-            image_url
-        ], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
-
-        rc = process.wait()
-
-        if rc != 0:
-            raise DockerError('Pulling the image failed', rc, process.stderr.read())
-
-    def _login(self):
-        if self.registry.username is not None:
-            process = subprocess.Popen([
-                'docker',
-                'login',
-                '-u',
-                self.registry.username,
-                '--password-stdin',
-                self.registry.url
-            ], stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
-
-            process.stdin.write(self.registry.password.encode())
-            process.stdin.close()
-
-            rc = process.wait()
-
-            if rc != 0:
-                raise DockerError('Logging in to the registry failed', rc, process.stderr.read())
-
-    def update(self):
-        """
-        Attempt to update the local copy of the image from the registry
-        :return: True if there was an update, False otherwise
-        """
-
-        self._login()
-
-        output = subprocess.check_output([
-            'docker',
-            'pull',
-            '{registry}/{name}:{tag}'.format(registry=self.registry.schemeless_url, tag=self.tag, name=self.name)
-        ])
-
-        for line in output.decode().splitlines():
-            if line.startswith("Status: Downloaded"):
-                return True
-
-        return False
+    def _login(self) -> None:
+        """If the registry configuration contains a username, log-in to the registry."""
+        if self._registry.username is not None:
+            logging.info('Logging to docker registry `%s` as `%s`', self._registry.url, self._registry.username)
+            # the following command exposes docker registry username nad password!
+            run_docker_command(['login', '-u', self._registry.username, '-p', self._registry.password,
+                                self._registry.url])

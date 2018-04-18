@@ -1,42 +1,58 @@
 import pytest
-from unittest import mock
-
-import zmq
 from minio import Minio
+import subprocess
+import os
+import random
+import string
+import os.path as path
 
-from cxworker.api import create_app
-from cxworker.api.views import create_worker_blueprint
-from cxworker.manager.config import ContainerConfig
-from cxworker.manager.registry import ContainerRegistry
+from cxworker.utils import create_clean_dir
 
-
-@pytest.fixture()
-def app(minio, registry):
-    app = create_app(__name__)
-    app.register_blueprint(create_worker_blueprint(registry, minio))
-
-    with app.app_context():
-        yield app
+from cxworker.shepherd.config import RegistryConfig
 
 
 @pytest.fixture()
+def registry_config():
+    yield RegistryConfig(dict(url='https://registry.hub.docker.com', username='cxworkertestdocker',
+                              password='abc321321'))
+
+
+@pytest.fixture(scope='session')
 def minio():
-    yield mock.Mock(spec=Minio)
+    data_dir = path.join(create_clean_dir(path.join('/tmp', 'minio')))
+    env = os.environ.copy()
+    minio_key = 'AKIAIOSFODNN7EXAMPLE'
+    minio_secret = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
+    env['MINIO_ACCESS_KEY'] = minio_key
+    env['MINIO_SECRET_KEY'] = minio_secret
+    minio_host = '0.0.0.0:7000'
+    proc = subprocess.Popen(['minio', 'server', '--address', minio_host, data_dir], env=env)
+    yield Minio(minio_host, access_key=minio_key, secret_key=minio_secret, secure=False)
+    proc.kill()
+
+
+@pytest.fixture(scope='function')
+def minio_scoped(minio: Minio):
+    assert not minio.list_buckets()
+
+    yield minio
+
+    for bucket in minio.list_buckets():
+        for obj in minio.list_objects_v2(bucket.name, recursive=True):
+            minio.remove_object(obj.bucket_name, obj.object_name)
+        minio.remove_bucket(bucket.name)
 
 
 @pytest.fixture()
-def registry(zmq_context, container_config):
-    yield ContainerRegistry(zmq_context, "fake_registry", container_config)
-
-
-@pytest.fixture()
-def zmq_context():
-    yield mock.Mock(spec=zmq.Context)
-
-
-@pytest.fixture()
-def container_config():
-    yield {
-        "container_a": ContainerConfig(8888, "cpu", []),
-        "container_b": ContainerConfig(8889, "cpu", [])
-    }
+def bucket(minio: Minio):
+    request_id = 'test-request-' + (''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
+    if minio.bucket_exists(request_id):
+        for obj in minio.list_objects_v2(request_id, recursive=True):
+            minio.remove_object(request_id, obj.object_name)
+        minio.remove_bucket(request_id)
+    minio.make_bucket(request_id)
+    yield request_id
+    if minio.bucket_exists(request_id):
+        for obj in minio.list_objects_v2(request_id, recursive=True):
+            minio.remove_object(request_id, obj.object_name)
+        minio.remove_bucket(request_id)

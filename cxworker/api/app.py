@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from functools import partial
 import logging
 
-from .errors import ClientActionError, AppError
+from .errors import ClientActionError, AppError, NameConflictError
 from .responses import ErrorResponse
 
 
@@ -33,6 +33,7 @@ def error_handler(http_code, error: AppError):
 def create_app(name: str):
     app = Flask(name)
 
+    app.register_error_handler(NameConflictError, partial(error_handler, 409))
     app.register_error_handler(ClientActionError, partial(error_handler, 400))
     app.register_error_handler(AppError, partial(error_handler, 500))
     app.register_error_handler(Exception, internal_error_handler)

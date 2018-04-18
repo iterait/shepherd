@@ -1,6 +1,6 @@
 FROM cognexa/cxflow:latest
 
-RUN pacman -Sy --noconfirm --needed python-pyzmq openssh python-numpy && paccache -rfk0
+RUN pacman -Syu --noconfirm --needed python-pyzmq openssh python-numpy && paccache -rfk0
 
 ADD ssh /root/.ssh
 RUN chmod 600 -R /root/.ssh
@@ -17,6 +17,6 @@ WORKDIR /project
 ADD . .
 
 # Replace this with your model of choice
-ADD config.yaml /project/config.yaml
+ADD cxflow-test/latest/docker-config.yaml /project/config.yaml
 
 CMD cxworker-runner /project

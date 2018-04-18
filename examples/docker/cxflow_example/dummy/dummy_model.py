@@ -3,7 +3,9 @@ import cxflow as cx
 
 class DummyModel(cx.AbstractModel):
 
-    def __init__(self, **kwargs):
+    def __init__(self, factor: int=2, **kwargs):
+        super().__init__(**kwargs)
+        self._factor = factor
         pass
 
     def input_names(self):
@@ -16,7 +18,7 @@ class DummyModel(cx.AbstractModel):
         pass
 
     def run(self, batch: cx.Batch, train: bool, stream):
-        batch['output'] = [999]
+        batch['output'] = [batch['key'][0]*self._factor]
         return batch
 
     @property
