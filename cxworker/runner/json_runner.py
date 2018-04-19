@@ -12,9 +12,11 @@ from .base_runner import BaseRunner
 def to_json_serializable(data):
     """Make an object containing numpy arrays/scalars JSON serializable."""
 
+    if data is None:
+        return None
     if isinstance(data, dict):
         return {key: to_json_serializable(value) for key, value in data.items()}
-    elif isinstance(data, list):
+    elif isinstance(data, list) or isinstance(data, tuple):
         return [to_json_serializable(v) for v in data]
     elif isinstance(data, np.ndarray):
         return data.tolist()

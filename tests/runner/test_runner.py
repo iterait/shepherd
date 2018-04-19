@@ -15,8 +15,6 @@ def test_to_json_serializable(json_data):
     original, serializable = json_data
     assert serializable == to_json_serializable(original)
     with pytest.raises(ValueError):
-        to_json_serializable(None)
-    with pytest.raises(ValueError):
         to_json_serializable(gevent)
 
 
