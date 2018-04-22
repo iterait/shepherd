@@ -15,4 +15,4 @@ minio
 pip
 schematics
 cxflow
-greenlet==0.4.13
+git+https://github.com/Cognexa/apistrap.git@dev

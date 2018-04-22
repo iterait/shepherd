@@ -10,6 +10,10 @@ class ErrorResponse(Model):
     message: str = StringType(required=True)
 
 
+class JobErrorResponse(ErrorResponse):
+    pass
+
+
 class StatusResponse(Model):
     containers: Dict[str, SheepModel] = DictType(ModelType(SheepModel), required=True)
 
