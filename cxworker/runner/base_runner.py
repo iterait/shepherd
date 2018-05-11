@@ -76,11 +76,6 @@ class BaseRunner:
             logging.info('Creating model')
             self._model = create_model(self._config, None, self._dataset, self._config_path)
 
-    def _get_stream(self, *args, **kwargs) -> cx.Stream:
-        """Get the prediction stream."""
-        self._load_dataset()
-        return getattr(self._dataset, self._stream_name+'_stream')(*args, **kwargs)
-
     @abstractmethod
     def _process_job(self, input_path: str, output_path: str) -> None:
         """
