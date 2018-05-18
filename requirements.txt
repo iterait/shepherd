@@ -3,6 +3,7 @@ pytest-mock
 pytest-flask
 click
 Flask
+Flask-CORS
 simplejson
 pyzmq
 gevent
