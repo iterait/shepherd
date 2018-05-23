@@ -27,8 +27,17 @@ def test_kill_blocking_container():
     proc.wait()
 
     proc = subprocess.Popen(['docker', 'run', '--rm', '-p' '9999:9999', 'pritunl/archlinux', 'sleep', '10'])
-    gevent.sleep(2)  # allow docker start-up
+    for _ in range(20):
+        gevent.sleep(0.2)
+        if len(run_docker_command(['ps']).split('\n')) > 2:
+            break
+    else:
+        assert False
     assert proc.poll() is None
     kill_blocking_container(9999)
-    gevent.sleep(0.2)
-    assert proc.poll() is not None
+    for _ in range(20):
+        gevent.sleep(0.2)
+        if proc.poll() is not None:
+            break
+    else:
+        assert False
