@@ -45,7 +45,7 @@ Basics
 ******
 
 With **cxworker** up and running, you can start computing your resource intensive *jobs* with it.
-An example of a job may be an inference of neural network which may take a while so better do it asynchronously right?
+An example of a job may be an inference of neural network which may take a while so better do it asynchronously, right?
 
 In essence, a job computation consists of following steps
 
@@ -76,20 +76,20 @@ Behind the scenes
 *****************
 
 So by who, when and how is your job computed? Well, **cxworker** delegates the actual work to his shepherd and sheep
-(poor things right?).
+(poor things, right?).
 A sheep will configure itself to the desired model and version so that it can compute your jobs.
 A shepherd can hold multiple sheep, nonetheless, you need to address the jobs to them manually.
 
 The important thing here is that **arbitrary number of jobs may be submitted to the worker and his sheep will deal with
 them eventually**.
 
-Every sheep manages it own *runner* (`more on runners <runners.html>`_) and communicates with it via sockets. So in the
+Every sheep manages its own *runner* (`more on runners <runners.html>`_) and communicates with it via sockets. So in the
 end, *runners* do the heavy lifting.
 
 Configuration
 *************
 
-You may have noticed that in the command above, the worker was configured with ``examples/configs/cxworker-bare.yml``.
+You may have noticed that in the command above that the worker was configured with ``examples/configs/cxworker-bare.yml``.
 Let's see what is in there:
 
 .. code-block:: yaml
@@ -116,7 +116,7 @@ Aside from that, **cxworker** needs a single directory to work with.
 It is just fine to have it under ``/tmp`` as **cxworker** saves everything worth saving to the storage.
 In the case it crashes or is restarted, this directory is cleaned-up anyways.
 
-Finally, we can configure the sheep the **worker** has under his command.
+Finally, we can configure the sheep the **worker** has under its command.
 At the moment, we recognize ``bare`` and ``docker`` sheep.
 You can find more on how to configure them in their respective sections.
 
