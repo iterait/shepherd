@@ -110,7 +110,6 @@ class BaseRunner:
 
     def process_all(self) -> None:
         """Listen on the ``self._socket`` and process the incoming jobs in an endless loop."""
-        self._load_config()
         logging.info('Starting the loop')
         try:
             logging.debug('Creating socket')
