@@ -43,7 +43,7 @@ def job(bucket, minio):
     job_id = bucket
     data = json.dumps({'key': [1000]}).encode()
     minio.put_object(bucket, DEFAULT_PAYLOAD_PATH, BytesIO(data), len(data))
-    yield job_id, ModelModel(dict(name='cxflow-test', version='latest'))
+    yield job_id, ModelModel(dict(name='cxflow-test', version='test2'))
 
 
 @pytest.fixture()

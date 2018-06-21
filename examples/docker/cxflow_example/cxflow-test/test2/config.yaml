@@ -1,0 +1,7 @@
+dataset:
+  class: dummy.DummyDataset
+
+
+model:
+  name: Dummy
+  class: dummy.DummyModel
