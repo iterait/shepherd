@@ -7,7 +7,7 @@ import click
 import gevent
 import cxflow as cx
 from minio import Minio
-from gevent.wsgi import WSGIServer
+from gevent.pywsgi import WSGIServer
 from urllib3.exceptions import MaxRetryError
 
 from .api import create_app

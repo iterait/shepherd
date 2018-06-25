@@ -1,5 +1,7 @@
 import json
 import pytest
+import os
+import re
 import os.path as path
 
 import gevent
@@ -14,8 +16,6 @@ from cxworker.comm import *
 def test_to_json_serializable(json_data):
     original, serializable = json_data
     assert serializable == to_json_serializable(original)
-    with pytest.raises(ValueError):
-        to_json_serializable(None)
     with pytest.raises(ValueError):
         to_json_serializable(gevent)
 
@@ -82,3 +82,14 @@ def test_runner_configuration(mocker):
     mocker.patch('sys.argv', ['cxworker-runner', '-p', '8888', config_path])
     with pytest.raises(ModuleNotFoundError):
         run()  # runner is configured to a non-existent module; thus, we expect a failure
+
+
+def test_n_gpus(mocker):
+    n_system_gpus = len([s for s in os.listdir("/dev") if re.search(r'nvidia[0-9]+', s) is not None])
+    assert n_available_gpus() == n_system_gpus
+    mocker.patch('os.environ', {'NVIDIA_VISIBLE_DEVICES': '0,3'})
+    assert n_available_gpus() == 2
+    mocker.patch('os.environ', {'CUDA_VISIBLE_DEVICES': '1'})
+    assert n_available_gpus() == 1
+    mocker.patch('os.environ', {'NVIDIA_VISIBLE_DEVICES': '0,3', 'CUDA_VISIBLE_DEVICES': ''})
+    assert n_available_gpus() == 0

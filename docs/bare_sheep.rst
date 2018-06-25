@@ -4,7 +4,7 @@ Bare Sheep
 :py:class:`cxworker.sheep.BareSheep` uses a sub-process to run its *runner*.
 In particular, it runs ``cxworker-runner`` command which is linked to :py:func:`cxworker.runner.runner_entry_point.run`.
 
-As mentioned earlier, sheep communicates with its runner via a socket.
+As mentioned earlier, a sheep communicates with its runner via a socket.
 The messages are minimal though, in principle, only ``job_id`` s are passed through the socket while the data are
 prepared in a folder.
 
@@ -24,7 +24,7 @@ Bare sheep's config is fairly simple:
 
 Aside from configuration common for all sheep (socket ``port`` and sheep ``type``), bare sheep allows to configure:
 
-- ``working_directory`` directory from which is the ``cxworker-runner`` command called
+- ``working_directory`` directory from which ``cxworker-runner`` command is called
 - ``stdout_file`` and ``stderr_file`` to store the **runner** outputs
 
 Model Name and Version
@@ -40,4 +40,4 @@ Usage
 *****
 
 Use bare sheep whenever a docker is unavailable or your use case is simple.
-In other cases, `docker sheep <docker_sheep.html>`_ is usually preferred.
+In other cases, `docker sheep <docker_sheep.html>`_ is usually recommended.

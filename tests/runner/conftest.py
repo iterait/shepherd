@@ -7,8 +7,8 @@ import numpy as np
 
 from cxworker.constants import INPUT_DIR, OUTPUT_DIR, DEFAULT_PAYLOAD_FILE
 
-original_data = [{'a': np.array([1, 2, 3])}, [np.array(1), np.array(2)]]
-serializable_data = [{'a': [1, 2, 3]}, [1, 2]]
+original_data = [{'a': np.array([1, 2, 3])}, [np.array(1), np.array(2)], (np.array(42), 'crazy', None)]
+serializable_data = [{'a': [1, 2, 3]}, [1, 2], [42, 'crazy', None]]
 
 
 @pytest.fixture(params=zip(original_data, serializable_data))

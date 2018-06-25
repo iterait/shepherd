@@ -16,6 +16,27 @@ from cxworker.comm import *
 from cxworker.constants import INPUT_DIR, OUTPUT_DIR
 
 
+def n_available_gpus() -> int:
+    """
+    Return the number of NVIDIA GPU devices available to this process.
+
+    .. note::
+        This method attempts to parse (in-order) ``CUDA_VISIBLE_DEVICES`` env variable (bare sheep) and
+        ``NVIDIA_VISIBLE_DEVICES`` env variable (docker sheep).
+        If none of these variables is available, it lists GPU devices in ``/dev``.
+
+    :return: the number of available GPU devices
+    """
+    if 'CUDA_VISIBLE_DEVICES' in os.environ:
+        devices = os.environ['CUDA_VISIBLE_DEVICES']
+    elif 'NVIDIA_VISIBLE_DEVICES' in os.environ and not os.environ['NVIDIA_VISIBLE_DEVICES'].strip() == 'all':
+        devices = os.environ['NVIDIA_VISIBLE_DEVICES']
+    else:
+        devices = ','.join(filter(lambda d: re.search(r'nvidia[0-9]+', d) is not None, os.listdir('/dev')))
+
+    return len(devices.split(',')) if len(devices) > 0 else 0
+
+
 class BaseRunner:
     """
     Base **cxflow** runner class suitable for inheritance when implementing a runner with custom behavior.
@@ -57,8 +78,7 @@ class BaseRunner:
                     logging.warning('Config does not contain `eval.%s.hooks` section. '
                                     'No hook will be employed during the evaluation.', self._stream_name)
                     self._config['hooks'] = []
-            self._config["model"]["n_gpus"] = len([s for s in os.listdir("/dev")
-                                                   if re.search(r'nvidia[0-9]+', s) is not None])
+            self._config["model"]["n_gpus"] = n_available_gpus()
             validate_config(self._config)
             logging.debug('Loaded config: %s', self._config)
 
@@ -74,12 +94,10 @@ class BaseRunner:
         if self._model is None:
             self._load_config()
             logging.info('Creating model')
-            self._model = create_model(self._config, None, self._dataset, self._config_path)
-
-    def _get_stream(self, *args, **kwargs) -> cx.Stream:
-        """Get the prediction stream."""
-        self._load_dataset()
-        return getattr(self._dataset, self._stream_name+'_stream')(*args, **kwargs)
+            restore_from = self._config_path
+            if not path.isdir(restore_from):
+                restore_from = path.dirname(restore_from)
+            self._model = create_model(self._config, None, self._dataset, restore_from)
 
     @abstractmethod
     def _process_job(self, input_path: str, output_path: str) -> None:
@@ -92,7 +110,6 @@ class BaseRunner:
 
     def process_all(self) -> None:
         """Listen on the ``self._socket`` and process the incoming jobs in an endless loop."""
-        self._load_config()
         logging.info('Starting the loop')
         try:
             logging.debug('Creating socket')
