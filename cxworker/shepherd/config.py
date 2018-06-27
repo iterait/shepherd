@@ -24,7 +24,7 @@ def strip_url_scheme(url):
 
 
 class StorageConfig(Model):
-    url: str = URLType(required=True)
+    url: str = URLType(fqdn=False, required=True)
     access_key: str = StringType(required=True)
     secret_key: str = StringType(required=True)
 
@@ -38,7 +38,7 @@ class StorageConfig(Model):
 
 
 class RegistryConfig(Model):
-    url: str = URLType(required=True)
+    url: str = URLType(fqdn=False, required=True)
     username: Optional[str] = StringType(required=False)
     password: Optional[str] = StringType(required=False)
 
