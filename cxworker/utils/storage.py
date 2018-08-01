@@ -42,7 +42,7 @@ def push_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
     Push directory contents to the specified minio bucket.
 
     :param minio: Minio handle
-    :param bucket_name: Minio buckete name
+    :param bucket_name: Minio bucket name
     :param dir_name: directory name to push to from
     :raise StorageError: if the push fails
     """
