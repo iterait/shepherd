@@ -31,7 +31,7 @@ def pull_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
                 minio.fget_object(bucket_name, object.object_name, path.join(dir_name, filepath))
                 pulled_count += 1
         if pulled_count == 0:
-            logging.warning('No input objects pulled from bucket `%s`. Make they are in the `inputs/` folder.',
+            logging.warning('No input objects pulled from bucket `%s`. Make sure they are in the `inputs/` folder.',
                             bucket_name)
     except MinioError as me:
         raise StorageError('Failed to pull minio bucket `{}`'.format(bucket_name)) from me
