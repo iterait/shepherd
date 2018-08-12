@@ -1,5 +1,6 @@
 import logging
 import re
+import os
 import yaml
 from typing import Optional, Dict, Any
 
@@ -64,7 +65,32 @@ class WorkerConfig(Model):
 
 
 def load_worker_config(config_stream) -> WorkerConfig:
+    # regex pattern for compiling ENV variables
+    regex_no_brackets = re.compile(r'([^$]*)\$([A-Z_][A-Z_0-9]*)')
+    regex_brackets = re.compile(r'([^$]*)\${([A-Z_][A-Z_0-9]*)}')
+    yaml.add_implicit_resolver('!env', regex_no_brackets)
+    yaml.add_implicit_resolver('!env', regex_brackets)
+
+    # define constructor for recognizing environment variables
+    def env_constructor(loader, node):
+        value = loader.construct_scalar(node)
+
+        def replace_env_vars(matchobj):
+            env_name = matchobj.group(2)
+            if env_name not in os.environ:
+                raise ValueError(f'Environment variable `{env_name}` not set')
+            return matchobj.group(1) + os.environ[env_name]
+
+        value = regex_no_brackets.sub(replace_env_vars, value)
+        value = regex_brackets.sub(replace_env_vars, value)
+        return value
+
+    # add constructor to yaml loader
+    yaml.add_constructor('!env', env_constructor)
+
+    # construct config object
     config_object = yaml.load(config_stream)
+
     config = WorkerConfig(config_object)
     config.validate()
     return config

@@ -16,6 +16,16 @@ def valid_config_file():
 
 
 @pytest.fixture()
+def valid_config_env_file():
+    yield path.join('examples', 'configs', 'cxworker-bare-env.yml')
+
+
+@pytest.fixture()
+def invalid_config_env_file():
+    yield path.join('examples', 'configs', 'cxworker-bare-env-invalid.yml')
+
+
+@pytest.fixture()
 def invalid_config_file(tmpdir):
     """Invalid worker configuration with missing mandatory sections."""
     invalid_config_filepath = path.join(str(tmpdir), 'config.yml')

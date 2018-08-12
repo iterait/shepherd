@@ -1,0 +1,14 @@
+data_root: /tmp/worker-data
+registry:
+  url: ${REGISTRY_URL}
+storage:
+  url: $STORAGE_URL
+  access_key: ${STORAGE_ACCESS_KEY}
+  secret_key: $_STORAGE_SECRET_KEY
+sheep:
+  bare_sheep:
+    port: $SHEEP_PORT_1
+    type: bare
+    working_directory: filip/$HOME_PATH/docker/${MODEL_EXAMPLE}
+    stdout_file: /tmp/bare-cxworker-runner-stdout.txt
+    stderr_file: /tmp/bare-cxworker-runner-stderr.txt
