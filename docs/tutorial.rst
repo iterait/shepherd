@@ -30,7 +30,7 @@ Now, running the **cxworker** is incredibly easy.
 .. code-block:: shell
 
     docker-compose -f examples/docker/docker-compose-sandbox.yml up -d  # start up minio and docker registry
-    cxworker run -c examples/configs/cxworker-bare.yml  # start up cxworker
+    cxworker -c examples/configs/cxworker-bare.yml  # start up cxworker
 
 That is it! You should see some output similar to this:
 
