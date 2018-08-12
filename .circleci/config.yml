@@ -35,7 +35,7 @@ references:
     run:
       name: Run tests.
       command: |
-        python setup.py test
+        pytest -s --forked
 
   doc: &doc
     run:

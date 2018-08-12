@@ -1,12 +1,11 @@
+from gevent import monkey; monkey.patch_all()
 import pytest
 from minio import Minio
 import subprocess
 import os
 import random
 import string
-import os.path as path
-
-from cxworker.utils import create_clean_dir
+from typing import Tuple
 
 from cxworker.shepherd.config import RegistryConfig
 
@@ -18,8 +17,8 @@ def registry_config():
 
 
 @pytest.fixture(scope='session')
-def minio():
-    data_dir = path.join(create_clean_dir(path.join('/tmp', 'minio')))
+def minio(tmpdir_factory):
+    data_dir = tmpdir_factory.mktemp('minio')
     env = os.environ.copy()
     minio_key = 'AKIAIOSFODNN7EXAMPLE'
     minio_secret = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
@@ -56,3 +55,13 @@ def bucket(minio: Minio):
         for obj in minio.list_objects_v2(request_id, recursive=True):
             minio.remove_object(request_id, obj.object_name)
         minio.remove_bucket(request_id)
+
+
+@pytest.fixture()
+def image_valid() -> Tuple[str, str]:
+    yield 'library/alpine', 'latest'
+
+
+@pytest.fixture()
+def image_invalid() -> Tuple[str, str]:
+    yield 'cognexa/non-existing-image', 'latest'
