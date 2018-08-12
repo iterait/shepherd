@@ -6,6 +6,7 @@ Flask
 Flask-CORS
 simplejson
 pyzmq
+greenlet==0.4.13  # TODO: dirty hack by @Teyras
 gevent
 PyYaml
 requests
