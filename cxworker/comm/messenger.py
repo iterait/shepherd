@@ -15,7 +15,7 @@ class Messenger:
     @staticmethod
     def send(socket: zmq.Socket, message: Message, response_to: Optional[Message]=None) -> None:
         """
-        Encode the given image and send it to the given socket.
+        Encode given message and send it to the given socket.
 
         :param socket: socket to send the message to
         :param message: message to be send
