@@ -1,3 +1,4 @@
+from gevent import monkey; monkey.patch_all()
 import pytest
 from minio import Minio
 import subprocess

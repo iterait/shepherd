@@ -1,6 +1,7 @@
 pytest
 pytest-mock
 pytest-flask
+pytest-forked
 click
 Flask
 Flask-CORS
