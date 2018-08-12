@@ -30,16 +30,16 @@ assert len(docker_container_kwargs) == len(docker_commands)
 
 @pytest.mark.skipif(docker_not_available(), reason='Docker is not available.')
 @pytest.mark.parametrize('command,kwargs', zip(docker_commands, docker_container_kwargs))
-def test_commands(command, kwargs, registry_config):
-    image = DockerImage('pritunl/archlinux', 'latest', registry_config)
+def test_commands(command, kwargs, registry_config, image_valid):
+    image = DockerImage(*image_valid, registry_config)
     command = command.replace('<<IMAGE>>', image.full_name).split(' ')
     container = DockerContainer(image=image, **kwargs)
     assert command == container._build_run_command()
 
 
 @pytest.mark.skipif(docker_not_available(), reason='Docker is not available.')
-def test_docker_container(registry_config):
-    image = DockerImage('pritunl/archlinux', 'latest', registry_config)
+def test_docker_container(registry_config, image_valid):
+    image = DockerImage(*image_valid, registry_config)
     image.pull()
 
     num_running_before = len(run_docker_command(['ps']).split('\n'))

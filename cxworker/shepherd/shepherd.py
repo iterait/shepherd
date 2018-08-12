@@ -46,6 +46,7 @@ class Shepherd:
         self.minio = minio
         self.poller = zmq.Poller()
         self.sheep: Dict[str, BaseSheep] = {}
+        self.notifier: JobDoneNotifier = JobDoneNotifier()
 
         for sheep_id, config in sheep_config.items():
             socket = zmq.Context.instance().socket(zmq.DEALER)
@@ -65,7 +66,6 @@ class Shepherd:
             gevent.spawn(partial(self.dequeue_and_feed_jobs, sheep_id))
             gevent.spawn(partial(self.health_check, sheep_id))
 
-        self.notifier: JobDoneNotifier = JobDoneNotifier()
         self._listener = gevent.spawn(self.listen)
 
     def __getitem__(self, sheep_id: str) -> BaseSheep:

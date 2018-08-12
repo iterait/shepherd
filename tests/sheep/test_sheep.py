@@ -1,5 +1,6 @@
 import pytest
 import logging
+from typing import Tuple
 
 from cxworker.sheep import BareSheep, DockerSheep, SheepConfigurationError
 from cxworker.sheep.docker_sheep import extract_gpu_number
@@ -30,24 +31,29 @@ def test_bare_configuration_error(bare_sheep: BareSheep):
         bare_sheep.start('cxflow-test', 'i-do-not-exist')
 
 
+@pytest.fixture()
+def image_valid2() -> Tuple[str, str]:
+    yield 'library/alpine', 'edge'
+
+
 @pytest.mark.skipif(docker_not_available(), reason='Docker is not available.')
-def test_docker_sheep_start_stop(docker_sheep: DockerSheep):
-    docker_sheep.start('pritunl/archlinux', 'latest')
+def test_docker_sheep_start_stop(docker_sheep: DockerSheep, image_valid, image_valid2):
+    docker_sheep.start(*image_valid)
     assert docker_sheep.running
     docker_sheep.slaughter()
     assert not docker_sheep.running
-    docker_sheep.start('base/archlinux', '')
-    docker_sheep.start('base/archlinux', '')
+    docker_sheep.start(*image_valid2)
+    docker_sheep.start(*image_valid2)
 
 
 @pytest.mark.skipif(docker_not_available(), reason='Docker is not available.')
-def test_docker_configuration_error(docker_sheep: DockerSheep):
+def test_docker_configuration_error(docker_sheep: DockerSheep, image_valid, image_invalid):
     with pytest.raises(SheepConfigurationError):  # image pull should fail
-        docker_sheep.start('missing/image-sosjshd', 'latest')
+        docker_sheep.start(*image_invalid)
 
     docker_sheep.sheep_data_root = 'i-do-not/exist'
     with pytest.raises(SheepConfigurationError):  # container start should fail
-        docker_sheep.start('pritunl/archlinux', 'latest')
+        docker_sheep.start(*image_valid)
 
 
 def test_welcome(caplog):
