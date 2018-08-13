@@ -27,8 +27,8 @@ setup(name='cxworker',
       zip_safe=False,
       setup_requires=['pytest-runner'],
       tests_require=['pytest', 'pytest-mock', 'pytest-flask'],
-      install_requires=['click', 'Flask', 'simplejson', 'pyzmq', 'gevent', 'PyYaml', 'requests', 'minio', 'schematics',
-                        'cxflow'],
+      install_requires=['click', 'flask', 'flask_cors', 'simplejson', 'pyzmq', 'gevent', 'PyYaml', 'requests', 'minio',
+                        'schematics', 'cxflow', 'apistrap'],
       entry_points={
           'console_scripts': [
               'cxworker=cxworker.manage:run',
