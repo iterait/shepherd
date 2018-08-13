@@ -18,6 +18,12 @@ def registry_config():
 
 @pytest.fixture(scope='session')
 def minio(tmpdir_factory):
+    try:
+        if subprocess.call(['minio']) != 0:
+            raise RuntimeError()
+    except:
+        pytest.skip("Minio is not installed")
+
     data_dir = tmpdir_factory.mktemp('minio')
     env = os.environ.copy()
     minio_key = 'AKIAIOSFODNN7EXAMPLE'
