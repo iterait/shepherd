@@ -1,18 +1,20 @@
-pytest
-pytest-mock
-pytest-flask
-pytest-forked
 click
 Flask
 Flask-CORS
 simplejson
 pyzmq
-greenlet==0.4.13  # TODO: dirty hack by @Teyras
-gevent
+greenlet>=0.4.14
+gevent>=1.3.5
 PyYaml
 requests
 minio
 pip
 schematics
 cxflow
-greenlet==0.4.13
+git+https://github.com/Cognexa/apistrap.git@dev
+
+# testing
+pytest
+pytest-mock
+pytest-flask
+pytest-forked

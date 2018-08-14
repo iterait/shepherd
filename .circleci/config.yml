@@ -9,6 +9,7 @@ references:
         export DEBIAN_FRONTEND=noninteractive
         apt-get update -qy
         apt-get install -y git python3-dev python3-pip curl
+        pip3 install -r requirements.txt
         pip3 install -e .
         echo "$(tail -n +2 cxworker/manage.py)" > cxworker/manage.py  # remove gevent monkey patch (it breaks sphinx)
 
@@ -23,8 +24,8 @@ references:
         mv /tmp/docker/* /usr/bin
         pacman --noconfirm --needed -Syu minio
         mkdir examples/docker/cxflow_example/ssh
-        echo $PRIVATE_SSH_KEY_PRIVATE | tr ' ' '\n' | base64 -d > examples/docker/cxflow_example/ssh/id_rsa
-        pip install -e .
+        pip3 install -r requirements.txt
+        pip3 install -e .
 
   add_rw_key: &add_rw_key
     add_ssh_keys:
@@ -35,7 +36,7 @@ references:
     run:
       name: Run tests.
       command: |
-        pytest -s --forked
+        pytest --forked
 
   doc: &doc
     run:
