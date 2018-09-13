@@ -11,7 +11,7 @@ class UnknownSheepError(ClientActionError):
 
 
 class UnknownJobError(ClientActionError):
-    """Exception raised when a client asks about a job that is not assigned to this worker."""
+    """Exception raised when a client asks about a job that is not assigned to this shepherd."""
 
 
 class StorageError(AppError):

@@ -1,11 +1,11 @@
-# cxflow runner docker example
+# Shepherd runner docker example
 This directory contains simple config, dataset, model and Dockerfile with cxflow docker runner.
 
-A container of this image may be utilized with **cxworker** for predicting new examples.
+A container of this image may be utilized with **shepherd** for predicting new examples.
 
 To build and test it
 
-- create a `ssh` dir with SSH keys having access to **cxworker** GitHub
+- create a `ssh` dir with SSH keys having access to **shepherd** GitHub
 - start a local docker registry with the provided docker compose sandbox (`../docker-compose-sandbox.yml`)
 - build, tag and push the image to the registry with `./build.sh`
 

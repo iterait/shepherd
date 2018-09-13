@@ -9,18 +9,18 @@ from schematics.types import StringType
 
 from .base_sheep import BaseSheep
 from .docker_sheep import extract_gpu_number
-from cxworker.sheep.errors import SheepConfigurationError
+from shepherd.sheep.errors import SheepConfigurationError
 
 
 class BareSheep(BaseSheep):
     """
-    An adapter that running models on bare metal with ``cxworker-runner``.
+    An adapter that running models on bare metal with ``shepherd-runner``.
     This might be useful when Docker isolation is impossible or not necessary, for example in deployments with just a
     few models.
     """
 
     class Config(BaseSheep.Config):
-        working_directory: str = StringType(required=True)  # working directory of the cxworker-runner
+        working_directory: str = StringType(required=True)  # working directory of the shepherd-runner
         stdout_file: Optional[str] = StringType(required=False)  # if specified, capture runner's stdout to this file
         stderr_file: Optional[str] = StringType(required=False)  # if specified, capture runner's stderr to this file
 
@@ -75,7 +75,7 @@ class BareSheep(BaseSheep):
 
         # start the runner in a new sub-process
         self._runner = subprocess.Popen(
-            shlex.split("cxworker-runner -p {} {}".format(self._config.port, self._runner_config_path)), env=env,
+            shlex.split("shepherd-runner -p {} {}".format(self._config.port, self._runner_config_path)), env=env,
             cwd=self._config.working_directory, stdout=stdout, stderr=stderr)
 
     def slaughter(self) -> None:

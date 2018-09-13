@@ -1,4 +1,4 @@
-data_root: /tmp/worker-data
+data_root: /tmp/shepherd-data
 registry:
   url: http://0.0.0.0:6000
 storage:
@@ -11,5 +11,5 @@ sheep:
     port: 9001
     type: bare
     working_directory: examples/docker/cxflow_example
-    stdout_file: /tmp/bare-cxworker-runner-stdout.txt
-    stderr_file: /tmp/bare-cxworker-runner-stderr.txt
+    stdout_file: /tmp/bare-shepherd-runner-stdout.txt
+    stderr_file: /tmp/bare-shepherd-runner-stderr.txt

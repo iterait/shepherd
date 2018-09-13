@@ -6,9 +6,9 @@ from flask import Blueprint, send_file
 from minio import Minio
 from minio.error import MinioError, BucketAlreadyExists, BucketAlreadyOwnedByYou
 
-from cxworker.constants import DONE_FILE, ERROR_FILE, DEFAULT_OUTPUT_FILE, OUTPUT_DIR, DEFAULT_PAYLOAD_PATH
-from cxworker.shepherd.shepherd import Shepherd
-from cxworker.utils import minio_object_exists
+from shepherd.constants import DONE_FILE, ERROR_FILE, DEFAULT_OUTPUT_FILE, OUTPUT_DIR, DEFAULT_PAYLOAD_PATH
+from shepherd.shepherd.shepherd import Shepherd
+from shepherd.utils import minio_object_exists
 from .requests import StartJobRequest
 from .responses import StartJobResponse, StatusResponse, JobStatusResponse, ErrorResponse, JobErrorResponse
 from .errors import ClientActionError, StorageError, UnknownJobError, NameConflictError
@@ -23,10 +23,10 @@ def check_job_exists(minio, job_id):
         raise StorageError('Failed to check minio bucket `{}`'.format(job_id)) from me
 
 
-def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
-    worker = Blueprint('worker', __name__)
+def create_shepherd_blueprint(shepherd: Shepherd, minio: Minio):
+    api = Blueprint('shepherd', __name__)
 
-    @worker.route('/start-job', methods=['POST'])
+    @api.route('/start-job', methods=['POST'])
     @swagger.autodoc()
     @swagger.accepts(StartJobRequest)
     @swagger.responds_with(StartJobResponse)
@@ -54,7 +54,7 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
         shepherd.enqueue_job(start_job_request.job_id, start_job_request.model, start_job_request.sheep_id)
         return StartJobResponse()
 
-    @worker.route("/jobs/<job_id>/ready", methods=["GET"])
+    @api.route("/jobs/<job_id>/ready", methods=["GET"])
     @swagger.autodoc()
     @swagger.responds_with(JobStatusResponse)
     def is_ready(job_id: str):
@@ -67,7 +67,7 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
         check_job_exists(minio, job_id)
         return JobStatusResponse({'ready': shepherd.is_job_done(job_id)})
 
-    @worker.route("/jobs/<job_id>/wait_ready", methods=["GET"])
+    @api.route("/jobs/<job_id>/wait_ready", methods=["GET"])
     @swagger.autodoc()
     @swagger.responds_with(JobStatusResponse)
     def wait_ready(job_id: str):
@@ -80,8 +80,8 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
         shepherd.notifier.wait_for(lambda: shepherd.is_job_done(job_id))
         return JobStatusResponse({'ready': shepherd.is_job_done(job_id)})
 
-    @worker.route("/jobs/<job_id>/result/<result_file>", methods=["GET"])
-    @worker.route("/jobs/<job_id>/result", methods=["GET"])
+    @api.route("/jobs/<job_id>/result/<result_file>", methods=["GET"])
+    @api.route("/jobs/<job_id>/result", methods=["GET"])
     @swagger.autodoc()
     @swagger.responds_with(JobStatusResponse, code=202)
     @swagger.responds_with(ErrorResponse, code=404)
@@ -109,7 +109,7 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
         mime = mimetypes.guess_type(result_file)[0] or "application/octet-stream"
         return send_file(minio.get_object(job_id, output_path), mimetype=mime)
 
-    @worker.route('/status', methods=['GET'])
+    @api.route('/status', methods=['GET'])
     @swagger.autodoc()
     @swagger.responds_with(StatusResponse)
     def get_status():
@@ -118,4 +118,4 @@ def create_worker_blueprint(shepherd: Shepherd, minio: Minio):
         response.containers = dict(shepherd.get_status())
         return response
 
-    return worker
+    return api

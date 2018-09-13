@@ -2,7 +2,7 @@ from schematics import Model
 from schematics.exceptions import ValidationError
 from schematics.types import StringType, ModelType
 
-from cxworker.api.models import ModelModel
+from shepherd.api.models import ModelModel
 
 
 class StartJobRequest(Model):

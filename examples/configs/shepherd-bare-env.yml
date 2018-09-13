@@ -1,4 +1,4 @@
-data_root: /tmp/worker-data
+data_root: /tmp/shepherd-data
 registry:
   url: ${REGISTRY_URL}
 storage:
@@ -10,5 +10,5 @@ sheep:
     port: $SHEEP_PORT_1
     type: bare
     working_directory: filip/$HOME_PATH/docker/${MODEL_EXAMPLE}
-    stdout_file: /tmp/bare-cxworker-runner-stdout.txt
-    stderr_file: /tmp/bare-cxworker-runner-stderr.txt
+    stdout_file: /tmp/bare-shepherd-runner-stdout.txt
+    stderr_file: /tmp/bare-shepherd-runner-stderr.txt

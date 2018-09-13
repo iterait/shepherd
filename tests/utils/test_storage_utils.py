@@ -5,9 +5,9 @@ import io
 
 from minio import Minio
 
-from cxworker.constants import INPUT_DIR, OUTPUT_DIR
-from cxworker.utils import *
-from cxworker.api.errors import StorageError
+from shepherd.constants import INPUT_DIR, OUTPUT_DIR
+from shepherd.utils import *
+from shepherd.api.errors import StorageError
 
 
 def test_create_clean_dir(tmpdir):

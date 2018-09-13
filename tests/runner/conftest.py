@@ -5,7 +5,7 @@ import json
 import os.path as path
 import numpy as np
 
-from cxworker.constants import INPUT_DIR, OUTPUT_DIR, DEFAULT_PAYLOAD_FILE
+from shepherd.constants import INPUT_DIR, OUTPUT_DIR, DEFAULT_PAYLOAD_FILE
 
 original_data = [{'a': np.array([1, 2, 3])}, [np.array(1), np.array(2)], (np.array(42), 'crazy', None)]
 serializable_data = [{'a': [1, 2, 3]}, [1, 2], [42, 'crazy', None]]

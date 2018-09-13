@@ -2,9 +2,9 @@ import pytest
 import logging
 from typing import Tuple
 
-from cxworker.sheep import BareSheep, DockerSheep, SheepConfigurationError
-from cxworker.sheep.docker_sheep import extract_gpu_number
-from cxworker.sheep.welcome import welcome
+from shepherd.sheep import BareSheep, DockerSheep, SheepConfigurationError
+from shepherd.sheep.docker_sheep import extract_gpu_number
+from shepherd.sheep.welcome import welcome
 
 from ..docker.docker_not_available import docker_not_available
 

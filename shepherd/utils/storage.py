@@ -6,7 +6,7 @@ from os import path as path
 from minio import Minio
 from minio.error import MinioError
 
-from cxworker.constants import INPUT_DIR, OUTPUT_DIR
+from shepherd.constants import INPUT_DIR, OUTPUT_DIR
 from ..api.errors import StorageError
 
 _MINIO_FOLDER_DELIMITER = '/'

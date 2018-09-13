@@ -4,7 +4,7 @@ from io import BytesIO
 import pytest
 from minio import Minio
 
-from cxworker.constants import DONE_FILE, ERROR_FILE, OUTPUT_DIR
+from shepherd.constants import DONE_FILE, ERROR_FILE, OUTPUT_DIR
 
 
 @pytest.fixture()

@@ -9,12 +9,12 @@ import gevent
 import zmq.green as zmq
 from minio import Minio
 
-from cxworker.constants import OUTPUT_DIR, DONE_FILE, ERROR_FILE
+from shepherd.constants import OUTPUT_DIR, DONE_FILE, ERROR_FILE
 from .config import RegistryConfig
 from ..sheep import *
 from ..api.models import SheepModel
 from ..api.models import ModelModel
-from cxworker.sheep.errors import SheepConfigurationError
+from shepherd.sheep.errors import SheepConfigurationError
 from ..api.errors import UnknownSheepError, UnknownJobError
 from ..utils import create_clean_dir
 from ..utils import pull_minio_bucket, push_minio_bucket, minio_object_exists
@@ -249,7 +249,7 @@ class Shepherd:
                 if job_id in sheep.jobs_meta.keys() or job_id in sheep.in_progress:
                     return False
             else:
-                raise UnknownJobError('Job `{}` is not know to this worker'.format(job_id))
+                raise UnknownJobError('Job `{}` is not know to this shepherd'.format(job_id))
 
     def close(self):
         self.slaughter_all()

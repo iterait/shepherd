@@ -1,5 +1,5 @@
 import pytest
-from cxworker.comm import *
+from shepherd.comm import *
 
 
 def test_send_rcv(dealer_socket, router_socket, message: Message):

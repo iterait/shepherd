@@ -2,8 +2,8 @@ import pytest
 import gevent
 
 
-from cxworker.docker import DockerContainer, DockerImage, DockerError
-from cxworker.docker.utils import run_docker_command
+from shepherd.docker import DockerContainer, DockerImage, DockerError
+from shepherd.docker.utils import run_docker_command
 
 from .docker_not_available import docker_not_available
 

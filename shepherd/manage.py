@@ -13,8 +13,8 @@ from urllib3.exceptions import MaxRetryError
 from .api import create_app
 from .shepherd import Shepherd
 from .sheep.welcome import welcome
-from .api.views import create_worker_blueprint
-from .shepherd.config import load_worker_config
+from .api.views import create_shepherd_blueprint
+from .shepherd.config import load_shepherd_config
 
 
 @click.command()
@@ -23,15 +23,15 @@ from .shepherd.config import load_worker_config
 @click.option("-c", "--config", "config_file", required=True, help="Path to a configuration file")
 def run(host, port, config_file) -> None:
     """
-    Run worker configured from the given ``config_file`` and listen for the API call on the given ``host`` and ``port``.
+    Run shepherd configured from the given ``config_file`` and listen for the API call on the given ``host`` and ``port``.
 
     :param host: API host
     :param port: API port
-    :param config_file: worker config file
+    :param config_file: shepherd config file
     """
-    # load worker configuration
+    # load shepherd configuration
     with open(config_file, "r") as config_stream:
-        config = load_worker_config(config_stream)
+        config = load_shepherd_config(config_stream)
 
     # set-up logging
     logging.basicConfig(level=config.logging.log_level,
@@ -48,7 +48,7 @@ def run(host, port, config_file) -> None:
     shepherd = Shepherd(config.sheep, config.data_root, minio, config.registry)
 
     app = create_app(__name__)
-    app.register_blueprint(create_worker_blueprint(shepherd, minio))
+    app.register_blueprint(create_shepherd_blueprint(shepherd, minio))
     api_server = WSGIServer((host, port), app, log=logging.getLogger(''))
     api_handler = gevent.spawn(api_server.serve_forever)
 
@@ -62,7 +62,7 @@ def run(host, port, config_file) -> None:
 
     # process API calls forever
     try:
-        logging.info('Worker API is available at http://%s:%s', host, port)
+        logging.info('Shepherd API is available at http://%s:%s', host, port)
         api_handler.join()
     except KeyboardInterrupt:
         logging.info("Interrupt caught, slaughtering all the sheep")

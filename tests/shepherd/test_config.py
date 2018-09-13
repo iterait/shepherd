@@ -4,16 +4,16 @@ import pytest
 import os
 from schematics.exceptions import DataError
 
-from cxworker.shepherd.config import load_worker_config, WorkerConfig
+from shepherd.shepherd.config import load_shepherd_config, ShepherdConfig
 
 
 def test_load_config(valid_config_file):
     with open(valid_config_file) as file:
-        config = load_worker_config(file)
+        config = load_shepherd_config(file)
 
-    assert isinstance(config, WorkerConfig)
+    assert isinstance(config, ShepherdConfig)
 
-    assert config.data_root == '/tmp/worker-data'
+    assert config.data_root == '/tmp/shepherd-data'
 
     assert config.storage.url == 'http://0.0.0.0:7000'
     assert config.storage.schemeless_url == '0.0.0.0:7000'
@@ -40,11 +40,11 @@ def test_load_config_valid_env(valid_config_env_file):
     os.environ['MODEL_EXAMPLE'] = 'cxflow_example'
 
     with open(valid_config_env_file) as file:
-        config = load_worker_config(file)
+        config = load_shepherd_config(file)
 
-    assert isinstance(config, WorkerConfig)
+    assert isinstance(config, ShepherdConfig)
 
-    assert config.data_root == '/tmp/worker-data'
+    assert config.data_root == '/tmp/shepherd-data'
 
     assert config.registry.url == os.environ['REGISTRY_URL']
     assert config.storage.url == os.environ['STORAGE_URL']
@@ -72,7 +72,7 @@ def test_load_config_invalid_env(valid_config_env_file):
 
     with pytest.raises(ValueError, match='Environment variable `REGISTRY_URL` not set'), \
          open(valid_config_env_file) as file:
-        load_worker_config(file)
+        load_shepherd_config(file)
 
 
 def test_load_config_invalid_env_name(invalid_config_env_file):
@@ -85,12 +85,12 @@ def test_load_config_invalid_env_name(invalid_config_env_file):
     os.environ['MODEL_EXAMPLE'] = 'cxflow_example'
 
     with open(invalid_config_env_file) as file:
-        config = load_worker_config(file)
+        config = load_shepherd_config(file)
 
-        assert isinstance(config, WorkerConfig)
+        assert isinstance(config, ShepherdConfig)
         assert config.sheep['bare_sheep']['name'] == '${3_SHEEP_NAME}'
 
 
 def test_invalid_config(invalid_config_file):
     with pytest.raises(DataError), open(invalid_config_file) as file:
-        load_worker_config(file)
+        load_shepherd_config(file)

@@ -12,8 +12,8 @@ import cxflow as cx
 from cxflow.cli.common import create_dataset, create_model
 from cxflow.cli.util import validate_config, find_config
 from cxflow.utils import load_config
-from cxworker.comm import *
-from cxworker.constants import INPUT_DIR, OUTPUT_DIR
+from shepherd.comm import *
+from shepherd.constants import INPUT_DIR, OUTPUT_DIR
 
 
 def n_available_gpus() -> int:

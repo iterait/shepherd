@@ -3,15 +3,15 @@ import json
 import gevent
 import pytest
 
-from cxworker.constants import ERROR_FILE, DEFAULT_OUTPUT_PATH, DONE_FILE
-from cxworker.sheep import BareSheep, DockerSheep, SheepConfigurationError
-from cxworker.shepherd import Shepherd
-from cxworker.api.errors import UnknownSheepError, UnknownJobError
-from cxworker.shepherd.config import WorkerConfig
-from cxworker.utils.storage import minio_object_exists
+from shepherd.constants import ERROR_FILE, DEFAULT_OUTPUT_PATH, DONE_FILE
+from shepherd.sheep import BareSheep, DockerSheep, SheepConfigurationError
+from shepherd.shepherd import Shepherd
+from shepherd.api.errors import UnknownSheepError, UnknownJobError
+from shepherd.shepherd.config import ShepherdConfig
+from shepherd.utils.storage import minio_object_exists
 
 
-def test_shepherd_init(valid_config: WorkerConfig, minio):
+def test_shepherd_init(valid_config: ShepherdConfig, minio):
 
     # test valid shepherd creation
     shepherd = Shepherd(valid_config.sheep, valid_config.data_root, minio, valid_config.registry)

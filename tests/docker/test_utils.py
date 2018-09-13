@@ -3,8 +3,8 @@ import gevent
 
 import pytest
 
-from cxworker.docker import DockerError
-from cxworker.docker.utils import run_docker_command, kill_blocking_container
+from shepherd.docker import DockerError
+from shepherd.docker.utils import run_docker_command, kill_blocking_container
 
 from .docker_not_available import docker_not_available
 

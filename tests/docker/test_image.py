@@ -1,7 +1,7 @@
 import pytest
 
-from cxworker.shepherd.config import RegistryConfig
-from cxworker.docker import DockerImage, DockerError
+from shepherd.shepherd.config import RegistryConfig
+from shepherd.docker import DockerImage, DockerError
 
 from .docker_not_available import docker_not_available
 
