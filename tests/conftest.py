@@ -12,8 +12,9 @@ from shepherd.shepherd.config import RegistryConfig
 
 @pytest.fixture()
 def registry_config():
-    yield RegistryConfig(dict(url='https://registry.hub.docker.com', username='cxworkertestdocker',
-                              password='abc321321'))
+    yield RegistryConfig(dict(url='https://registry.hub.docker.com',
+                              username='iteraitshepherd',
+                              password='Iterait123'))
 
 
 @pytest.fixture(scope='session')
