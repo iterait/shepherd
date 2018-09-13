@@ -1,5 +1,7 @@
 # Shepherd
 
+[![CircleCI](https://circleci.com/gh/iterait/shepherd.png?style=shield&circle-token=1045f8994f4f35d81130331600a0683e16bbb4f9)](https://circleci.com/gh/iterait/shepherd/tree/master)
+
 Provides access to computation resources on a single machine.
 
 ## Development Guide
