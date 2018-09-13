@@ -12,7 +12,7 @@ class Message(Model):
     """Optional identity (for zmq ROUTER sockets)."""
 
     job_id = StringType()
-    """**cxworker** job id."""
+    """**shepherd** job id."""
 
     @serializable
     def message_type(self):
@@ -40,12 +40,12 @@ class InputMessage(Message):
 
 
 class DoneMessage(Message):
-    """Message informing :py:class:`cxworker.shepherd.Shepherd` about a finished job."""
+    """Message informing :py:class:`shepherd.shepherd.Shepherd` about a finished job."""
     pass
 
 
 class ErrorMessage(Message):
-    """Message informing :py:class:`cxworker.shepherd.Shepherd` about an encountered error."""
+    """Message informing :py:class:`shepherd.shepherd.Shepherd` about an encountered error."""
 
     short_error = StringType()
     """Human-readable short error message."""

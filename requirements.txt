@@ -11,7 +11,7 @@ minio
 pip
 schematics
 cxflow
-git+https://github.com/Cognexa/apistrap.git@dev
+git+https://github.com/iterait/apistrap.git
 
 # testing
 pytest

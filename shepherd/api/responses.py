@@ -3,7 +3,7 @@ from typing import Dict
 from schematics import Model
 from schematics.types import StringType, BooleanType, DictType, ModelType
 
-from cxworker.api.models import SheepModel
+from shepherd.api.models import SheepModel
 
 
 class ErrorResponse(Model):

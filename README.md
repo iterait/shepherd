@@ -1,4 +1,4 @@
-# CXWorker
+# Shepherd
 
 Provides access to computation resources on a single machine.
 
@@ -15,7 +15,7 @@ Provides access to computation resources on a single machine.
 
 The test suite can be run with `python setup.py test`.
 
-### Launching the Worker
+### Launching the Shepherd
 
 First, you need to have a Docker registry and a Minio server running. The 
 easiest way to achieve this is to use the Docker Compose example:
@@ -28,18 +28,18 @@ Second, you need a configuration file. Again, examples found in the `examples/co
 folder are a great starting point. Feel free to pick one of those and edit it to 
 your needs.
 
-Finally, you need to run the following command to start the worker:
+Finally, you need to run the following command to start the shepherd:
 
 ```
-cxworker -c examples/configs/cxworker-docker-cpu.yml
+shepherd -c examples/configs/shepherd-docker-cpu.yml
 ```
 
 Be sure to adjust the command line parameters according to your needs (`-h` is 
-your host address, `-p` is the port number where the worker API server listens 
+your host address, `-p` is the port number where the shepherd API server listens 
 and `-c` is the path to the configuration file).
 
-After launching the worker, there will be an HTTP API available on the 
-configured port that can be used to control the worker.
+After launching the shepherd, there will be an HTTP API available on the 
+configured port that can be used to control the shepherd.
 
 ### Processing a Request Directly
 

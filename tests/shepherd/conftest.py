@@ -4,30 +4,30 @@ import os.path as path
 from io import BytesIO
 import os.path as path
 
-from cxworker.constants import DEFAULT_PAYLOAD_PATH, INPUT_DIR
-from cxworker.shepherd.config import load_worker_config
-from cxworker.shepherd import Shepherd
-from cxworker.api.models import ModelModel
+from shepherd.constants import DEFAULT_PAYLOAD_PATH, INPUT_DIR
+from shepherd.shepherd.config import load_shepherd_config
+from shepherd.shepherd import Shepherd
+from shepherd.api.models import ModelModel
 
 
 @pytest.fixture()
 def valid_config_file():
-    yield path.join('examples', 'configs', 'cxworker-bare.yml')
+    yield path.join('examples', 'configs', 'shepherd-bare.yml')
 
 
 @pytest.fixture()
 def valid_config_env_file():
-    yield path.join('examples', 'configs', 'cxworker-bare-env.yml')
+    yield path.join('examples', 'configs', 'shepherd-bare-env.yml')
 
 
 @pytest.fixture()
 def invalid_config_env_file():
-    yield path.join('examples', 'configs', 'cxworker-bare-env-invalid.yml')
+    yield path.join('examples', 'configs', 'shepherd-bare-env-invalid.yml')
 
 
 @pytest.fixture()
 def invalid_config_file(tmpdir):
-    """Invalid worker configuration with missing mandatory sections."""
+    """Invalid shepherd configuration with missing mandatory sections."""
     invalid_config_filepath = path.join(str(tmpdir), 'config.yml')
     with open(invalid_config_filepath, 'w') as file:
         file.write('logging:\n  level: debug')
@@ -37,7 +37,7 @@ def invalid_config_file(tmpdir):
 @pytest.fixture()
 def valid_config(valid_config_file):
     with open(valid_config_file) as file:
-        yield load_worker_config(file)
+        yield load_shepherd_config(file)
 
 
 @pytest.fixture()

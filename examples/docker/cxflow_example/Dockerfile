@@ -1,4 +1,4 @@
-FROM cognexa/cxflow:latest
+FROM iterait/cxflow:latest
 
 RUN pacman -Syu --noconfirm --needed python-pyzmq openssh python-numpy && paccache -rfk0
 
@@ -6,7 +6,7 @@ ADD ssh /root/.ssh
 RUN chmod 600 -R /root/.ssh
 RUN ssh-keyscan -H github.com >> /root/.ssh/known_hosts
 
-RUN pip install git+ssh://git@github.com/cognexa/cxworker.git
+RUN pip install git+ssh://git@github.com/iterait/shepherd.git
 
 ENV LD_LIBRARY_PATH /usr/local/lib
 
@@ -19,4 +19,4 @@ ADD . .
 # Replace this with your model of choice
 ADD cxflow-test/latest/docker-config.yaml /project/config.yaml
 
-CMD cxworker-runner /project
+CMD shepherd-runner /project

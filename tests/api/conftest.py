@@ -2,9 +2,9 @@ from unittest import mock
 
 import pytest
 
-from cxworker.api import create_app
-from cxworker.api.views import create_worker_blueprint
-from cxworker.shepherd import Shepherd
+from shepherd.api import create_app
+from shepherd.api.views import create_shepherd_blueprint
+from shepherd.shepherd import Shepherd
 
 
 @pytest.fixture(scope="function")
@@ -15,7 +15,7 @@ def mock_shepherd():
 @pytest.fixture(scope="function")
 def app(minio, mock_shepherd):
     app = create_app(__name__)
-    app.register_blueprint(create_worker_blueprint(mock_shepherd, minio))
+    app.register_blueprint(create_shepherd_blueprint(mock_shepherd, minio))
 
     with app.app_context():
         yield app

@@ -1,6 +1,6 @@
 import logging
 
-from cxworker.shepherd.config import RegistryConfig
+from shepherd.shepherd.config import RegistryConfig
 from .utils import run_docker_command
 
 
@@ -11,7 +11,7 @@ class DockerImage:
         """
         Initialize new :py:class:`DockerImage`.
 
-        :param name: image name, e.g.: ``cognexa/cxflow``
+        :param name: image name, e.g.: ``library/alpine``
         :param tag: image tag, e.g.: ``latest`` or ``stable``
         :param registry: docker registry config
         """
@@ -21,7 +21,7 @@ class DockerImage:
 
     @property
     def full_name(self) -> str:
-        """Return docker image full name including registry url. E.g.: ``docker.cognexa.com/isletnet:latest``."""
+        """Return docker image full name including registry url. E.g.: ``docker.iterait.com/my-image:latest``."""
         registry = self._registry.schemeless_url.strip()
         if len(registry) > 0:
             registry += '/'

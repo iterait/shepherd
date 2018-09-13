@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
-setup(name='cxworker',
-      version='0.3.0',
-      description='Worker',
-      long_description='Works',
+setup(name='shepherd',
+      version='0.3.1',
+      description='Shepherd',
+      long_description='Asynchronous worker',
       classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
@@ -18,11 +18,11 @@ setup(name='cxworker',
         'Programming Language :: Python :: 3.6'
       ],
       keywords='worker',
-      url='https://github.com/cognexa/cxworker',
-      author='Cognexa Solutions s.r.o.',
-      author_email='info@cognexa.com',
+      url='https://github.com/iterait/shepherd',
+      author=['Iterait a.s.', 'Cognexa Solutions s.r.o.'],
+      author_email='info@iterait.com',
       license='MIT',
-      packages=['cxworker']+['.'.join(('cxworker', package)) for package in find_packages('cxworker')],
+      packages=['shepherd']+['.'.join(('shepherd', package)) for package in find_packages('shepherd')],
       include_package_data=True,
       zip_safe=False,
       setup_requires=['pytest-runner'],
@@ -31,8 +31,8 @@ setup(name='cxworker',
                         'schematics', 'cxflow', 'apistrap'],
       entry_points={
           'console_scripts': [
-              'cxworker=cxworker.manage:run',
-              'cxworker-runner=cxworker.runner.runner_entry_point:run'
+              'shepherd=shepherd.manage:run',
+              'shepherd-runner=shepherd.runner.runner_entry_point:run'
           ]
       }
 )

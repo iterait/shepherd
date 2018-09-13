@@ -12,10 +12,10 @@ __all__ = ['run']
 
 def create_argparser():
     """Create and return argument parser."""
-    parser = ArgumentParser('cxworker runner')
+    parser = ArgumentParser('shepherd runner')
     parser.add_argument('-p', '--port', dest="port", default=9999, type=int, help='Socket port to bind to')
     parser.add_argument('-s', '--stream', default='predict', help='Dataset stream name')
-    parser.add_argument('-r', '--runner', default='cxworker.runner.JSONRunner', help='Fully qualified runner class')
+    parser.add_argument('-r', '--runner', default='shepherd.runner.JSONRunner', help='Fully qualified runner class')
     parser.add_argument('config_path', help='cxflow configuration file path')
     return parser
 
@@ -24,7 +24,7 @@ def run() -> None:
     """
     Create a runner and list on the configured port for job ``InputMessage`` s.
 
-    Can be invoked with installed ``cxworker-runner`` command.
+    Can be invoked with installed ``shepherd-runner`` command.
     """
 
     # parse args

@@ -103,7 +103,7 @@ ENV/
 .mypy_cache/
 
 ssh
-cxworker.*.rst
-docs/cxworker/cxworker.rst
+shepherd.*.rst
+docs/shepherd/shepherd.rst
 .pytest_cache
 

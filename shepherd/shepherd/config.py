@@ -56,7 +56,7 @@ class LoggingConfig(Model):
         return getattr(logging, self.level.upper())
 
 
-class WorkerConfig(Model):
+class ShepherdConfig(Model):
     data_root: str = StringType(required=True)
     storage: StorageConfig = ModelType(StorageConfig, required=True)
     logging: LoggingConfig = ModelType(LoggingConfig, required=False, default=LoggingConfig(dict(level='info')))
@@ -64,7 +64,7 @@ class WorkerConfig(Model):
     registry: Optional[RegistryConfig] = ModelType(RegistryConfig, required=False)
 
 
-def load_worker_config(config_stream) -> WorkerConfig:
+def load_shepherd_config(config_stream) -> ShepherdConfig:
     # regex pattern for compiling ENV variables
     regex_no_brackets = re.compile(r'([^$]*)\$([A-Z_][A-Z_0-9]*)')
     regex_brackets = re.compile(r'([^$]*)\${([A-Z_][A-Z_0-9]*)}')
@@ -91,6 +91,6 @@ def load_worker_config(config_stream) -> WorkerConfig:
     # construct config object
     config_object = yaml.load(config_stream)
 
-    config = WorkerConfig(config_object)
+    config = ShepherdConfig(config_object)
     config.validate()
     return config

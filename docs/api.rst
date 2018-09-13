@@ -1,4 +1,4 @@
-cxworker API
+Shepherd API
 ============
 
 TBD

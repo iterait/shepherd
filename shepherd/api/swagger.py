@@ -1,5 +1,5 @@
 from apistrap import Swagger
 
 swagger = Swagger()
-swagger.title = "CXWorker"
+swagger.title = "Shepherd"
 

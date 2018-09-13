@@ -1,7 +1,7 @@
 Docker Sheep
 ============
 
-:py:class:`cxworker.sheep.DockerSheep` does exactly the same as `bare sheep <bare_sheep.html>`_ except it
+:py:class:`shepherd.sheep.DockerSheep` does exactly the same as `bare sheep <bare_sheep.html>`_ except it
 runs the *runner* in a docker. Similarly to the bare sheep's runner, docker runner is expected to listen for
 incoming jobs at a socket bind to port **9999**.
 

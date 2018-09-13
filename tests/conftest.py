@@ -7,7 +7,7 @@ import random
 import string
 from typing import Tuple
 
-from cxworker.shepherd.config import RegistryConfig
+from shepherd.shepherd.config import RegistryConfig
 
 
 @pytest.fixture()
@@ -70,4 +70,4 @@ def image_valid() -> Tuple[str, str]:
 
 @pytest.fixture()
 def image_invalid() -> Tuple[str, str]:
-    yield 'cognexa/non-existing-image', 'latest'
+    yield 'iterait/non-existing-image', 'latest'

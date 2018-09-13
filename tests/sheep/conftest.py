@@ -2,8 +2,8 @@ import pytest
 import zmq.green as zmq
 from zmq.error import ZMQError
 
-from cxworker.sheep import BareSheep, DockerSheep, SheepError, SheepConfigurationError
-from cxworker.shepherd.config import RegistryConfig
+from shepherd.sheep import BareSheep, DockerSheep, SheepError, SheepConfigurationError
+from shepherd.shepherd.config import RegistryConfig
 
 
 @pytest.fixture()
@@ -20,8 +20,8 @@ def sheep_socket():
 @pytest.fixture()
 def bare_sheep(sheep_socket, tmpdir):
     sheep = BareSheep({'port': 9001, 'type': 'bare', 'working_directory': 'examples/docker/cxflow_example',
-                       'stdout_file': '/tmp/i-dont-exists/bare-cxworker-runner-stdout.txt',
-                       'stderr_file': '/tmp/i-dont-exists/bare-cxworker-runner-stderr.txt'},
+                       'stdout_file': '/tmp/i-dont-exists/bare-shepherd-runner-stdout.txt',
+                       'stderr_file': '/tmp/i-dont-exists/bare-shepherd-runner-stderr.txt'},
                       socket=sheep_socket, sheep_data_root=str(tmpdir))
     yield sheep
     sheep.slaughter()

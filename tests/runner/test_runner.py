@@ -7,10 +7,10 @@ import os.path as path
 import gevent
 import subprocess
 
-from cxworker.constants import OUTPUT_DIR, DEFAULT_OUTPUT_FILE
-from cxworker.runner import *
-from cxworker.runner.runner_entry_point import run
-from cxworker.comm import *
+from shepherd.constants import OUTPUT_DIR, DEFAULT_OUTPUT_FILE
+from shepherd.runner import *
+from shepherd.runner.runner_entry_point import run
+from shepherd.comm import *
 
 
 def test_to_json_serializable(json_data):
@@ -68,7 +68,7 @@ def test_runner(job, feeding_socket, runner_setup, mocker, start):  # for covera
 
     # test both config by dir and config by file
     for config_path in [base_config_path, path.join(base_config_path, 'config.yaml')]:
-        command = ['cxworker-runner', '-p', str(port), '-s', stream, config_path]
+        command = ['shepherd-runner', '-p', str(port), '-s', stream, config_path]
         handle = start(command, mocker)
         Messenger.send(socket, InputMessage(dict(job_id=job_id, io_data_root=job_dir)))
         Messenger.recv(socket, [DoneMessage])
@@ -79,7 +79,7 @@ def test_runner(job, feeding_socket, runner_setup, mocker, start):  # for covera
 
 def test_runner_configuration(mocker):
     config_path = path.join('examples', 'docker', 'cxflow_example', 'cxflow-test', 'test')
-    mocker.patch('sys.argv', ['cxworker-runner', '-p', '8888', config_path])
+    mocker.patch('sys.argv', ['shepherd-runner', '-p', '8888', config_path])
     with pytest.raises(ModuleNotFoundError):
         run()  # runner is configured to a non-existent module; thus, we expect a failure
 

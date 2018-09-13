@@ -7,7 +7,7 @@ from collections import defaultdict
 import cxflow as cx
 import numpy as np
 
-from cxworker.constants import DEFAULT_PAYLOAD_FILE, DEFAULT_OUTPUT_FILE
+from shepherd.constants import DEFAULT_PAYLOAD_FILE, DEFAULT_OUTPUT_FILE
 from .base_runner import BaseRunner
 
 

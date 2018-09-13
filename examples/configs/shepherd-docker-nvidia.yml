@@ -1,4 +1,4 @@
-data_root: /tmp/worker-data
+data_root: /tmp/shepherd-data
 registry:
   url: http://0.0.0.0:6000
 storage:
@@ -7,9 +7,8 @@ storage:
   secret_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
 sheep:
-  cpu_sheep_1:
+  gpu_sheep_1:
     port: 9001
     type: docker
-  cpu_sheep_2:
-    port: 9002
-    type: docker
+    devices:
+      - /dev/nvidia0
