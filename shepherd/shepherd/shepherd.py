@@ -113,6 +113,7 @@ class Shepherd:
         if sheep_id is None:
             sheep_id = next(iter(self.sheep.keys()))
             logging.info('Job `%s` is auto-assigned to sheep `%s`', job_id, sheep_id)
+        logging.error('Adding %s to jobs_meta for job id %s.', job_meta, job_id)
         self[sheep_id].jobs_meta[job_id] = job_meta
         self[sheep_id].jobs_queue.put(job_id)
 
@@ -178,6 +179,7 @@ class Shepherd:
             # send the InputMessage to the sheep
             sheep.in_progress.add(job_id)
             sheep.jobs_meta.pop(job_id)
+            logging.error('Removed %s from jobs_meta. New jobs meta: %s', job_id, sheep.jobs_meta)
             logging.info('Sending InputMessage for job `%s` on `%s`', job_id, sheep_id)
             Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
 
@@ -246,9 +248,13 @@ class Shepherd:
             return True
         else:
             for sheep in self.sheep.values():
+                logging.error('Iterating sheep: %s', sheep)
+                logging.error('jobs_meta: %s', sheep.jobs_meta)
+                logging.error('sheep in progress: %s', sheep.in_progress)
                 if job_id in sheep.jobs_meta.keys() or job_id in sheep.in_progress:
                     return False
             else:
+                logging.error('Bucket %s DOES NOT EXIST when asking in ready', job_id)
                 raise UnknownJobError('Job `{}` is not know to this shepherd'.format(job_id))
 
     def close(self):

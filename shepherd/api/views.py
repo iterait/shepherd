@@ -1,5 +1,6 @@
 from io import BytesIO
 
+import logging
 import mimetypes
 
 from flask import Blueprint, send_file
@@ -52,6 +53,11 @@ def create_shepherd_blueprint(shepherd: Shepherd, minio: Minio):
         except UnknownJobError:
             pass
         shepherd.enqueue_job(start_job_request.job_id, start_job_request.model, start_job_request.sheep_id)
+        if minio.bucket_exists(start_job_request.job_id):
+            logging.warning('Bucket %s exists', start_job_request.job_id)
+        else:
+            logging.error('Bucket %s DOES NOT EXIST', start_job_request.job_id)
+        check_job_exists(minio, start_job_request.job_id)
         return StartJobResponse()
 
     @api.route("/jobs/<job_id>/ready", methods=["GET"])
@@ -64,6 +70,10 @@ def create_shepherd_blueprint(shepherd: Shepherd, minio: Minio):
 
         :param job_id: An identifier of the queried job
         """
+        if minio.bucket_exists(job_id):
+            logging.warning('Bucket %s exists when asking for ready', job_id)
+        else:
+            logging.error('Bucket %s DOES NOT EXIST when asking in ready', job_id)
         check_job_exists(minio, job_id)
         return JobStatusResponse({'ready': shepherd.is_job_done(job_id)})
 
