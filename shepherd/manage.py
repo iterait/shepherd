@@ -1,5 +1,3 @@
-from gevent import monkey; monkey.patch_all(sys=True, Event=True)
-
 import sys
 import logging
 
