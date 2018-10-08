@@ -4,7 +4,7 @@ import os.path as path
 from typing import Any
 from collections import defaultdict
 
-import cxflow as cx
+import emloop as el
 import numpy as np
 
 from shepherd.constants import DEFAULT_PAYLOAD_FILE, DEFAULT_OUTPUT_FILE
@@ -28,17 +28,17 @@ def to_json_serializable(data):
         raise ValueError('Unsupported JSON type `{}` (key `{}`)'.format(type(data), data))
 
 
-def run(model: cx.AbstractModel, dataset: cx.AbstractDataset, stream_name: str, payload: Any) -> cx.Batch:
+def run(model: el.AbstractModel, dataset: el.AbstractDataset, stream_name: str, payload: Any) -> el.Batch:
     """
     Get the specified data stream from the given dataset, apply the given model on its batches and return the results.
 
-    The components have to be **cxflow** compatible with:
+    The components have to be **emloop** compatible with:
         - dataset having method named ``[stream_name]_stream`` taking the payload and returning the stream
         - (optional) dataset having method named ``postprocess_batch`` taking both the input and output batches and
             returning the post-processed batch
 
-    :param model: cxflow model to be run
-    :param dataset: cxflow dataset to get the stream from
+    :param model: emloop model to be run
+    :param dataset: emloop dataset to get the stream from
     :param stream_name: stream name
     :param payload: payload passed to the method creating the stream
     :return: result batch (if the stream produces multiple batches its the concatenation of all the results)
@@ -62,7 +62,7 @@ def run(model: cx.AbstractModel, dataset: cx.AbstractDataset, stream_name: str, 
 
 class JSONRunner(BaseRunner):
     """
-    Fully functional cxflow runner which loads a JSON from ``input_path``/``input.json``, passes the loaded object
+    Fully functional emloop runner which loads a JSON from ``input_path``/``input.json``, passes the loaded object
     to the desired dataset stream, runs the model and saves the output batch to ``output_path``/``output.json``.
     """
 

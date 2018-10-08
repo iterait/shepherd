@@ -10,6 +10,6 @@ sheep:
   bare_sheep:
     port: 9001
     type: bare
-    working_directory: examples/docker/cxflow_example
+    working_directory: examples/docker/emloop_example
     stdout_file: /tmp/bare-shepherd-runner-stdout.txt
     stderr_file: /tmp/bare-shepherd-runner-stderr.txt

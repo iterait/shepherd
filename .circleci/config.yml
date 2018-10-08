@@ -23,7 +23,7 @@ references:
         tar -xz -C /tmp -f /tmp/docker-$VER.tgz
         mv /tmp/docker/* /usr/bin
         pacman --noconfirm --needed -Syu minio
-        mkdir examples/docker/cxflow_example/ssh
+        mkdir examples/docker/emloop_example/ssh
         pip3 install -r requirements.txt
         pip3 install -e .
 
@@ -42,13 +42,13 @@ references:
     run:
       name: Generate documentation
       command: |
-        bash <(curl -fsSL https://raw.githubusercontent.com/Cognexa/ci-utils/master/doc_deploy.sh)
+        bash <(curl -fsSL https://raw.githubusercontent.com/iterait/ci-utils/master/doc_deploy.sh)
 
 jobs:
 
   test_archlinux:
     docker:
-      - image: iterait/cxflow:latest
+      - image: iterait/emloop
     working_directory: ~/shepherd
     steps:
       - setup_remote_docker:

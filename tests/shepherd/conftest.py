@@ -1,6 +1,5 @@
 import pytest
 import json
-import os.path as path
 from io import BytesIO
 import os.path as path
 
@@ -42,7 +41,7 @@ def valid_config(valid_config_file):
 
 @pytest.fixture()
 def shepherd(valid_config, minio):
-    """Shepherd with a single bare sheep which runs a cxflow runner that doubles its inputs."""
+    """Shepherd with a single bare sheep which runs a emloop runner that doubles its inputs."""
     shepherd = Shepherd(valid_config.sheep, valid_config.data_root, minio, valid_config.registry)
     yield shepherd
     shepherd.close()
@@ -53,7 +52,7 @@ def job(bucket, minio):
     job_id = bucket
     data = json.dumps({'key': [1000]}).encode()
     minio.put_object(bucket, DEFAULT_PAYLOAD_PATH, BytesIO(data), len(data))
-    yield job_id, ModelModel(dict(name='cxflow-test', version='test2'))
+    yield job_id, ModelModel(dict(name='emloop-test', version='test2'))
 
 
 @pytest.fixture()
@@ -62,7 +61,7 @@ def bad_job(bucket, minio):
     job_id = bucket
     data = json.dumps({'key': [1000]}).encode()
     minio.put_object(bucket, INPUT_DIR + '/some_other_file.json', BytesIO(data), len(data))
-    yield job_id, ModelModel(dict(name='cxflow-test', version='latest'))
+    yield job_id, ModelModel(dict(name='emloop-test', version='latest'))
 
 
 @pytest.fixture()
@@ -76,8 +75,8 @@ def bad_configuration_job(bucket, minio):
 
 @pytest.fixture()
 def bad_runner_job(bucket, minio):
-    """cxflow-test:test model has bad runner configuration; thus, the runner should fail (and stop)."""
+    """emloop-test:test model has bad runner configuration; thus, the runner should fail (and stop)."""
     job_id = bucket
     data = json.dumps({'key': [1000]}).encode()
     minio.put_object(bucket, DEFAULT_PAYLOAD_PATH, BytesIO(data), len(data))
-    yield job_id, ModelModel(dict(name='cxflow-test', version='test'))
+    yield job_id, ModelModel(dict(name='emloop-test', version='test'))

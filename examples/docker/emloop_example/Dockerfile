@@ -1,4 +1,4 @@
-FROM iterait/cxflow:latest
+FROM iterait/emloop
 
 RUN pacman -Syu --noconfirm --needed python-pyzmq openssh python-numpy && paccache -rfk0
 
@@ -17,6 +17,6 @@ WORKDIR /project
 ADD . .
 
 # Replace this with your model of choice
-ADD cxflow-test/latest/docker-config.yaml /project/config.yaml
+ADD emloop-test /project/config.yaml
 
 CMD shepherd-runner /project

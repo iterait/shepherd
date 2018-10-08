@@ -1,3 +1,3 @@
 [submodule "docs/_base"]
 	path = docs/_base
-	url = https://github.com/Cognexa/sphinx-docs
+	url = https://github.com/iterait/sphinx-docs

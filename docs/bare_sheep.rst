@@ -18,7 +18,7 @@ Bare sheep's config is fairly simple:
   bare_sheep:
     port: 9001
     type: bare
-    working_directory: examples/docker/cxflow_example
+    working_directory: examples/docker/emloop_example
     stdout_file: /tmp/bare-shepherd-runner-stdout.txt
     stderr_file: /tmp/bare-shepherd-runner-stderr.txt
 
@@ -30,7 +30,7 @@ Aside from configuration common for all sheep (socket ``port`` and sheep ``type`
 Model Name and Version
 **********************
 
-Bare sheep allows to run *jobs* with any model name and version as long as a **cxflow** configuration file can be
+Bare sheep allows to run *jobs* with any model name and version as long as a **emloop** configuration file can be
 found in ``working_directory``/``model_name``/``model_version``/``config.yaml``.
 
 For example with ``working_directory="/var"``, ``model_name="my_project/models"`` and finally ``model_version`` empty,
