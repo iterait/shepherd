@@ -1,8 +1,7 @@
-import json
-import cxflow as cx
+import emloop as el
 
 
-class DummyDataset(cx.BaseDataset):
+class DummyDataset(el.BaseDataset):
 
     def _configure_dataset(self, post_process_factor: int=1, **kwargs):
         self._post_process_factor = post_process_factor
