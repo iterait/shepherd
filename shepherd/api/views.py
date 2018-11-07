@@ -1,4 +1,6 @@
 from io import BytesIO
+from datetime import datetime
+import calendar
 
 import mimetypes
 
@@ -10,7 +12,8 @@ from shepherd.constants import DONE_FILE, ERROR_FILE, DEFAULT_OUTPUT_FILE, OUTPU
 from shepherd.shepherd.shepherd import Shepherd
 from shepherd.utils import minio_object_exists
 from .requests import StartJobRequest
-from .responses import StartJobResponse, StatusResponse, JobStatusResponse, ErrorResponse, JobErrorResponse
+from .responses import StartJobResponse, StatusResponse, JobStatusResponse, ErrorResponse, \
+    JobErrorResponse, JobReadyResponse
 from .errors import ClientActionError, StorageError, UnknownJobError, NameConflictError
 from .swagger import swagger
 
@@ -56,7 +59,7 @@ def create_shepherd_blueprint(shepherd: Shepherd, minio: Minio):
 
     @api.route("/jobs/<job_id>/ready", methods=["GET"])
     @swagger.autodoc()
-    @swagger.responds_with(JobStatusResponse)
+    @swagger.responds_with(JobReadyResponse)
     def is_ready(job_id: str):
         """
         Check if a job has already been processed.
@@ -65,7 +68,13 @@ def create_shepherd_blueprint(shepherd: Shepherd, minio: Minio):
         :param job_id: An identifier of the queried job
         """
         check_job_exists(minio, job_id)
-        return JobStatusResponse({'ready': shepherd.is_job_done(job_id)})
+        ready = shepherd.is_job_done(job_id)
+        if ready:
+            timestamp = datetime.fromtimestamp(calendar.timegm(minio.stat_object(job_id, 'done').last_modified))
+        else:
+            timestamp = None
+        return JobReadyResponse({'ready': ready,
+                                 'finished_at': timestamp})
 
     @api.route("/jobs/<job_id>/wait_ready", methods=["GET"])
     @swagger.autodoc()

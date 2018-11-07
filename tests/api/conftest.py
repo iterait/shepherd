@@ -17,9 +17,16 @@ def mock_shepherd():
                     "version": "latest"
                 }
             })
+
+    def ready(*args):
+        if args[0] == 'uuid-ready':
+            return True
+        else:
+            return False
+
     m = mock.create_autospec(Shepherd)
     m.get_status.side_effect = status_gen
-    m.is_job_done.return_value = True
+    m.is_job_done.side_effect = ready
     m.notifier = mock.MagicMock()
     yield m
 
