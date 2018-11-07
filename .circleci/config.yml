@@ -79,3 +79,15 @@ workflows:
               only: dev
           requires:
             - test_archlinux
+
+  nightly-build:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+                - dev
+    jobs:
+      - test_archlinux
