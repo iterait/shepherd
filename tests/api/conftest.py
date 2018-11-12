@@ -19,10 +19,7 @@ def mock_shepherd():
             })
 
     def ready(*args):
-        if args[0] == 'uuid-ready':
-            return True
-        else:
-            return False
+        return args[0] == 'uuid-ready'
 
     m = mock.create_autospec(Shepherd)
     m.get_status.side_effect = status_gen

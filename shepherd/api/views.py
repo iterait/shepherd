@@ -70,11 +70,12 @@ def create_shepherd_blueprint(shepherd: Shepherd, minio: Minio):
         check_job_exists(minio, job_id)
         ready = shepherd.is_job_done(job_id)
         if ready:
-            timestamp = datetime.fromtimestamp(calendar.timegm(minio.stat_object(job_id, 'done').last_modified))
+            timestamp = minio.stat_object(job_id, 'done').last_modified
+            formatted_timestamp = datetime.fromtimestamp(calendar.timegm(timestamp))
         else:
-            timestamp = None
+            formatted_timestamp = None
         return JobReadyResponse({'ready': ready,
-                                 'finished_at': timestamp})
+                                 'finished_at': formatted_timestamp})
 
     @api.route("/jobs/<job_id>/wait_ready", methods=["GET"])
     @swagger.autodoc()
