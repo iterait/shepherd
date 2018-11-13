@@ -1,6 +1,6 @@
 import json
 from io import BytesIO
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytest
 
 from shepherd.constants import DONE_FILE
@@ -36,7 +36,8 @@ def test_ready(client, minio):
     response = client.get('/jobs/uuid-ready/ready')
     assert response.status_code == 200
     assert response.json['ready'] is True
-    assert response.json['finished_at'][:17] == timestamp.isoformat()[:17]
+    timestamp_diff = timestamp - datetime.strptime(response.json['finished_at'], '%Y-%m-%dT%H:%M:%S.%f')
+    assert timestamp_diff < timedelta(seconds=1)
 
     response = client.post('/start-job', content_type='application/json', data=json.dumps({
         'job_id': 'uuid-not-ready',
