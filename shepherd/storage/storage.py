@@ -7,6 +7,12 @@ class Storage(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
+    def is_accessible(self) -> bool:
+        """
+        Check if the remote storage can be accessed
+        """
+
+    @abc.abstractmethod
     def pull_job_data(self, job_id: str, target_directory: str):
         """
         Download job files from the remote storage to a local directory

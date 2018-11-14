@@ -9,6 +9,7 @@ import zmq.green as zmq
 from minio import Minio
 
 from shepherd.constants import OUTPUT_DIR
+from shepherd.docker.registry import list_images_in_registry
 from shepherd.storage.minio_storage import MinioStorage
 from .config import RegistryConfig
 from ..sheep import *
@@ -42,6 +43,7 @@ class Shepherd:
             if config["type"] == "docker" and registry_config is None:
                 raise SheepConfigurationError("To use docker sheep, you need to configure a registry URL")
 
+        self.registry_config = registry_config
         self.storage = MinioStorage(minio)
         self.poller = zmq.Poller()
         self.sheep: Dict[str, BaseSheep] = {}
@@ -63,9 +65,13 @@ class Shepherd:
             self.sheep[sheep_id] = sheep
             self.poller.register(socket, zmq.POLLIN)
             gevent.spawn(partial(self.dequeue_and_feed_jobs, sheep_id))
-            gevent.spawn(partial(self.health_check, sheep_id))
+            gevent.spawn(partial(self.sheep_health_check, sheep_id))
 
         self._listener = gevent.spawn(self.listen)
+        self._health_checker = gevent.spawn(self.shepherd_health_check)
+
+        self.storage_inaccessible_reported = False
+        self.registry_inaccessible_reported = False
 
     def __getitem__(self, sheep_id: str) -> BaseSheep:
         """
@@ -92,7 +98,7 @@ class Shepherd:
 
     def slaughter_sheep(self, sheep_id: str) -> None:
         """
-        Slaughter (kill) the specified sheep. In particular, it's container and socked are going to be terminated,
+        Slaughter (kill) the specified sheep. In particular, it's container and socket are going to be terminated,
 
         :param sheep_id:
         :return:
@@ -115,7 +121,25 @@ class Shepherd:
         self[sheep_id].jobs_meta[job_id] = job_meta
         self[sheep_id].jobs_queue.put(job_id)
 
-    def health_check(self, sheep_id: str) -> None:
+    def shepherd_health_check(self) -> None:
+        while True:
+            gevent.sleep(1)
+
+            if not self.storage.is_accessible() and not self.storage_inaccessible_reported:
+                logging.warning("The remote storage is not accessible")
+                self.storage_inaccessible_reported = True
+            else:
+                self.storage_inaccessible_reported = False
+
+            if self.registry_config is not None:
+                try:
+                    list_images_in_registry(self.registry_config)
+                    self.registry_inaccessible_reported = False
+                except:
+                    logging.warning("The Docker registry is not accessible")
+                    self.registry_inaccessible_reported = True
+
+    def sheep_health_check(self, sheep_id: str) -> None:
         """
         Periodically check if the specified sheep is running and resolve its in-progress jobs if not.
 
@@ -242,14 +266,15 @@ class Shepherd:
         """
         if self.storage.is_job_done(job_id):
             return True
+
+        for sheep in self.sheep.values():
+            if job_id in sheep.jobs_meta.keys() or job_id in sheep.in_progress:
+                return False
         else:
-            for sheep in self.sheep.values():
-                if job_id in sheep.jobs_meta.keys() or job_id in sheep.in_progress:
-                    return False
-            else:
-                raise UnknownJobError('Job `{}` is not know to this shepherd'.format(job_id))
+            raise UnknownJobError('Job `{}` is not know to this shepherd'.format(job_id))
 
     def close(self):
         self.slaughter_all()
         self.notifier.close()
         self._listener.kill()
+        self._health_checker.kill()

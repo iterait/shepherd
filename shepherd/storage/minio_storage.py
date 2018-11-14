@@ -11,6 +11,13 @@ class MinioStorage(Storage):
     def __init__(self, minio: Minio):
         self._minio = minio
 
+    def is_accessible(self) -> bool:
+        try:
+            self._minio.list_buckets()
+            return True
+        except BaseException:
+            return False
+
     def pull_job_data(self, job_id: str, target_directory: str):
         pull_minio_bucket(self._minio, job_id, target_directory)
 
