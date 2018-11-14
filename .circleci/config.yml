@@ -73,12 +73,12 @@ workflows:
   test:
     jobs:
       - test_archlinux
-      - generate_documentation:
-          filters:
-            branches:
-              only: dev
-          requires:
-            - test_archlinux
+#      - generate_documentation:
+#          filters:
+#            branches:
+#              only: dev
+#          requires:
+#            - test_archlinux
 
   nightly-build:
     triggers:
