@@ -4,7 +4,7 @@ import logging
 import os.path as path
 from argparse import ArgumentParser
 
-import cxflow as cx
+import emloop as el
 
 
 __all__ = ['run']
@@ -16,7 +16,7 @@ def create_argparser():
     parser.add_argument('-p', '--port', dest="port", default=9999, type=int, help='Socket port to bind to')
     parser.add_argument('-s', '--stream', default='predict', help='Dataset stream name')
     parser.add_argument('-r', '--runner', default='shepherd.runner.JSONRunner', help='Fully qualified runner class')
-    parser.add_argument('config_path', help='cxflow configuration file path')
+    parser.add_argument('config_path', help='emloop configuration file path')
     return parser
 
 
@@ -30,8 +30,8 @@ def run() -> None:
     # parse args
     sys.path.insert(0, os.getcwd())
     logging.basicConfig(level=logging.DEBUG,
-                        format=cx.constants.CXF_LOG_FORMAT,
-                        datefmt=cx.constants.CXF_LOG_DATE_FORMAT)
+                        format=el.constants.EL_LOG_FORMAT,
+                        datefmt=el.constants.EL_LOG_DATE_FORMAT)
 
     args = create_argparser().parse_args()
 
@@ -43,12 +43,12 @@ def run() -> None:
     runner_config_file = path.join(config_dir, 'runner.yaml')
     if path.exists(runner_config_file):
         logging.info('Using custom runner configuration file')
-        runner_config = cx.utils.load_config(path.join(runner_config_file))
+        runner_config = el.utils.load_config(path.join(runner_config_file))
         runner_fqn = runner_config['runner']['class']
 
     # create runner
-    module, class_ = cx.utils.parse_fully_qualified_name(runner_fqn)
-    runner = cx.utils.create_object(module, class_, args=(args.config_path, args.port, args.stream))
+    module, class_ = el.utils.parse_fully_qualified_name(runner_fqn)
+    runner = el.utils.create_object(module, class_, args=(args.config_path, args.port, args.stream))
 
     # listen for input messages
     runner.process_all()

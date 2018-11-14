@@ -12,7 +12,7 @@ Shepherd
    api
    shepherd/index
 
-**Shepherd** is lightweight runner of **cxflow** models with simple REST API.
+**Shepherd** is lightweight runner of **emloop** models with simple REST API.
 
 It enables running multiple models and version with one server and supports GPU computations.
 

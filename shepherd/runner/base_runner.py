@@ -8,10 +8,10 @@ from typing import Optional, Any, Dict
 
 import zmq.green as zmq
 
-import cxflow as cx
-from cxflow.cli.common import create_dataset, create_model
-from cxflow.cli.util import validate_config, find_config
-from cxflow.utils import load_config
+import emloop as el
+from emloop.cli.common import create_dataset, create_model
+from emloop.cli.util import validate_config, find_config
+from emloop.utils import load_config
 from shepherd.comm import *
 from shepherd.constants import INPUT_DIR, OUTPUT_DIR
 
@@ -39,13 +39,13 @@ def n_available_gpus() -> int:
 
 class BaseRunner:
     """
-    Base **cxflow** runner class suitable for inheritance when implementing a runner with custom behavior.
+    Base **emloop** runner class suitable for inheritance when implementing a runner with custom behavior.
     :py:class:`BaseRunner` manages the socket, messages and many more. See :py:meth:`_process_job` for more info.
     """
 
     def __init__(self, config_path: str, port: int, stream_name: str):
         """Create new :py:class:`Runner`."""
-        logging.info('Creating cxflow runner from `%s` listening on port %s', config_path, port)
+        logging.info('Creating emloop runner from `%s` listening on port %s', config_path, port)
 
         # bind to the socket
         self._port = port
@@ -54,12 +54,12 @@ class BaseRunner:
         self._config_path: str = config_path
         self._stream_name: str = stream_name
         self._config: Dict[str, Any] = None
-        self._dataset: Optional[cx.AbstractDataset] = None
-        self._model: Optional[cx.AbstractModel] = None
+        self._dataset: Optional[el.AbstractDataset] = None
+        self._model: Optional[el.AbstractModel] = None
 
     def _load_config(self) -> None:
         """
-        Maybe load the **cxflow** configuration from previously specified file and apply updates
+        Maybe load the **emloop** configuration from previously specified file and apply updates
         from ``eval.<stream_name>`` section.
         """
         if self._config is None:

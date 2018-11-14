@@ -3,7 +3,7 @@ Introduction
 
 Before diving into **shepherd**, please make you have installed and configured
 
-- **cxflow** framework
+- **emloop** framework
 - **docker** (and nvidia docker 2 if you plan on accelerating your computations with GPUs)
 - **docker registry** and **docker-compose**
 - **minio** cloud storage
@@ -64,7 +64,7 @@ The initial ``/start-job`` end-point type is POST and a JSON similar to the foll
         "job_id": "request_id",
         "model":
             {
-                "name": "cxflow-test",
+                "name": "emloop-test",
                 "version": "latest"
             }
     }
@@ -106,7 +106,7 @@ Let's see what is in there:
       bare_sheep:
         port: 9001
         type: bare
-        working_directory: examples/docker/cxflow_example
+        working_directory: examples/docker/emloop_example
         stdout_file: /tmp/bare-shepherd-runner-stdout.txt
         stderr_file: /tmp/bare-shepherd-runner-stderr.txt
 

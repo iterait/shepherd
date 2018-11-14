@@ -1,0 +1,11 @@
+dataset:
+  class: examples.docker.emloop_example.dummy.DummyDataset
+
+
+model:
+  name: Dummy
+  class: examples.docker.emloop_example.dummy.DummyModel
+
+eval:
+  predict:
+    hooks: [LogProfile]

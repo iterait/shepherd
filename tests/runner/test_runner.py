@@ -25,7 +25,7 @@ def test_json_runner(job, feeding_socket, runner_setup):
     job_id, job_dir = job
 
     version, stream, expected = runner_setup
-    config_path = path.join('examples', 'docker', 'cxflow_example', 'cxflow-test', version)
+    config_path = path.join('examples', 'docker', 'emloop_example', 'emloop-test', version)
     runner = JSONRunner(config_path, port, stream)
     greenlet = gevent.spawn(runner.process_all)
     Messenger.send(socket, InputMessage(dict(job_id=job_id, io_data_root=job_dir)))
@@ -40,7 +40,7 @@ def test_json_runner_exception(job, feeding_socket):
     socket, port = feeding_socket
     job_id, job_dir = job
 
-    config_path = path.join('examples', 'docker', 'cxflow_example', 'cxflow-test', 'latest')
+    config_path = path.join('examples', 'docker', 'emloop_example', 'emloop-test', 'latest')
     runner = JSONRunner(config_path, port, 'does_not_exist')
     greenlet = gevent.spawn(runner.process_all)
     Messenger.send(socket, InputMessage(dict(job_id=job_id, io_data_root=job_dir)))
@@ -64,7 +64,7 @@ def test_runner(job, feeding_socket, runner_setup, mocker, start):  # for covera
     socket, port = feeding_socket
     job_id, job_dir = job
     version, stream, expected = runner_setup
-    base_config_path = path.join('examples', 'docker', 'cxflow_example', 'cxflow-test', version)
+    base_config_path = path.join('examples', 'docker', 'emloop_example', 'emloop-test', version)
 
     # test both config by dir and config by file
     for config_path in [base_config_path, path.join(base_config_path, 'config.yaml')]:
@@ -78,7 +78,7 @@ def test_runner(job, feeding_socket, runner_setup, mocker, start):  # for covera
 
 
 def test_runner_configuration(mocker):
-    config_path = path.join('examples', 'docker', 'cxflow_example', 'cxflow-test', 'test')
+    config_path = path.join('examples', 'docker', 'emloop_example', 'emloop-test', 'test')
     mocker.patch('sys.argv', ['shepherd-runner', '-p', '8888', config_path])
     with pytest.raises(ModuleNotFoundError):
         run()  # runner is configured to a non-existent module; thus, we expect a failure

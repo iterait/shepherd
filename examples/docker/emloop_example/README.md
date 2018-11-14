@@ -1,5 +1,5 @@
 # Shepherd runner docker example
-This directory contains simple config, dataset, model and Dockerfile with cxflow docker runner.
+This directory contains simple config, dataset, model and Dockerfile with emloop docker runner.
 
 A container of this image may be utilized with **shepherd** for predicting new examples.
 

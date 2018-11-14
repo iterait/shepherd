@@ -27,5 +27,5 @@ When new model name and version is encountered, docker sheep pulls the docker im
 
 Example Dockerfile follows:
 
-.. include:: ../examples/docker/cxflow_example/Dockerfile
+.. include:: ../examples/docker/emloop_example/Dockerfile
    :literal:

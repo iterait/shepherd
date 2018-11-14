@@ -4,7 +4,7 @@ import subprocess
 import os.path as path
 from typing import Dict, Any, Optional
 
-import cxflow as cx
+import emloop as el
 from schematics.types import StringType
 
 from .base_sheep import BaseSheep
@@ -44,13 +44,13 @@ class BareSheep(BaseSheep):
         :param model_version: model version
         :raise SheepConfigurationError: if the runner config path does not exist
         """
-        cxflow_config_path = path.join(self._config.working_directory, model_name, model_version,
-                                       cx.constants.CXF_CONFIG_FILE)
-        if not path.exists(cxflow_config_path):
+        emloop_config_path = path.join(self._config.working_directory, model_name, model_version,
+                                       el.constants.EL_CONFIG_FILE)
+        if not path.exists(emloop_config_path):
             raise SheepConfigurationError("Cannot load model `{}:{}`, file '{}' does not exist."
-                                          .format(model_name, model_version, cxflow_config_path))
+                                          .format(model_name, model_version, emloop_config_path))
         super()._load_model(model_name, model_version)
-        self._runner_config_path = path.relpath(cxflow_config_path, self._config.working_directory)
+        self._runner_config_path = path.relpath(emloop_config_path, self._config.working_directory)
 
     def start(self, model_name: str, model_version: str) -> None:
         """

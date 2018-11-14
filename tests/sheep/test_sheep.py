@@ -18,17 +18,17 @@ def test_extract_gpu_number():
 
 def test_bare_sheep_start_stop(bare_sheep: BareSheep):
     bare_sheep.slaughter()
-    bare_sheep.start('cxflow-test', 'latest')
+    bare_sheep.start('emloop-test', 'latest')
     assert bare_sheep.running
     bare_sheep.slaughter()
     assert not bare_sheep.running
-    bare_sheep.start('cxflow-test', 'latest')
+    bare_sheep.start('emloop-test', 'latest')
 
 
 def test_bare_configuration_error(bare_sheep: BareSheep):
 
     with pytest.raises(SheepConfigurationError):  # path does not exist
-        bare_sheep.start('cxflow-test', 'i-do-not-exist')
+        bare_sheep.start('emloop-test', 'i-do-not-exist')
 
 
 @pytest.fixture()
