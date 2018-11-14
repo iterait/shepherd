@@ -65,13 +65,22 @@ class BareSheep(BaseSheep):
         env = os.environ.copy()
         env["CUDA_VISIBLE_DEVICES"] = ",".join(filter(None, map(extract_gpu_number, self._config.devices)))
         stdout = subprocess.DEVNULL
-        if self._config.stdout_file is not None:
-            os.makedirs(os.path.dirname(self._config.stdout_file), exist_ok=True)
-            stdout = open(self._config.stdout_file, 'a')
+
+        try:
+            if self._config.stdout_file is not None:
+                os.makedirs(os.path.dirname(self._config.stdout_file), exist_ok=True)
+                stdout = open(self._config.stdout_file, 'a')
+        except Exception as e:
+            raise SheepConfigurationError("Could not open stdout log file: {}".format(str(e))) from e
+
         stderr = subprocess.DEVNULL
-        if self._config.stderr_file is not None:
-            os.makedirs(os.path.dirname(self._config.stderr_file), exist_ok=True)
-            stderr = open(self._config.stderr_file, 'a')
+
+        try:
+            if self._config.stderr_file is not None:
+                os.makedirs(os.path.dirname(self._config.stderr_file), exist_ok=True)
+                stderr = open(self._config.stderr_file, 'a')
+        except Exception as e:
+            raise SheepConfigurationError("Could not open stderr log file: {}".format(str(e))) from e
 
         # start the runner in a new sub-process
         self._runner = subprocess.Popen(

@@ -169,17 +169,31 @@ class Shepherd:
                 try:
                     self.start_sheep(sheep_id, model.name, model.version)
                 except SheepConfigurationError as sce:
-                    shutil.rmtree(path.join(sheep.sheep_data_root, job_id))
                     error = 'Failed to start sheep for this job ({})'.format(str(sce))
                     logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep_id, job_id, error)
-                    error = error.encode()
-                    self.minio.put_object(job_id, ERROR_FILE, BytesIO(error), len(error))
+                    self._job_failed(job_id, error, sheep)
                     continue
+                except Exception as e:
+                    error = '`{}` thrown when starting sheep `{}` for job `{}`'.format(str(e), sheep_id, job_id)
+                    self._job_failed(job_id, error, sheep)
+                    logging.exception(e)
+                    continue
+
             # send the InputMessage to the sheep
             sheep.in_progress.add(job_id)
             sheep.jobs_meta.pop(job_id)
             logging.info('Sending InputMessage for job `%s` on `%s`', job_id, sheep_id)
             Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
+
+    def _job_failed(self, job_id: str, error: str, sheep: BaseSheep):
+        """
+        A job has failed - remove the local copy of its data and mark it as failed in the remote storage
+        """
+
+        shutil.rmtree(path.join(sheep.sheep_data_root, job_id))
+
+        error = error.encode()
+        self.minio.put_object(job_id, ERROR_FILE, BytesIO(error), len(error))
 
     def listen(self) -> None:
         """

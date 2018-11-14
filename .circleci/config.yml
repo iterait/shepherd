@@ -36,7 +36,10 @@ references:
     run:
       name: Run tests.
       command: |
-        pytest --forked
+        useradd -m -s /bin/bash test
+        passwd -d test
+        chown -R test /root
+        sudo -u test pytest --forked
 
   doc: &doc
     run:

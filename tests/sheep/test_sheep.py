@@ -1,5 +1,8 @@
+import os
+
 import pytest
 import logging
+from pathlib import Path
 from typing import Tuple
 
 from shepherd.sheep import BareSheep, DockerSheep, SheepConfigurationError
@@ -27,7 +30,7 @@ def test_bare_sheep_start_stop(bare_sheep: BareSheep):
 
 def test_bare_configuration_error(bare_sheep: BareSheep):
 
-    with pytest.raises(SheepConfigurationError):  # path does not exist
+    with pytest.raises(SheepConfigurationError):  # model version does not exist
         bare_sheep.start('emloop-test', 'i-do-not-exist')
 
 
@@ -60,3 +63,27 @@ def test_welcome(caplog):
     caplog.set_level(logging.INFO)
     welcome()
     assert len(caplog.text) > 0
+
+
+def test_bare_sheep_stderr_file_permission_denied(sheep_socket, tmpdir: Path, bare_sheep_config):
+    stderr = tmpdir / "stderr"
+    stderr.write_text("", "ascii")
+    os.chmod(str(stderr), 0o444)
+
+    bare_sheep_config["stderr_file"] = str(stderr)
+    bare_sheep = BareSheep(bare_sheep_config, socket=sheep_socket, sheep_data_root=str(tmpdir))
+    
+    with pytest.raises(SheepConfigurationError):
+        bare_sheep.start('emloop-test', 'latest')
+
+
+def test_bare_sheep_stdout_file_permission_denied(sheep_socket, tmpdir: Path, bare_sheep_config):
+    stdout = tmpdir / "stdout"
+    stdout.write_text("", "ascii")
+    os.chmod(str(stdout), 0o444)
+
+    bare_sheep_config["stdout_file"] = str(stdout)
+    bare_sheep = BareSheep(bare_sheep_config, socket=sheep_socket, sheep_data_root=str(tmpdir))
+
+    with pytest.raises(SheepConfigurationError):
+        bare_sheep.start('emloop-test', 'latest')
