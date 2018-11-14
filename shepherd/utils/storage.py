@@ -5,12 +5,14 @@ from os import path as path
 
 from minio import Minio
 from minio.error import MinioError
+from urllib3.exceptions import HTTPError
 
 from shepherd.constants import INPUT_DIR, OUTPUT_DIR
-from ..api.errors import StorageError
+from ..api.errors import StorageError, StorageInaccessibleError
 
 _MINIO_FOLDER_DELIMITER = '/'
 """Minio folder delimiter."""
+
 
 def pull_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
     """
@@ -33,6 +35,8 @@ def pull_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
         if pulled_count == 0:
             logging.warning('No input objects pulled from bucket `%s`. Make sure they are in the `inputs/` folder.',
                             bucket_name)
+    except HTTPError as he:
+        raise StorageInaccessibleError() from he
     except MinioError as me:
         raise StorageError('Failed to pull minio bucket `{}`'.format(bucket_name)) from me
 
@@ -58,6 +62,8 @@ def push_minio_bucket(minio: Minio, bucket_name: str, dir_name: str) -> None:
         if pushed_count == 0:
             logging.warning('No output files pushed to bucket `%s`. Make sure they are in the `outputs/` folder.',
                             bucket_name)
+    except HTTPError as he:
+        raise StorageInaccessibleError() from he
     except MinioError as me:
         raise StorageError('Failed to push minio bucket `{}`'.format(bucket_name)) from me
 
@@ -74,6 +80,8 @@ def minio_object_exists(minio: Minio, bucket_name: str, object_name: str) -> boo
     try:
         minio.stat_object(bucket_name, object_name)
         return True
+    except HTTPError as he:
+        raise StorageInaccessibleError() from he
     except MinioError:
         return False
 

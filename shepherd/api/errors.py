@@ -18,5 +18,9 @@ class StorageError(AppError):
     """Exception raised when application encounters some issue with the minio storage."""
 
 
+class StorageInaccessibleError(AppError):
+    """Exception raised when the remote storage is not accessible at the moment"""
+
+
 class NameConflictError(ClientActionError):
     """Exception raised when a client chooses a job ID that was already used"""
