@@ -1,10 +1,10 @@
 dataset:
-  class: examples.docker.cxflow_example.dummy.PostProcessDataset
+  class: examples.docker.emloop_example.dummy.PostProcessDataset
 
 
 model:
   name: Dummy
-  class: examples.docker.cxflow_example.dummy.DummyModel
+  class: examples.docker.emloop_example.dummy.DummyModel
 
 eval:
   production:

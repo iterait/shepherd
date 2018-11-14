@@ -3,7 +3,7 @@ import logging
 
 import click
 import gevent
-import cxflow as cx
+import emloop as el
 from minio import Minio
 from gevent.pywsgi import WSGIServer
 from urllib3.exceptions import MaxRetryError
@@ -33,8 +33,8 @@ def run(host, port, config_file) -> None:
 
     # set-up logging
     logging.basicConfig(level=config.logging.log_level,
-                        format=cx.constants.CXF_LOG_FORMAT,
-                        datefmt=cx.constants.CXF_LOG_DATE_FORMAT)
+                        format=el.constants.EL_LOG_FORMAT,
+                        datefmt=el.constants.EL_LOG_DATE_FORMAT)
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     welcome()
 

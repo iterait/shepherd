@@ -37,7 +37,7 @@ def test_load_config_valid_env(valid_config_env_file):
     os.environ['_STORAGE_SECRET_KEY'] = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
     os.environ['SHEEP_PORT_1'] = '9001'
     os.environ['HOME_PATH'] = 'examples'
-    os.environ['MODEL_EXAMPLE'] = 'cxflow_example'
+    os.environ['MODEL_EXAMPLE'] = 'emloop_example'
 
     with open(valid_config_env_file) as file:
         config = load_shepherd_config(file)
@@ -68,7 +68,7 @@ def test_load_config_invalid_env(valid_config_env_file):
     os.environ['_STORAGE_SECRET_KEY'] = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
     os.environ['SHEEP_PORT_1'] = '9001'
     os.environ['HOME_PATH'] = 'examples'
-    os.environ['MODEL_EXAMPLE'] = 'cxflow_example'
+    os.environ['MODEL_EXAMPLE'] = 'emloop_example'
 
     with pytest.raises(ValueError, match='Environment variable `REGISTRY_URL` not set'), \
          open(valid_config_env_file) as file:
@@ -82,7 +82,7 @@ def test_load_config_invalid_env_name(invalid_config_env_file):
     os.environ['_STORAGE_SECRET_KEY'] = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
     os.environ['SHEEP_PORT_1'] = '9001'
     os.environ['HOME_PATH'] = 'examples'
-    os.environ['MODEL_EXAMPLE'] = 'cxflow_example'
+    os.environ['MODEL_EXAMPLE'] = 'emloop_example'
 
     with open(invalid_config_env_file) as file:
         config = load_shepherd_config(file)
