@@ -70,8 +70,8 @@ class Shepherd:
         self._listener = gevent.spawn(self.listen)
         self._health_checker = gevent.spawn(self.shepherd_health_check)
 
-        self.storage_inaccessible_reported = False
-        self.registry_inaccessible_reported = False
+        self._storage_inaccessible_reported = False
+        self._registry_inaccessible_reported = False
 
     def __getitem__(self, sheep_id: str) -> BaseSheep:
         """
@@ -122,22 +122,26 @@ class Shepherd:
         self[sheep_id].jobs_queue.put(job_id)
 
     def shepherd_health_check(self) -> None:
+        """
+        Periodically check if the shepherd and all of its dependencies work properly (and logs warnings if they do not).
+        """
+
         while True:
             gevent.sleep(1)
 
-            if not self.storage.is_accessible() and not self.storage_inaccessible_reported:
+            if not self.storage.is_accessible() and not self._storage_inaccessible_reported:
                 logging.warning("The remote storage is not accessible")
-                self.storage_inaccessible_reported = True
+                self._storage_inaccessible_reported = True
             else:
-                self.storage_inaccessible_reported = False
+                self._storage_inaccessible_reported = False
 
             if self.registry_config is not None:
                 try:
                     list_images_in_registry(self.registry_config)
-                    self.registry_inaccessible_reported = False
+                    self._registry_inaccessible_reported = False
                 except:
                     logging.warning("The Docker registry is not accessible")
-                    self.registry_inaccessible_reported = True
+                    self._registry_inaccessible_reported = True
 
     def sheep_health_check(self, sheep_id: str) -> None:
         """
@@ -158,7 +162,7 @@ class Shepherd:
                         error = 'Sheep container died without notice'
                         logging.error('Sheep `%s` encountered error when processing job `%s`: %s',
                                       sheep_id, job_id, error)
-                        self.storage.job_failed(job_id, error)
+                        self.storage.report_job_failed(job_id, error)
                     sheep.in_progress = set()
                     self.notifier.notify()
             except SheepError as se:
@@ -195,7 +199,7 @@ class Shepherd:
                     shutil.rmtree(path.join(sheep.sheep_data_root, job_id))
                     error = 'Failed to start sheep for this job ({})'.format(str(sce))
                     logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep_id, job_id, error)
-                    self.storage.job_failed(job_id, error)
+                    self.storage.report_job_failed(job_id, error)
                     continue
             # send the InputMessage to the sheep
             sheep.in_progress.add(job_id)
@@ -225,11 +229,11 @@ class Shepherd:
 
                 # save the done/error file
                 if isinstance(message, DoneMessage):
-                    self.storage.job_done(job_id)
+                    self.storage.report_job_done(job_id)
                     logging.info('Job `%s` from sheep `%s` done', job_id, sheep_id)
                 elif isinstance(message, ErrorMessage):
                     error = (message.short_error + '\n' + message.long_error)
-                    self.storage.job_failed(job_id, error)
+                    self.storage.report_job_failed(job_id, error)
                     logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep_id, message.short_error)
 
                 # notify about the finished job
