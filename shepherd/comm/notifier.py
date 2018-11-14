@@ -1,8 +1,6 @@
-import logging
 from typing import Callable
 
 import zmq.green as zmq
-from zmq.error import ZMQError
 import gevent
 
 

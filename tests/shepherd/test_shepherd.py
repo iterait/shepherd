@@ -6,8 +6,8 @@ import pytest
 from shepherd.constants import ERROR_FILE, DEFAULT_OUTPUT_PATH, DONE_FILE
 from shepherd.sheep import BareSheep, DockerSheep, SheepConfigurationError
 from shepherd.shepherd import Shepherd
-from shepherd.api.errors import UnknownSheepError, UnknownJobError
-from shepherd.shepherd.config import ShepherdConfig
+from shepherd.errors.api import UnknownSheepError, UnknownJobError
+from shepherd.config import ShepherdConfig
 from shepherd.utils.storage import minio_object_exists
 
 

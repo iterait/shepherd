@@ -10,7 +10,7 @@ from .api import create_app
 from .shepherd import Shepherd
 from .sheep.welcome import welcome
 from .api.views import create_shepherd_blueprint
-from .shepherd.config import load_shepherd_config
+from .config import load_shepherd_config
 
 
 @click.command()

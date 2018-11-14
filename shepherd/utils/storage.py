@@ -8,7 +8,7 @@ from minio.error import MinioError
 from urllib3.exceptions import HTTPError
 
 from shepherd.constants import INPUT_DIR, OUTPUT_DIR
-from ..api.errors import StorageError, StorageInaccessibleError
+from ..errors.api import StorageError, StorageInaccessibleError
 
 _MINIO_FOLDER_DELIMITER = '/'
 """Minio folder delimiter."""

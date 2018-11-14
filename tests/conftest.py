@@ -7,7 +7,7 @@ import random
 import string
 from typing import Tuple
 
-from shepherd.shepherd.config import RegistryConfig
+from shepherd.config import RegistryConfig
 
 
 @pytest.fixture()

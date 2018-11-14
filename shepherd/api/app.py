@@ -3,7 +3,7 @@ from flask_cors import CORS
 from functools import partial
 import logging
 
-from .errors import ClientActionError, AppError, NameConflictError, StorageInaccessibleError
+from ..errors.api import ClientActionError, AppError, NameConflictError, StorageInaccessibleError
 from .responses import ErrorResponse
 from .swagger import swagger
 

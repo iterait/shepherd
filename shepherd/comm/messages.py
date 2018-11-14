@@ -2,7 +2,7 @@ import json
 import sys, inspect
 from schematics import Model
 from schematics.types import StringType, serializable, PolyModelType
-from typing import List, Iterable, Optional
+from typing import Iterable, Optional
 
 
 class Message(Model):

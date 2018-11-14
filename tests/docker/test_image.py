@@ -1,7 +1,8 @@
 import pytest
 
-from shepherd.shepherd.config import RegistryConfig
-from shepherd.docker import DockerImage, DockerError
+from shepherd.config import RegistryConfig
+from shepherd.docker import DockerImage
+from shepherd.errors.docker import DockerError
 
 from .docker_not_available import docker_not_available
 

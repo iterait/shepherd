@@ -7,7 +7,7 @@ from minio import Minio
 
 from shepherd.constants import INPUT_DIR, OUTPUT_DIR
 from shepherd.utils import *
-from shepherd.api.errors import StorageError
+from shepherd.errors.api import StorageError
 
 
 def test_create_clean_dir(tmpdir):

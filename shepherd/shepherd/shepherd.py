@@ -8,15 +8,15 @@ import gevent
 import zmq.green as zmq
 from minio import Minio
 
-from shepherd.constants import OUTPUT_DIR
-from shepherd.docker.registry import list_images_in_registry
-from shepherd.storage.minio_storage import MinioStorage
-from .config import RegistryConfig
+from ..constants import OUTPUT_DIR
+from ..docker import list_images_in_registry
+from ..storage.minio_storage import MinioStorage
+from ..config import RegistryConfig
 from ..sheep import *
 from ..api.models import SheepModel
 from ..api.models import ModelModel
-from shepherd.sheep.errors import SheepConfigurationError
-from ..api.errors import UnknownSheepError, UnknownJobError
+from shepherd.errors.sheep import SheepConfigurationError
+from ..errors.api import UnknownSheepError, UnknownJobError
 from ..utils import create_clean_dir
 from ..comm import Messenger, InputMessage, DoneMessage, ErrorMessage, JobDoneNotifier
 

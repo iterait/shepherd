@@ -1,6 +1,6 @@
 from typing import Optional
 
-from ..sheep.errors import SheepError
+from ..errors.sheep import SheepError
 
 
 class DockerError(SheepError):

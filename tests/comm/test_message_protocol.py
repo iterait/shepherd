@@ -1,5 +1,6 @@
 import pytest
 from shepherd.comm import *
+from shepherd.errors.comm import MessageError, UnexpectedMessageTypeError
 
 
 def test_send_rcv(dealer_socket, router_socket, message: Message):

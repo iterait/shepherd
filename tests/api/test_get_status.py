@@ -1,7 +1,6 @@
 import json
 from io import BytesIO
 from datetime import datetime, timedelta
-import pytest
 
 from shepherd.constants import DONE_FILE
 
