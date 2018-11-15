@@ -41,6 +41,9 @@ That is it! You should see some output similar to this:
     2018-04-01 00:44:23.000490: INFO    @shepherd       : Minio storage appears to be up and running
     2018-04-01 00:44:23.000490: INFO    @shepherd       : Shepherd API is available at http://0.0.0.0:5000
 
+
+Note that the shepherd may be run in a debug mode by setting **DEBUG** environmental variable to 1.
+
 Basics
 ******
 
