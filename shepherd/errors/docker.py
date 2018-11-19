@@ -2,6 +2,8 @@ from typing import Optional
 
 from ..errors.sheep import SheepError
 
+__all__ = ['DockerError']
+
 
 class DockerError(SheepError):
     """Error in execution of a docker command."""

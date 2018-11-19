@@ -2,7 +2,7 @@ import logging
 import subprocess
 from typing import List
 
-from shepherd.errors.docker import DockerError
+from ..errors.docker import DockerError
 
 
 def kill_blocking_container(host_port: int) -> None:

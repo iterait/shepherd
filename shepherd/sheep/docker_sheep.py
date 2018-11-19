@@ -4,10 +4,10 @@ from typing import Dict, Any, Optional, List
 from schematics.types import BooleanType
 
 from .base_sheep import BaseSheep
-from shepherd.errors.sheep import SheepConfigurationError
 from ..docker import DockerContainer, DockerImage
 from ..config import RegistryConfig
 from ..errors.docker import DockerError
+from ..errors.sheep import SheepConfigurationError
 
 
 def extract_gpu_number(device_name: str) -> Optional[str]:

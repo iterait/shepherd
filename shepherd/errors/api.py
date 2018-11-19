@@ -1,3 +1,7 @@
+__all__ = ['AppError', 'ClientActionError', 'UnknownSheepError', 'UnknownJobError', 'StorageError',
+           'StorageInaccessibleError', 'NameConflictError']
+
+
 class AppError(Exception, BaseException):
     """Base application exception, will result in 500 response."""
 

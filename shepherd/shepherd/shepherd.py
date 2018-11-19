@@ -15,8 +15,8 @@ from ..config import RegistryConfig
 from ..sheep import *
 from ..api.models import SheepModel
 from ..api.models import ModelModel
-from shepherd.errors.sheep import SheepConfigurationError
 from ..errors.api import UnknownSheepError, UnknownJobError
+from ..errors.sheep import SheepConfigurationError, SheepError
 from ..utils import create_clean_dir
 from ..comm import Messenger, InputMessage, DoneMessage, ErrorMessage, JobDoneNotifier
 
@@ -48,6 +48,7 @@ class Shepherd:
         self.poller = zmq.Poller()
         self.sheep: Dict[str, BaseSheep] = {}
         self.notifier: JobDoneNotifier = JobDoneNotifier()
+        self._sheep_greenlets = {}
 
         for sheep_id, config in sheep_config.items():
             socket = zmq.Context.instance().socket(zmq.DEALER)
@@ -64,8 +65,11 @@ class Shepherd:
             logging.info('Created sheep `%s` of type `%s`', sheep_id, sheep_type)
             self.sheep[sheep_id] = sheep
             self.poller.register(socket, zmq.POLLIN)
-            gevent.spawn(partial(self.dequeue_and_feed_jobs, sheep_id))
-            gevent.spawn(partial(self.sheep_health_check, sheep_id))
+
+            self._sheep_greenlets[sheep_id] = [
+                gevent.spawn(partial(self.dequeue_and_feed_jobs, sheep_id)),
+                gevent.spawn(partial(self.sheep_health_check, sheep_id))
+            ]
 
         self._listener = gevent.spawn(self.listen)
         self._health_checker = gevent.spawn(self.shepherd_health_check)
@@ -104,6 +108,10 @@ class Shepherd:
         :return:
         """
         logging.info('Slaughtering sheep `%s`', sheep_id)
+
+        for greenlet in self._sheep_greenlets[sheep_id]:
+            greenlet.kill()
+
         self[sheep_id].slaughter()
 
     def enqueue_job(self, job_id: str, job_meta: ModelModel, sheep_id: Optional[str]=None) -> None:
@@ -130,7 +138,7 @@ class Shepherd:
             gevent.sleep(1)
 
             if not self.storage.is_accessible() and not self._storage_inaccessible_reported:
-                logging.warning("The remote storage is not accessible")
+                logging.error("The remote storage is not accessible")
                 self._storage_inaccessible_reported = True
             else:
                 self._storage_inaccessible_reported = False
@@ -140,7 +148,7 @@ class Shepherd:
                     list_images_in_registry(self.registry_config)
                     self._registry_inaccessible_reported = False
                 except:
-                    logging.warning("The Docker registry is not accessible")
+                    logging.error("The Docker registry is not accessible")
                     self._registry_inaccessible_reported = True
 
     def sheep_health_check(self, sheep_id: str) -> None:

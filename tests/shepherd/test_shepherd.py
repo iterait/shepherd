@@ -4,9 +4,10 @@ import gevent
 import pytest
 
 from shepherd.constants import ERROR_FILE, DEFAULT_OUTPUT_PATH, DONE_FILE
-from shepherd.sheep import BareSheep, DockerSheep, SheepConfigurationError
+from shepherd.sheep import BareSheep, DockerSheep
 from shepherd.shepherd import Shepherd
 from shepherd.errors.api import UnknownSheepError, UnknownJobError
+from shepherd.errors.sheep import SheepConfigurationError
 from shepherd.config import ShepherdConfig
 from shepherd.utils.storage import minio_object_exists
 
