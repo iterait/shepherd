@@ -1,8 +1,8 @@
+import json
 import logging
 import os
+from aiohttp import web
 
-from flask import Flask, jsonify
-from flask_cors import CORS
 from functools import partial
 
 from ..errors.api import ClientActionError, AppError, NameConflictError, StorageInaccessibleError
@@ -19,7 +19,7 @@ def internal_error_handler(error: Exception):
 
     response = ErrorResponse({"message": 'Internal server error ({})'.format(str(error))})
     logging.exception(error)
-    return jsonify(response.to_primitive()), 500
+    return web.Response(text=json.dumps(response.to_primitive()), content_type='application/json'), 500
 
 
 def error_handler(http_code, error: AppError):
@@ -31,20 +31,18 @@ def error_handler(http_code, error: AppError):
     """
 
     response = ErrorResponse({"message": str(error)})
-    return jsonify(response.to_primitive()), http_code
+    return web.Response(text=json.dumps(response.to_primitive()), content_type='application/json'), http_code
 
 
-def create_app(name: str):
-    app = Flask(name)
-    CORS(app, expose_headers=["Content-Disposition"], send_wildcard=True, origins=[])
+def create_app():
+    app = web.Application(debug=os.getenv('DEBUG', False))
+    # TODO CORS(app, expose_headers=["Content-Disposition"], send_wildcard=True, origins=[])
 
-    app.register_error_handler(NameConflictError, partial(error_handler, 409))
-    app.register_error_handler(ClientActionError, partial(error_handler, 400))
-    app.register_error_handler(StorageInaccessibleError, partial(error_handler, 503))
-    app.register_error_handler(AppError, partial(error_handler, 500))
-    app.register_error_handler(Exception, internal_error_handler)
-
-    app.debug = os.getenv('DEBUG', False)
+    swagger.error_middleware.add_handler(NameConflictError, partial(error_handler, 409))
+    swagger.error_middleware.add_handler(ClientActionError, partial(error_handler, 400))
+    swagger.error_middleware.add_handler(StorageInaccessibleError, partial(error_handler, 503))
+    swagger.error_middleware.add_handler(AppError, partial(error_handler, 500))
+    swagger.error_middleware.add_handler(Exception, internal_error_handler)
 
     swagger.init_app(app)
 

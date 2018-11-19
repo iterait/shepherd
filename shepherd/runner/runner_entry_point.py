@@ -1,3 +1,4 @@
+import asyncio
 import os
 import sys
 import logging
@@ -20,7 +21,7 @@ def create_argparser():
     return parser
 
 
-def run() -> None:
+async def main() -> None:
     """
     Create a runner and list on the configured port for job ``InputMessage`` s.
 
@@ -51,8 +52,12 @@ def run() -> None:
     runner = el.utils.create_object(module, class_, args=(args.config_path, args.port, args.stream))
 
     # listen for input messages
-    runner.process_all()
+    await runner.process_all()
+
+
+def run():
+    asyncio.run(main())  # pragma: no cover
 
 
 if __name__ == '__main__':
-    run()  # pragma: no cover
+    run()

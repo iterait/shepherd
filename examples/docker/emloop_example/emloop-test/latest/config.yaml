@@ -1,10 +1,10 @@
 dataset:
-  class: examples.docker.emloop_example.dummy.DummyDataset
+  class: dummy.DummyDataset
 
 
 model:
   name: Dummy
-  class: examples.docker.emloop_example.dummy.DummyModel
+  class: dummy.DummyModel
 
 eval:
   predict:

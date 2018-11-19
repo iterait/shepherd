@@ -45,7 +45,7 @@ def test_shepherd_status(shepherd):
     assert sheep_name == 'bare_sheep'
 
 
-def test_job(shepherd: Shepherd, job, minio):
+async def test_job(shepherd: Shepherd, job, minio):
     job_id, job_meta = job
 
     with pytest.raises(UnknownJobError):
@@ -53,7 +53,10 @@ def test_job(shepherd: Shepherd, job, minio):
 
     shepherd.enqueue_job(job_id, job_meta)
     assert not shepherd.is_job_done(job_id)
-    shepherd.notifier.wait_for(lambda: shepherd.is_job_done(job_id))
+
+    async with shepherd.job_done_condition:
+        await shepherd.job_done_condition.wait_for(lambda: shepherd.is_job_done(job_id))
+
     assert shepherd['bare_sheep'].running
     assert shepherd.is_job_done(job_id)
     assert minio_object_exists(minio, job_id, DEFAULT_OUTPUT_PATH)

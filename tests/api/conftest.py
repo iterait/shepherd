@@ -3,7 +3,7 @@ import pytest
 
 from shepherd.api import create_app
 from shepherd.api.models import SheepModel
-from shepherd.api.views import create_shepherd_blueprint
+from shepherd.api.views import create_shepherd_routes
 from shepherd.shepherd import Shepherd
 
 
@@ -31,7 +31,7 @@ def mock_shepherd():
 @pytest.fixture(scope="function")
 def app(minio, mock_shepherd):
     app = create_app(__name__)
-    app.register_blueprint(create_shepherd_blueprint(mock_shepherd, minio))
+    app.register_blueprint(create_shepherd_routes(mock_shepherd, minio))
     app.debug = True
 
     with app.app_context():

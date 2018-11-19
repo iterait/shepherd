@@ -1,15 +1,16 @@
+import asyncio
 import logging
 
 import click
-import gevent
 import emloop as el
 from minio import Minio
-from gevent.pywsgi import WSGIServer
+
+from aiohttp import web
 
 from .api import create_app
 from .shepherd import Shepherd
 from .sheep.welcome import welcome
-from .api.views import create_shepherd_blueprint
+from .api.views import create_shepherd_routes
 from .config import load_shepherd_config
 
 
@@ -43,15 +44,15 @@ def run(host, port, config_file) -> None:
     logging.debug('Creating shepherd')
     shepherd = Shepherd(config.sheep, config.data_root, minio, config.registry)
 
-    app = create_app(__name__)
-    app.register_blueprint(create_shepherd_blueprint(shepherd, minio))
-    api_server = WSGIServer((host, port), app, log=logging.getLogger(''))
-    api_handler = gevent.spawn(api_server.serve_forever)
+    app = create_app()
+    app.add_routes(create_shepherd_routes(shepherd, minio))
+    app.on_startup.append(lambda _: shepherd.start())
+    app.on_cleanup.append(lambda _: shepherd.close())
 
     # process API calls forever
     try:
         logging.info('Shepherd API is available at http://%s:%s', host, port)
-        api_handler.join()
+        web.run_app(app, host=host, port=port)
     except KeyboardInterrupt:
         logging.info("Interrupt caught, slaughtering all the sheep")
         shepherd.close()
