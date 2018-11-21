@@ -109,9 +109,6 @@ class Shepherd:
         """
         logging.info('Slaughtering sheep `%s`', sheep_id)
 
-        for greenlet in self._sheep_greenlets[sheep_id]:
-            greenlet.kill()
-
         self[sheep_id].slaughter()
 
     def enqueue_job(self, job_id: str, job_meta: ModelModel, sheep_id: Optional[str]=None) -> None:
@@ -290,3 +287,7 @@ class Shepherd:
         self.notifier.close()
         self._listener.kill()
         self._health_checker.kill()
+
+        for sheep_greenlets in self._sheep_greenlets.values():
+            for sheep_greenlet in sheep_greenlets:
+                sheep_greenlet.kill()
