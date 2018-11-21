@@ -1,7 +1,9 @@
+import logging
+import os
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 from functools import partial
-import logging
 
 from ..errors.api import ClientActionError, AppError, NameConflictError, StorageInaccessibleError
 from .responses import ErrorResponse
@@ -41,6 +43,8 @@ def create_app(name: str):
     app.register_error_handler(StorageInaccessibleError, partial(error_handler, 503))
     app.register_error_handler(AppError, partial(error_handler, 500))
     app.register_error_handler(Exception, internal_error_handler)
+
+    app.debug = os.getenv('DEBUG', False)
 
     swagger.init_app(app)
 
