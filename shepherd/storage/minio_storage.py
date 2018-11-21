@@ -15,18 +15,6 @@ from .storage import Storage
 from ..utils import minio_object_exists
 
 
-def inherit_doc(parent):
-    """
-    A decorator that declares a method should inherit its doc block from its ancestor
-    :param parent: The parent class whose doc block should be used
-    """
-    def decorator(f):
-        f.__doc__ = getattr(parent, f.__name__).__doc__
-        return f
-
-    return decorator
-
-
 _MINIO_FOLDER_DELIMITER = '/'
 """Minio folder delimiter."""
 
@@ -37,18 +25,26 @@ class MinioStorage(Storage):
     """
 
     def __init__(self, minio: Minio):
+        """
+        Initialize the storage with a Minio handle.
+        :param minio: Minio storage handle
+        """
         self._minio = minio
 
-    @inherit_doc(Storage)
     def is_accessible(self) -> bool:
+        """
+        Implementation of :py:meth:`shepherd.storage.Storage.is_accessible`.
+        """
         try:
             self._minio.list_buckets()
             return True
         except BaseException:
             return False
 
-    @inherit_doc(Storage)
     def pull_job_data(self, job_id: str, target_directory: str) -> None:
+        """
+        Implementation of :py:meth:`shepherd.storage.Storage.pull_job_data`.
+        """
         logging.debug('Pulling minio bucket `%s` to dir `%s`', job_id, target_directory)
 
         try:
@@ -67,8 +63,10 @@ class MinioStorage(Storage):
         except MinioError as me:
             raise StorageError('Failed to pull minio bucket `{}`'.format(job_id)) from me
 
-    @inherit_doc(Storage)
     def push_job_data(self, job_id: str, source_directory: str) -> None:
+        """
+        Implementation of :py:meth:`shepherd.storage.Storage.push_job_data`.
+        """
         logging.debug('Pushing dir `%s` to minio bucket `%s`', source_directory, job_id)
         try:
             pushed_count = 0
@@ -86,8 +84,10 @@ class MinioStorage(Storage):
         except MinioError as me:
             raise StorageError('Failed to push minio bucket `{}`'.format(job_id)) from me
 
-    @inherit_doc(Storage)
     def report_job_failed(self, job_id: str, message: str) -> None:
+        """
+        Implementation of :py:meth:`shepherd.storage.Storage.report_job_failed`.
+        """
         error = message.encode()
         try:
             self._minio.put_object(job_id, ERROR_FILE, BytesIO(error), len(error))
@@ -96,8 +96,10 @@ class MinioStorage(Storage):
         except MinioError as me:
             raise StorageError(f"Failed to report job `{job_id}` as failed") from me
 
-    @inherit_doc(Storage)
     def report_job_done(self, job_id: str) -> None:
+        """
+        Implementation of :py:meth:`shepherd.storage.Storage.report_job_done`.
+        """
         try:
             self._minio.put_object(job_id, DONE_FILE, BytesIO(b''), 0)
         except HTTPError as he:
@@ -105,8 +107,10 @@ class MinioStorage(Storage):
         except MinioError as me:
             raise StorageError(f"Failed to report job `{job_id}` as done") from me
 
-    @inherit_doc(Storage)
     def is_job_done(self, job_id: str) -> bool:
+        """
+        Implementation of :py:meth:`shepherd.storage.Storage.is_job_done`.
+        """
         try:
             return minio_object_exists(self._minio, job_id, DONE_FILE) \
                    or minio_object_exists(self._minio, job_id, ERROR_FILE)
