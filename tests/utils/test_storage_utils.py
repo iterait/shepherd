@@ -59,7 +59,7 @@ def test_minio_push(minio: Minio, bucket, tmpdir, caplog):
     assert minio_objects[0].object_name == OUTPUT_DIR + '/file.txt'
 
     with pytest.raises(StorageError):
-        storage.push_job_data(minio, f'{bucket}-missing', job_dir)
+        storage.push_job_data(f'{bucket}-missing', job_dir)
 
     assert minio_object_exists(minio, bucket, OUTPUT_DIR + '/file.txt')
     assert not minio_object_exists(minio, bucket, 'another/file.txt')
