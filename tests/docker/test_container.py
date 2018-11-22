@@ -2,8 +2,9 @@ import pytest
 import gevent
 
 
-from shepherd.docker import DockerContainer, DockerImage, DockerError
+from shepherd.docker import DockerContainer, DockerImage
 from shepherd.docker.utils import run_docker_command
+from shepherd.errors.docker import DockerError
 
 from .docker_not_available import docker_not_available
 

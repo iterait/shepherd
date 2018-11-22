@@ -6,7 +6,7 @@ from minio import Minio
 from unittest.mock import Mock
 from werkzeug.test import Client
 
-from shepherd.api.errors import UnknownJobError
+from shepherd.errors.api import UnknownJobError
 
 from shepherd.constants import DEFAULT_PAYLOAD_PATH
 from shepherd.shepherd import Shepherd

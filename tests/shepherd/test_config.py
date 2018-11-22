@@ -4,7 +4,7 @@ import pytest
 import os
 from schematics.exceptions import DataError
 
-from shepherd.shepherd.config import load_shepherd_config, ShepherdConfig
+from shepherd.config import load_shepherd_config, ShepherdConfig
 
 
 def test_load_config(valid_config_file):

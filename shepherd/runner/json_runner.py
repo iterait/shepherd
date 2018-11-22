@@ -7,7 +7,7 @@ from collections import defaultdict
 import emloop as el
 import numpy as np
 
-from shepherd.constants import DEFAULT_PAYLOAD_FILE, DEFAULT_OUTPUT_FILE
+from ..constants import DEFAULT_PAYLOAD_FILE, DEFAULT_OUTPUT_FILE
 from .base_runner import BaseRunner
 
 

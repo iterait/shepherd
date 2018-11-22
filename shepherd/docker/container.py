@@ -2,7 +2,7 @@ import logging
 from typing import Dict, Optional, List
 
 from .image import DockerImage
-from .errors import DockerError
+from ..errors.docker import DockerError
 from .utils import run_docker_command, kill_blocking_container
 
 

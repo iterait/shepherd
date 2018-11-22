@@ -1,5 +1,4 @@
 from schematics import Model
-from schematics.exceptions import ValidationError
 from schematics.types import StringType, ModelType
 
 from shepherd.api.models import ModelModel
