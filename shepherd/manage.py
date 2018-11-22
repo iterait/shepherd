@@ -1,4 +1,3 @@
-import sys
 import logging
 
 import click
@@ -6,13 +5,12 @@ import gevent
 import emloop as el
 from minio import Minio
 from gevent.pywsgi import WSGIServer
-from urllib3.exceptions import MaxRetryError
 
 from .api import create_app
 from .shepherd import Shepherd
 from .sheep.welcome import welcome
 from .api.views import create_shepherd_blueprint
-from .shepherd.config import load_shepherd_config
+from .config import load_shepherd_config
 
 
 @click.command()
@@ -49,14 +47,6 @@ def run(host, port, config_file) -> None:
     app.register_blueprint(create_shepherd_blueprint(shepherd, minio))
     api_server = WSGIServer((host, port), app, log=logging.getLogger(''))
     api_handler = gevent.spawn(api_server.serve_forever)
-
-    # everything should be ready, lets check if minio works
-    try:
-        minio.list_buckets()
-        logging.info('Minio storage appears to be up and running')
-    except MaxRetryError:
-        logging.error('Cannot connect to minio at (%s)', config.storage.url)
-        sys.exit(1)
 
     # process API calls forever
     try:

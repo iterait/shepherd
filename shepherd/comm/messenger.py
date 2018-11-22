@@ -1,9 +1,9 @@
-from typing import Optional, Union, Sequence
+from typing import Union, Sequence
 
 import zmq.green as zmq
 from zmq.error import ZMQBaseError
 
-from .errors import *
+from ..errors.comm import MessageError, UnexpectedMessageTypeError
 from .messages import *
 
 

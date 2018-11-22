@@ -1,5 +1,5 @@
 from shepherd.docker.utils import run_docker_command
-from shepherd.docker import DockerError
+from shepherd.errors.docker import DockerError
 
 
 def docker_not_available():

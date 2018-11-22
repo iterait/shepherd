@@ -1,7 +1,6 @@
 import logging
 import shutil
 import os.path as path
-from io import BytesIO
 from functools import partial
 from typing import Mapping, Generator, Tuple, Dict, Any, Optional
 
@@ -9,15 +8,16 @@ import gevent
 import zmq.green as zmq
 from minio import Minio
 
-from shepherd.constants import OUTPUT_DIR, DONE_FILE, ERROR_FILE
-from .config import RegistryConfig
+from ..constants import OUTPUT_DIR
+from ..docker import list_images_in_registry
+from ..storage.minio_storage import MinioStorage
+from ..config import RegistryConfig
 from ..sheep import *
 from ..api.models import SheepModel
 from ..api.models import ModelModel
-from shepherd.sheep.errors import SheepConfigurationError
-from ..api.errors import UnknownSheepError, UnknownJobError
+from ..errors.api import UnknownSheepError, UnknownJobError
+from ..errors.sheep import SheepConfigurationError, SheepError
 from ..utils import create_clean_dir
-from ..utils import pull_minio_bucket, push_minio_bucket, minio_object_exists
 from ..comm import Messenger, InputMessage, DoneMessage, ErrorMessage, JobDoneNotifier
 
 
@@ -43,10 +43,12 @@ class Shepherd:
             if config["type"] == "docker" and registry_config is None:
                 raise SheepConfigurationError("To use docker sheep, you need to configure a registry URL")
 
-        self.minio = minio
+        self.registry_config = registry_config
+        self.storage = MinioStorage(minio)
         self.poller = zmq.Poller()
         self.sheep: Dict[str, BaseSheep] = {}
         self.notifier: JobDoneNotifier = JobDoneNotifier()
+        self._sheep_greenlets = {}
 
         for sheep_id, config in sheep_config.items():
             socket = zmq.Context.instance().socket(zmq.DEALER)
@@ -63,10 +65,17 @@ class Shepherd:
             logging.info('Created sheep `%s` of type `%s`', sheep_id, sheep_type)
             self.sheep[sheep_id] = sheep
             self.poller.register(socket, zmq.POLLIN)
-            gevent.spawn(partial(self.dequeue_and_feed_jobs, sheep_id))
-            gevent.spawn(partial(self.health_check, sheep_id))
+
+            self._sheep_greenlets[sheep_id] = [
+                gevent.spawn(partial(self.dequeue_and_feed_jobs, sheep_id)),
+                gevent.spawn(partial(self.sheep_health_check, sheep_id))
+            ]
 
         self._listener = gevent.spawn(self.listen)
+        self._health_checker = gevent.spawn(self.shepherd_health_check)
+
+        self._storage_inaccessible_reported = False
+        self._registry_inaccessible_reported = False
 
     def __getitem__(self, sheep_id: str) -> BaseSheep:
         """
@@ -93,12 +102,13 @@ class Shepherd:
 
     def slaughter_sheep(self, sheep_id: str) -> None:
         """
-        Slaughter (kill) the specified sheep. In particular, it's container and socked are going to be terminated,
+        Slaughter (kill) the specified sheep. In particular, it's container and socket are going to be terminated,
 
         :param sheep_id:
         :return:
         """
         logging.info('Slaughtering sheep `%s`', sheep_id)
+
         self[sheep_id].slaughter()
 
     def enqueue_job(self, job_id: str, job_meta: ModelModel, sheep_id: Optional[str]=None) -> None:
@@ -116,7 +126,29 @@ class Shepherd:
         self[sheep_id].jobs_meta[job_id] = job_meta
         self[sheep_id].jobs_queue.put(job_id)
 
-    def health_check(self, sheep_id: str) -> None:
+    def shepherd_health_check(self) -> None:
+        """
+        Periodically check if the shepherd and all of its dependencies work properly (and logs warnings if they do not).
+        """
+
+        while True:
+            gevent.sleep(1)
+
+            if not self.storage.is_accessible() and not self._storage_inaccessible_reported:
+                logging.error("The remote storage is not accessible")
+                self._storage_inaccessible_reported = True
+            else:
+                self._storage_inaccessible_reported = False
+
+            if self.registry_config is not None:
+                try:
+                    list_images_in_registry(self.registry_config)
+                    self._registry_inaccessible_reported = False
+                except:
+                    logging.error("The Docker registry is not accessible")
+                    self._registry_inaccessible_reported = True
+
+    def sheep_health_check(self, sheep_id: str) -> None:
         """
         Periodically check if the specified sheep is running and resolve its in-progress jobs if not.
 
@@ -132,10 +164,10 @@ class Shepherd:
                         shutil.rmtree(path.join(self[sheep_id].sheep_data_root, job_id))
 
                         # save the error
-                        error = b'Sheep container died without notice'
+                        error = 'Sheep container died without notice'
                         logging.error('Sheep `%s` encountered error when processing job `%s`: %s',
                                       sheep_id, job_id, error)
-                        self.minio.put_object(job_id, ERROR_FILE, BytesIO(error), len(error))
+                        self.storage.report_job_failed(job_id, error)
                     sheep.in_progress = set()
                     self.notifier.notify()
             except SheepError as se:
@@ -156,7 +188,7 @@ class Shepherd:
 
             # prepare working directory
             working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
-            pull_minio_bucket(self.minio, job_id, working_directory)
+            self.storage.pull_job_data(job_id, working_directory)
             create_clean_dir(path.join(working_directory, OUTPUT_DIR))
 
             # (re)start the sheep if needed
@@ -171,11 +203,11 @@ class Shepherd:
                 except SheepConfigurationError as sce:
                     error = 'Failed to start sheep for this job ({})'.format(str(sce))
                     logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep_id, job_id, error)
-                    self._job_failed(job_id, error, sheep)
+                    self._report_job_failed(job_id, error, sheep)
                     continue
                 except Exception as e:
                     error = '`{}` thrown when starting sheep `{}` for job `{}`'.format(str(e), sheep_id, job_id)
-                    self._job_failed(job_id, error, sheep)
+                    self._report_job_failed(job_id, error, sheep)
                     logging.exception(e)
                     continue
 
@@ -185,15 +217,13 @@ class Shepherd:
             logging.info('Sending InputMessage for job `%s` on `%s`', job_id, sheep_id)
             Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
 
-    def _job_failed(self, job_id: str, error: str, sheep: BaseSheep):
+    def _report_job_failed(self, job_id: str, error: str, sheep: BaseSheep):
         """
         A job has failed - remove the local copy of its data and mark it as failed in the remote storage
         """
 
         shutil.rmtree(path.join(sheep.sheep_data_root, job_id))
-
-        error = error.encode()
-        self.minio.put_object(job_id, ERROR_FILE, BytesIO(error), len(error))
+        self.storage.report_job_failed(job_id, error)
 
     def listen(self) -> None:
         """
@@ -212,16 +242,16 @@ class Shepherd:
 
                 # clean-up the working directory and upload the results
                 working_directory = path.join(self[sheep_id].sheep_data_root, job_id)
-                push_minio_bucket(self.minio, job_id, working_directory)
+                self.storage.push_job_data(job_id, working_directory)
                 shutil.rmtree(working_directory)
 
                 # save the done/error file
                 if isinstance(message, DoneMessage):
-                    self.minio.put_object(job_id, DONE_FILE, BytesIO(b''), 0)
+                    self.storage.report_job_done(job_id)
                     logging.info('Job `%s` from sheep `%s` done', job_id, sheep_id)
                 elif isinstance(message, ErrorMessage):
-                    error = (message.short_error + '\n' + message.long_error).encode()
-                    self.minio.put_object(job_id, ERROR_FILE, BytesIO(error), len(error))
+                    error = (message.short_error + '\n' + message.long_error)
+                    self.storage.report_job_failed(job_id, error)
                     logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep_id, message.short_error)
 
                 # notify about the finished job
@@ -256,16 +286,21 @@ class Shepherd:
         :raise UnknownJobError: if the job is not ready nor it is known to this shepherd
         :return: job ready flag
         """
-        if minio_object_exists(self.minio, job_id, DONE_FILE) or minio_object_exists(self.minio, job_id, ERROR_FILE):
+        if self.storage.is_job_done(job_id):
             return True
+
+        for sheep in self.sheep.values():
+            if job_id in sheep.jobs_meta.keys() or job_id in sheep.in_progress:
+                return False
         else:
-            for sheep in self.sheep.values():
-                if job_id in sheep.jobs_meta.keys() or job_id in sheep.in_progress:
-                    return False
-            else:
-                raise UnknownJobError('Job `{}` is not know to this shepherd'.format(job_id))
+            raise UnknownJobError('Job `{}` is not know to this shepherd'.format(job_id))
 
     def close(self):
         self.slaughter_all()
         self.notifier.close()
         self._listener.kill()
+        self._health_checker.kill()
+
+        for sheep_greenlets in self._sheep_greenlets.values():
+            for sheep_greenlet in sheep_greenlets:
+                sheep_greenlet.kill()

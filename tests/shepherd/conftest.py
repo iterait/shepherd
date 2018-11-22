@@ -4,7 +4,7 @@ from io import BytesIO
 import os.path as path
 
 from shepherd.constants import DEFAULT_PAYLOAD_PATH, INPUT_DIR
-from shepherd.shepherd.config import load_shepherd_config
+from shepherd.config import load_shepherd_config
 from shepherd.shepherd import Shepherd
 from shepherd.api.models import ModelModel
 

@@ -1,6 +1,6 @@
 import logging
 
-from shepherd.shepherd.config import RegistryConfig
+from ..config import RegistryConfig
 from .utils import run_docker_command
 
 

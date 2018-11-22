@@ -8,13 +8,13 @@ from flask import Blueprint, send_file
 from minio import Minio
 from minio.error import MinioError, BucketAlreadyExists, BucketAlreadyOwnedByYou
 
-from shepherd.constants import DONE_FILE, ERROR_FILE, DEFAULT_OUTPUT_FILE, OUTPUT_DIR, DEFAULT_PAYLOAD_PATH
-from shepherd.shepherd.shepherd import Shepherd
-from shepherd.utils import minio_object_exists
+from ..constants import DONE_FILE, ERROR_FILE, DEFAULT_OUTPUT_FILE, OUTPUT_DIR, DEFAULT_PAYLOAD_PATH
+from ..shepherd import Shepherd
+from ..utils import minio_object_exists
 from .requests import StartJobRequest
 from .responses import StartJobResponse, StatusResponse, JobStatusResponse, ErrorResponse, \
     JobErrorResponse, JobReadyResponse
-from .errors import ClientActionError, StorageError, UnknownJobError, NameConflictError
+from ..errors.api import ClientActionError, StorageError, UnknownJobError, NameConflictError
 from .swagger import swagger
 
 

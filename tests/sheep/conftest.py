@@ -3,8 +3,8 @@ from pathlib import Path
 import zmq.green as zmq
 from zmq.error import ZMQError
 
-from shepherd.sheep import BareSheep, DockerSheep, SheepError, SheepConfigurationError
-from shepherd.shepherd.config import RegistryConfig
+from shepherd.sheep import BareSheep, DockerSheep
+from shepherd.config import RegistryConfig
 
 
 @pytest.fixture()

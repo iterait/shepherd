@@ -9,7 +9,7 @@ from schematics.types import StringType
 
 from .base_sheep import BaseSheep
 from .docker_sheep import extract_gpu_number
-from shepherd.sheep.errors import SheepConfigurationError
+from ..errors.sheep import SheepConfigurationError
 
 
 class BareSheep(BaseSheep):

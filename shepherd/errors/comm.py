@@ -1,3 +1,6 @@
+__all__ = ['MessageError', 'UnexpectedMessageTypeError']
+
+
 class MessageError(ValueError):
     pass
 
