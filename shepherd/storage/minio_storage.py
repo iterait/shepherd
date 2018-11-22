@@ -27,6 +27,7 @@ class MinioStorage(Storage):
     def __init__(self, minio: Minio):
         """
         Initialize the storage with a Minio handle.
+
         :param minio: Minio storage handle
         """
         self._minio = minio
