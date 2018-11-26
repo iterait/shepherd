@@ -217,17 +217,19 @@ class Shepherd:
             logging.info('Sending InputMessage for job `%s` on `%s`', job_id, sheep_id)
             Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
 
-    def _report_job_failed(self, job_id: str, error: str, sheep: BaseSheep):
+    def _report_job_failed(self, job_id: str, error: str, sheep: BaseSheep) -> None:
         """
-        A job has failed - remove the local copy of its data and mark it as failed in the remote storage
+        A job has failed - remove the local copy of its data and mark it as failed in the remote storage.
         """
-
-        shutil.rmtree(path.join(sheep.sheep_data_root, job_id))
-        self.storage.report_job_failed(job_id, error)
+        try:
+            shutil.rmtree(path.join(sheep.sheep_data_root, job_id))
+            self.storage.report_job_failed(job_id, error)
+        except Exception as ex:
+            logging.exception(f'Error when reporting job `{job_id}` as failed', ex)
 
     def listen(self) -> None:
         """
-        Poll the sheep output sockets, process sheep outputs and clean-up working directories in an end-less loop.
+        Poll the sheep output sockets, process sheep outputs and clean-up working directories in an endless loop.
         """
         while True:
             # poll the output sockets
