@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 from aiohttp import web
@@ -16,10 +15,8 @@ def internal_error_handler(error: Exception):
     :param error: an exception object
     :return: a Flask response
     """
-
-    response = ErrorResponse({"message": 'Internal server error ({})'.format(str(error))})
     logging.exception(error)
-    return web.Response(text=json.dumps(response.to_primitive()), content_type='application/json'), 500
+    return (ErrorResponse({"message": 'Internal server error ({})'.format(str(error))})), 500
 
 
 def error_handler(http_code, error: AppError):
@@ -29,9 +26,7 @@ def error_handler(http_code, error: AppError):
     :param error: an exception object
     :return: a Flask response
     """
-
-    response = ErrorResponse({"message": str(error)})
-    return web.Response(text=json.dumps(response.to_primitive()), content_type='application/json'), http_code
+    return (ErrorResponse({"message": str(error)})), http_code
 
 
 def create_app():
