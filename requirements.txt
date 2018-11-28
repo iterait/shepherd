@@ -15,5 +15,6 @@ git+https://github.com/iterait/apistrap.git
 # testing
 pytest
 pytest-mock
-pytest-flask
 pytest-forked
+pytest-aiohttp
+pytest-asyncio

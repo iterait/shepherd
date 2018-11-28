@@ -1,5 +1,6 @@
+import time
+
 import pytest
-import gevent
 
 
 from shepherd.docker import DockerContainer, DockerImage
@@ -47,12 +48,12 @@ def test_docker_container(registry_config, image_valid):
     container = DockerContainer(image, command=['sleep', '10'])
     assert not container.running
     container.start()
-    gevent.sleep(0.2)
+    time.sleep(0.2)
     num_running_now = len(run_docker_command(['ps']).split('\n'))
     assert num_running_before + 1 == num_running_now
     assert container.running
     container.kill()
-    gevent.sleep(0.2)
+    time.sleep(0.2)
     num_running_final = len(run_docker_command(['ps']).split('\n'))
     assert num_running_final == num_running_before
 

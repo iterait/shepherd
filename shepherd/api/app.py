@@ -29,8 +29,8 @@ def error_handler(http_code, error: AppError):
     return (ErrorResponse({"message": str(error)})), http_code
 
 
-def create_app():
-    app = web.Application(debug=os.getenv('DEBUG', False))
+def create_app(debug=None):
+    app = web.Application(debug=debug if debug is not None else os.getenv('DEBUG', False))
     # TODO CORS(app, expose_headers=["Content-Disposition"], send_wildcard=True, origins=[])
 
     swagger.error_middleware.add_handler(NameConflictError, partial(error_handler, 409))

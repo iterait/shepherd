@@ -1,4 +1,6 @@
-from gevent import monkey; monkey.patch_all()
+import asyncio
+
+import logging
 import pytest
 from minio import Minio
 import subprocess
@@ -17,6 +19,16 @@ def registry_config():
                               password='Iterait123'))
 
 
+@pytest.fixture(scope="function")
+def event_loop():
+    logging.getLogger("asyncio").setLevel(logging.DEBUG)
+    loop = asyncio.new_event_loop()
+    loop.set_debug(True)
+    #asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    yield loop
+    loop.close()
+
+
 @pytest.fixture(scope='session')
 def minio(tmpdir_factory):
     try:
@@ -26,6 +38,9 @@ def minio(tmpdir_factory):
         pytest.skip("Minio is not installed")
 
     data_dir = tmpdir_factory.mktemp('minio')
+
+    assert len(os.listdir(data_dir)) == 0
+
     env = os.environ.copy()
     minio_key = 'AKIAIOSFODNN7EXAMPLE'
     minio_secret = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
@@ -57,11 +72,16 @@ def bucket(minio: Minio):
             minio.remove_object(request_id, obj.object_name)
         minio.remove_bucket(request_id)
     minio.make_bucket(request_id)
+    assert not list(minio.list_objects_v2(request_id, recursive=True))
+
     yield request_id
+
     if minio.bucket_exists(request_id):
         for obj in minio.list_objects_v2(request_id, recursive=True):
             minio.remove_object(request_id, obj.object_name)
         minio.remove_bucket(request_id)
+
+    assert not minio.bucket_exists(request_id)
 
 
 @pytest.fixture()

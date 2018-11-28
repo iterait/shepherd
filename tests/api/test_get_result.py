@@ -24,29 +24,38 @@ def job_failed(minio: Minio, bucket):
     yield job_id
 
 
-def test_get_result_success(job_done, client):
+async def test_get_result_success(job_done, aiohttp_client, app):
     job_id = job_done
-    response = client.get("/jobs/{}/result/payload.json".format(job_id))
-    assert response.status_code == 200
+    client = await aiohttp_client(app)
+    response = await client.get("/jobs/{}/result/payload.json".format(job_id))
+    assert response.status == 200
 
-    assert "content" in response.json
+    data = await response.json()
+    assert "content" in data
 
 
-def test_get_result_not_ready(bucket, client):
+async def test_get_result_not_ready(bucket, aiohttp_client, app):
     job_id = bucket
-    response = client.get("/jobs/{}/result/payload.json".format(job_id))
-    assert response.status_code == 202
+    client = await aiohttp_client(app)
+
+    response = await client.get("/jobs/{}/result/payload.json".format(job_id))
+    assert response.status == 202
 
 
-def test_get_result_error(job_failed, client):
+async def test_get_result_error(job_failed, aiohttp_client, app):
     job_id = job_failed
-    response = client.get("/jobs/{}/result/payload.json".format(job_id))
+    client = await aiohttp_client(app)
 
-    assert response.status_code == 500
-    assert response.json["message"] == "General error"
+    response = await client.get("/jobs/{}/result/payload.json".format(job_id))
+
+    assert response.status == 500
+    data = await response.json()
+    assert data["message"] == "General error"
 
 
-def test_get_result_not_found(job_done, client):
+async def test_get_result_not_found(job_done, aiohttp_client, app):
     job_id = job_done
-    response = client.get("/jobs/{}/result/i-dont-exist.json".format(job_id))
-    assert response.status_code == 404
+    client = await aiohttp_client(app)
+
+    response = await client.get("/jobs/{}/result/i-dont-exist.json".format(job_id))
+    assert response.status == 404
