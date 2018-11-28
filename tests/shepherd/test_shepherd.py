@@ -43,7 +43,7 @@ async def test_shepherd_status(shepherd):
     assert sheep_name == 'bare_sheep'
 
 
-async def test_job(shepherd: Shepherd, job, minio, event_loop):
+async def test_job(shepherd: Shepherd, job, minio, loop):
     job_id, job_meta = job
 
     with pytest.raises(UnknownJobError):

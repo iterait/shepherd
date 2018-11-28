@@ -19,16 +19,6 @@ def registry_config():
                               password='Iterait123'))
 
 
-@pytest.fixture(scope="function")
-def event_loop():
-    logging.getLogger("asyncio").setLevel(logging.DEBUG)
-    loop = asyncio.new_event_loop()
-    loop.set_debug(True)
-    #asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    yield loop
-    loop.close()
-
-
 @pytest.fixture(scope='session')
 def minio(tmpdir_factory):
     try:

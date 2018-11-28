@@ -16,7 +16,7 @@ def message(request):
 
 
 @pytest.fixture()
-async def dealer_socket():
+async def dealer_socket(loop):
     sock = zmq.asyncio.Context.instance().socket(zmq.DEALER)
     sock.bind('inproc://protocol')
     yield sock
@@ -25,7 +25,7 @@ async def dealer_socket():
 
 
 @pytest.fixture()
-async def router_socket():
+async def router_socket(loop):
     sock = zmq.asyncio.Context.instance().socket(zmq.ROUTER)
     sock.setsockopt(zmq.IDENTITY, b'router')
     sock.connect('inproc://protocol')
@@ -35,7 +35,7 @@ async def router_socket():
 
 
 @pytest.fixture()
-async def bad_socket():
+async def bad_socket(loop):
     sock = zmq.asyncio.Context.instance().socket(zmq.REQ)
     # socket is not connected
     yield sock

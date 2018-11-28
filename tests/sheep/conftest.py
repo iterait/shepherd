@@ -8,7 +8,7 @@ from shepherd.config import RegistryConfig
 
 
 @pytest.fixture()
-async def sheep_socket():
+async def sheep_socket(loop):
     sock = zmq.asyncio.Context.instance().socket(zmq.DEALER)
     yield sock
     try:

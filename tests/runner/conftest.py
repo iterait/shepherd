@@ -19,7 +19,7 @@ def json_data(request):
 
 
 @pytest.fixture()
-async def feeding_socket():
+async def feeding_socket(loop):
     sock = zmq.asyncio.Context.instance().socket(zmq.DEALER)
     sock.connect('tcp://0.0.0.0:9009')
     yield sock, 9009

@@ -40,7 +40,7 @@ def valid_config(valid_config_file):
 
 
 @pytest.fixture(scope="function")
-async def shepherd(valid_config, minio, event_loop):
+async def shepherd(valid_config, minio, loop):
     """Shepherd with a single bare sheep which runs a emloop runner that doubles its inputs."""
     shepherd = Shepherd(valid_config.sheep, valid_config.data_root, minio, valid_config.registry)
     await shepherd.start()

@@ -6,6 +6,7 @@ import re
 import os.path as path
 
 import subprocess
+from threading import Thread
 
 from shepherd.constants import OUTPUT_DIR, DEFAULT_OUTPUT_FILE
 from shepherd.runner import *
@@ -20,8 +21,7 @@ def test_to_json_serializable(json_data):
         to_json_serializable(asyncio)
 
 
-@pytest.mark.skip  # TODO weird stuff happens here
-async def test_json_runner(job, feeding_socket, runner_setup, event_loop):
+async def test_json_runner(job, feeding_socket, runner_setup, loop):
     socket, port = feeding_socket
     job_id, job_dir = job
 
@@ -38,7 +38,6 @@ async def test_json_runner(job, feeding_socket, runner_setup, event_loop):
     assert message.job_id == job_id
 
 
-@pytest.mark.skip  # TODO weird stuff happens here
 async def test_json_runner_exception(job, feeding_socket):
     socket, port = feeding_socket
     job_id, job_dir = job
@@ -54,11 +53,12 @@ async def test_json_runner_exception(job, feeding_socket):
 
 
 def start_cli(command, mocker):
-    return subprocess.Popen(command)
+    handle = subprocess.Popen(command)
+    return handle.kill
 
 
-@pytest.mark.parametrize('start', (start_cli,))  # TODO add some asyncio runner
-@pytest.mark.skip  # TODO weird stuff happens here
+# TODO add some asyncio runner, using a background thread with a separate event loop might also be feasible
+@pytest.mark.parametrize('start', (start_cli,))
 async def test_runner(job, feeding_socket, runner_setup, mocker, start):  # for coverage reporting
     socket, port = feeding_socket
     job_id, job_dir = job
@@ -68,10 +68,10 @@ async def test_runner(job, feeding_socket, runner_setup, mocker, start):  # for 
     # test both config by dir and config by file
     for config_path in [base_config_path, path.join(base_config_path, 'config.yaml')]:
         command = ['shepherd-runner', '-p', str(port), '-s', stream, config_path]
-        handle = start(command, mocker)
+        killswitch = start(command, mocker)
         await Messenger.send(socket, InputMessage(dict(job_id=job_id, io_data_root=job_dir)))
         await Messenger.recv(socket, [DoneMessage])
-        handle.kill()
+        killswitch()  # terminate the runner
         output = json.load(open(path.join(job_dir, job_id, OUTPUT_DIR, DEFAULT_OUTPUT_FILE)))
         assert output['output'] == [expected]
 

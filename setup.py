@@ -26,7 +26,7 @@ setup(name='shepherd',
       include_package_data=True,
       zip_safe=False,
       setup_requires=['pytest-runner'],
-      tests_require=['pytest', 'pytest-mock', 'pytest-asyncio', 'pytest-aiohttp'],
+      tests_require=['pytest', 'pytest-mock', 'pytest-aiohttp'],
       install_requires=['click', 'aiohttp', 'simplejson', 'pyzmq', 'gevent', 'PyYaml', 'requests', 'minio',
                         'schematics', 'emloop', 'apistrap'],
       entry_points={
