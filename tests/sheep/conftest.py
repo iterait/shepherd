@@ -1,4 +1,5 @@
 import pytest
+from pathlib import Path
 import zmq.green as zmq
 from zmq.error import ZMQError
 
@@ -18,11 +19,16 @@ def sheep_socket():
 
 
 @pytest.fixture()
-def bare_sheep(sheep_socket, tmpdir):
-    sheep = BareSheep({'port': 9001, 'type': 'bare', 'working_directory': 'examples/docker/emloop_example',
-                       'stdout_file': '/tmp/i-dont-exists/bare-shepherd-runner-stdout.txt',
-                       'stderr_file': '/tmp/i-dont-exists/bare-shepherd-runner-stderr.txt'},
-                      socket=sheep_socket, sheep_data_root=str(tmpdir))
+def bare_sheep_config(tmpdir_factory):
+    tmpdir = Path(tmpdir_factory.mktemp('logs'))
+    yield {'port': 9001, 'type': 'bare', 'working_directory': 'examples/docker/emloop_example',
+           'stdout_file': str(tmpdir / 'bare-shepherd-runner-stdout.txt'),
+           'stderr_file': str(tmpdir / 'bare-shepherd-runner-stderr.txt')}
+
+
+@pytest.fixture()
+def bare_sheep(sheep_socket, tmpdir, bare_sheep_config):
+    sheep = BareSheep(bare_sheep_config, socket=sheep_socket, sheep_data_root=str(tmpdir))
     yield sheep
     sheep.slaughter()
 

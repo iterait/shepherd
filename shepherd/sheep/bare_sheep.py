@@ -47,7 +47,7 @@ class BareSheep(BaseSheep):
         emloop_config_path = path.join(self._config.working_directory, model_name, model_version,
                                        el.constants.EL_CONFIG_FILE)
         if not path.exists(emloop_config_path):
-            raise SheepConfigurationError("Cannot load model `{}:{}`, file '{}' does not exist."
+            raise SheepConfigurationError('Cannot load model `{}:{}`, file `{}` does not exist.'
                                           .format(model_name, model_version, emloop_config_path))
         super()._load_model(model_name, model_version)
         self._runner_config_path = path.relpath(emloop_config_path, self._config.working_directory)
@@ -63,19 +63,28 @@ class BareSheep(BaseSheep):
 
         # prepare env. variables for GPU computation and stdout/stderr files
         env = os.environ.copy()
-        env["CUDA_VISIBLE_DEVICES"] = ",".join(filter(None, map(extract_gpu_number, self._config.devices)))
+        env['CUDA_VISIBLE_DEVICES'] = ','.join(filter(None, map(extract_gpu_number, self._config.devices)))
         stdout = subprocess.DEVNULL
-        if self._config.stdout_file is not None:
-            os.makedirs(os.path.dirname(self._config.stdout_file), exist_ok=True)
-            stdout = open(self._config.stdout_file, 'a')
+
+        try:
+            if self._config.stdout_file is not None:
+                os.makedirs(os.path.dirname(self._config.stdout_file), exist_ok=True)
+                stdout = open(self._config.stdout_file, 'a')
+        except IOError as ex:
+            raise SheepConfigurationError('Could not open stdout log file: {}'.format(str(ex))) from ex
+
         stderr = subprocess.DEVNULL
-        if self._config.stderr_file is not None:
-            os.makedirs(os.path.dirname(self._config.stderr_file), exist_ok=True)
-            stderr = open(self._config.stderr_file, 'a')
+
+        try:
+            if self._config.stderr_file is not None:
+                os.makedirs(os.path.dirname(self._config.stderr_file), exist_ok=True)
+                stderr = open(self._config.stderr_file, 'a')
+        except IOError as ex:
+            raise SheepConfigurationError('Could not open stderr log file: {}'.format(str(ex))) from ex
 
         # start the runner in a new sub-process
         self._runner = subprocess.Popen(
-            shlex.split("shepherd-runner -p {} {}".format(self._config.port, self._runner_config_path)), env=env,
+            shlex.split('shepherd-runner -p {} {}'.format(self._config.port, self._runner_config_path)), env=env,
             cwd=self._config.working_directory, stdout=stdout, stderr=stderr)
 
     def slaughter(self) -> None:
