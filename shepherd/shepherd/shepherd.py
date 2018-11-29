@@ -210,16 +210,32 @@ class Shepherd:
                 try:
                     self._start_sheep(sheep_id, model.name, model.version)
                 except SheepConfigurationError as sce:
-                    shutil.rmtree(path.join(sheep.sheep_data_root, job_id))
                     error = 'Failed to start sheep for this job ({})'.format(str(sce))
                     logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep_id, job_id, error)
-                    self.storage.report_job_failed(job_id, error)
+                    self._report_job_failed(job_id, error, sheep)
                     continue
+                except Exception as e:
+                    error = '`{}` thrown when starting sheep `{}` for job `{}`'.format(str(e), sheep_id, job_id)
+                    self._report_job_failed(job_id, error, sheep)
+                    logging.exception(e)
+                    continue
+
             # send the InputMessage to the sheep
             sheep.in_progress.add(job_id)
             sheep.jobs_meta.pop(job_id)
             logging.info('Sending InputMessage for job `%s` on `%s`', job_id, sheep_id)
             await Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
+
+
+    def _report_job_failed(self, job_id: str, error: str, sheep: BaseSheep) -> None:
+        """
+        A job has failed - remove the local copy of its data and mark it as failed in the remote storage.
+        """
+        try:
+            shutil.rmtree(path.join(sheep.sheep_data_root, job_id))
+            self.storage.report_job_failed(job_id, error)
+        except Exception as ex:
+            logging.exception(f'Error when reporting job `{job_id}` as failed', ex)
 
     async def _listen(self) -> None:
         """

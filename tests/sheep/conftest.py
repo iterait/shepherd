@@ -1,6 +1,7 @@
 import pytest
 import zmq
 import zmq.asyncio
+from pathlib import Path
 from zmq.error import ZMQError
 
 from shepherd.sheep import BareSheep, DockerSheep
@@ -19,7 +20,15 @@ async def sheep_socket(loop):
 
 
 @pytest.fixture()
-async def bare_sheep(sheep_socket, tmpdir):
+def bare_sheep_config(tmpdir_factory):
+    tmpdir = Path(tmpdir_factory.mktemp('logs'))
+    yield {'port': 9001, 'type': 'bare', 'working_directory': 'examples/docker/emloop_example',
+           'stdout_file': str(tmpdir / 'bare-shepherd-runner-stdout.txt'),
+           'stderr_file': str(tmpdir / 'bare-shepherd-runner-stderr.txt')}
+
+    
+@pytest.fixture()
+async def bare_sheep(sheep_socket, tmpdir, bare_sheep_config):
     sheep = BareSheep({'port': 9001, 'type': 'bare', 'working_directory': 'examples/docker/emloop_example',
                        'stdout_file': '/tmp/i-dont-exists/bare-shepherd-runner-stdout.txt',
                        'stderr_file': '/tmp/i-dont-exists/bare-shepherd-runner-stderr.txt'},
