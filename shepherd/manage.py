@@ -7,6 +7,7 @@ from minio import Minio
 from aiohttp import web
 import aiohttp_cors
 
+from .storage import MinioStorage
 from .api import create_app
 from .shepherd import Shepherd
 from .sheep.welcome import welcome
@@ -41,11 +42,13 @@ def run(host, port, config_file) -> None:
     logging.debug('Creating minio handle')
     minio = Minio(config.storage.schemeless_url, config.storage.access_key, config.storage.secret_key,
                   config.storage.secure)
+    storage = MinioStorage(minio)
+
     logging.debug('Creating shepherd')
-    shepherd = Shepherd(config.sheep, config.data_root, minio, config.registry)
+    shepherd = Shepherd(config.sheep, config.data_root, storage, config.registry)
 
     app = create_app()
-    app.add_routes(create_shepherd_routes(shepherd, minio))
+    app.add_routes(create_shepherd_routes(shepherd, storage))
 
     cors = aiohttp_cors.setup(app, defaults={
         "*": aiohttp_cors.ResourceOptions(

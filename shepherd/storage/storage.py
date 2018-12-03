@@ -1,4 +1,8 @@
+from io import BytesIO
+
 import abc
+import datetime
+from typing import Optional
 
 
 class Storage(metaclass=abc.ABCMeta):
@@ -10,6 +14,24 @@ class Storage(metaclass=abc.ABCMeta):
     def is_accessible(self) -> bool:
         """
         Check if the remote storage can be accessed.
+        """
+
+    @abc.abstractmethod
+    def init_job(self, job_id: str) -> None:
+        """
+        Prepare storage for a new job.
+
+        :param job_id: identifier of the new job
+        """
+
+    @abc.abstractmethod
+    def job_data_exists(self, job_id: str) -> bool:
+        """
+        Check if the remote storage contains data for given job.
+
+        :param job_id: identifier of the job to be checked
+        :raises StorageInaccessibleError: the remote storage is not accessible
+        :raises StorageError: there was an error when communicating with the remote storage
         """
 
     @abc.abstractmethod
@@ -30,6 +52,41 @@ class Storage(metaclass=abc.ABCMeta):
 
         :param job_id: identifier of the job whose files should be uploaded
         :param source_directory: the directory from which the files should be uploaded
+        :raises StorageInaccessibleError: the remote storage is not accessible
+        :raises StorageError: there was an error when communicating with the remote storage
+        """
+
+    @abc.abstractmethod
+    def get_timestamp(self, job_id: str, file_path: str) -> datetime.datetime:
+        """
+        Get the timestamp of the last modification of given file.
+
+        :param job_id: identifier of the job to which the file belongs
+        :param file_path: path to the queried file
+        :return: timestamp of last modification
+        """
+
+    @abc.abstractmethod
+    def put_file(self, job_id: str, file_path: str, stream: BytesIO, length: int) -> None:
+        """
+        Store given file.
+
+        :param job_id: identifier of the job to which the file belongs
+        :param file_path: path to the stored file
+        :param stream: stream to read file contents from
+        :param length: length of the content stream
+        :raises StorageInaccessibleError: the remote storage is not accessible
+        :raises StorageError: there was an error when communicating with the remote storage
+        """
+
+    @abc.abstractmethod
+    def get_file(self, job_id: str, file_path: str) -> Optional[BytesIO]:
+        """
+        Download given file.
+
+        :param job_id: identifier of the job to which the file belongs
+        :param file_path: path to the queried file
+        :return: a stream to read the file contents from
         :raises StorageInaccessibleError: the remote storage is not accessible
         :raises StorageError: there was an error when communicating with the remote storage
         """

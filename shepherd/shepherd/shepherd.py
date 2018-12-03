@@ -7,11 +7,10 @@ from typing import Mapping, Generator, Tuple, Dict, Any, Optional
 import zmq
 import zmq.asyncio
 
-from minio import Minio
 
 from ..constants import OUTPUT_DIR
 from ..docker import list_images_in_registry
-from ..storage.minio_storage import MinioStorage
+from ..storage.minio_storage import Storage
 from ..config import RegistryConfig
 from ..sheep import *
 from ..api.models import SheepModel
@@ -30,7 +29,7 @@ class Shepherd:
     def __init__(self,
                  sheep_config: Mapping[str, Dict[str, Any]],
                  data_root: str,
-                 minio: Minio,
+                 storage: Storage,
                  registry_config: Optional[RegistryConfig]=None):
         """
         Create mighty Shepherd.
@@ -38,14 +37,14 @@ class Shepherd:
         :param registry_config: optional docker registry config
         :param sheep_config: sheep config
         :param data_root: directory where the task/sheep directories will be managed
-        :param minio: Minio handle
+        :param storage: remote storage adapter
         """
         for config in sheep_config.values():
             if config["type"] == "docker" and registry_config is None:
                 raise SheepConfigurationError("To use docker sheep, you need to configure a registry URL")
 
         self.registry_config = registry_config
-        self.storage = MinioStorage(minio)
+        self.storage = storage
         self.poller = zmq.asyncio.Poller()
         self.sheep: Dict[str, BaseSheep] = {}
         self.job_done_condition = asyncio.Condition()
