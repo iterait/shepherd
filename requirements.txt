@@ -9,6 +9,7 @@ minio
 pip
 schematics
 aiohttp
+aiohttp-cors
 git+https://github.com/iterait/emloop.git
 git+https://github.com/iterait/apistrap.git
 

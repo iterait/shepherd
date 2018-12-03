@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 import click
@@ -6,6 +5,7 @@ import emloop as el
 from minio import Minio
 
 from aiohttp import web
+import aiohttp_cors
 
 from .api import create_app
 from .shepherd import Shepherd
@@ -46,6 +46,18 @@ def run(host, port, config_file) -> None:
 
     app = create_app()
     app.add_routes(create_shepherd_routes(shepherd, minio))
+
+    cors = aiohttp_cors.setup(app, defaults={
+        "*": aiohttp_cors.ResourceOptions(
+            allow_credentials=True,
+            expose_headers="*",
+            allow_headers="*",
+        )
+    })
+
+    for route in app.router.routes():
+        cors.add(route)
+
     app.on_startup.append(lambda _: shepherd.start())
     app.on_cleanup.append(lambda _: shepherd.close())
 

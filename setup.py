@@ -28,7 +28,7 @@ setup(name='shepherd',
       setup_requires=['pytest-runner'],
       tests_require=['pytest', 'pytest-mock', 'pytest-aiohttp'],
       install_requires=['click', 'aiohttp', 'simplejson', 'pyzmq', 'gevent', 'PyYaml', 'requests', 'minio',
-                        'schematics', 'emloop', 'apistrap'],
+                        'schematics', 'emloop', 'apistrap', 'aiohttp-cors'],
       entry_points={
           'console_scripts': [
               'shepherd=shepherd.manage:run',

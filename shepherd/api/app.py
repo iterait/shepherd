@@ -1,6 +1,7 @@
 import logging
 import os
 from aiohttp import web
+from aiohttp.web_exceptions import HTTPError
 
 from functools import partial
 
@@ -29,6 +30,15 @@ def error_handler(http_code, error: AppError):
     return (ErrorResponse({"message": str(error)})), http_code
 
 
+def http_error_handler(error: HTTPError):
+    """
+    Handles HTTP errors
+    :param error: an exception object
+    :return: a Flask response
+    """
+    return (ErrorResponse({"message": error.text})), error.status_code
+
+
 def create_app(debug=None):
     app = web.Application(debug=debug if debug is not None else os.getenv('DEBUG', False))
     # TODO CORS(app, expose_headers=["Content-Disposition"], send_wildcard=True, origins=[])
@@ -36,6 +46,7 @@ def create_app(debug=None):
     swagger.error_middleware.add_handler(NameConflictError, partial(error_handler, 409))
     swagger.error_middleware.add_handler(ClientActionError, partial(error_handler, 400))
     swagger.error_middleware.add_handler(StorageInaccessibleError, partial(error_handler, 503))
+    swagger.error_middleware.add_handler(HTTPError, http_error_handler)
     swagger.error_middleware.add_handler(AppError, partial(error_handler, 500))
     swagger.error_middleware.add_handler(Exception, internal_error_handler)
 
