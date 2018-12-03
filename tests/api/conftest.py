@@ -7,6 +7,7 @@ from shepherd.api.swagger import swagger
 from shepherd.api.models import SheepModel
 from shepherd.api.views import create_shepherd_routes
 from shepherd.shepherd import Shepherd
+from shepherd.storage import MinioStorage
 
 
 @pytest.fixture(scope="function")
@@ -20,7 +21,7 @@ def mock_shepherd():
                 }
             })
 
-    def ready(*args):
+    async def ready(*args):
         return args[0] == 'uuid-ready'
 
     async def nothing(*args, **kwargs):
@@ -37,7 +38,7 @@ def mock_shepherd():
 @pytest.fixture(scope="function")
 def app(minio, mock_shepherd):
     app = create_app(debug=True)
-    app.add_routes(create_shepherd_routes(mock_shepherd, minio))
+    app.add_routes(create_shepherd_routes(mock_shepherd, MinioStorage(minio)))
     swagger.init_app(app)
 
     yield app

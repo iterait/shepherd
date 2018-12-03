@@ -11,13 +11,13 @@ class Storage(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def is_accessible(self) -> bool:
+    async def is_accessible(self) -> bool:
         """
         Check if the remote storage can be accessed.
         """
 
     @abc.abstractmethod
-    def init_job(self, job_id: str) -> None:
+    async def init_job(self, job_id: str) -> None:
         """
         Prepare storage for a new job.
 
@@ -25,7 +25,7 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def job_data_exists(self, job_id: str) -> bool:
+    async def job_data_exists(self, job_id: str) -> bool:
         """
         Check if the remote storage contains data for given job.
 
@@ -35,7 +35,7 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def pull_job_data(self, job_id: str, target_directory: str) -> None:
+    async def pull_job_data(self, job_id: str, target_directory: str) -> None:
         """
         Download job files from the remote storage to a local directory.
 
@@ -46,7 +46,7 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def push_job_data(self, job_id: str, source_directory: str) -> None:
+    async def push_job_data(self, job_id: str, source_directory: str) -> None:
         """
         Upload processed job files from a local directory to the remote storage.
 
@@ -57,7 +57,7 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def get_timestamp(self, job_id: str, file_path: str) -> datetime.datetime:
+    async def get_timestamp(self, job_id: str, file_path: str) -> datetime.datetime:
         """
         Get the timestamp of the last modification of given file.
 
@@ -67,7 +67,7 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def put_file(self, job_id: str, file_path: str, stream: BytesIO, length: int) -> None:
+    async def put_file(self, job_id: str, file_path: str, stream: BytesIO, length: int) -> None:
         """
         Store given file.
 
@@ -80,7 +80,7 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def get_file(self, job_id: str, file_path: str) -> Optional[BytesIO]:
+    async def get_file(self, job_id: str, file_path: str) -> Optional[BytesIO]:
         """
         Download given file.
 
@@ -92,7 +92,7 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def report_job_failed(self, job_id: str, message: str) -> None:
+    async def report_job_failed(self, job_id: str, message: str) -> None:
         """
         Mark the job as failed in the remote storage.
 
@@ -103,7 +103,7 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def report_job_done(self, job_id: str) -> None:
+    async def report_job_done(self, job_id: str) -> None:
         """
         Mark the job as finished in the remote storage.
 
@@ -113,7 +113,7 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def is_job_done(self, job_id: str) -> bool:
+    async def is_job_done(self, job_id: str) -> bool:
         """
         Query the remote storage to find out if the job is done (either finished or failed).
 

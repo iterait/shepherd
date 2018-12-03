@@ -15,8 +15,8 @@ from ..errors.api import ClientActionError, UnknownJobError
 from .swagger import swagger
 
 
-def check_job_exists(storage: Storage, job_id: str):
-    if not storage.job_data_exists(job_id):
+async def check_job_exists(storage: Storage, job_id: str):
+    if not await storage.job_data_exists(job_id):
         raise ClientActionError('Data for job `{}` does not exist'.format(job_id))
 
 
@@ -34,17 +34,17 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage):
         :raises NameConflictError: a job with given id was already submitted
         """
         if not start_job_request.payload:
-            check_job_exists(storage, start_job_request.job_id)
+            await check_job_exists(storage, start_job_request.job_id)
         else:
-            storage.init_job(start_job_request.job_id)
+            await storage.init_job(start_job_request.job_id)
 
             payload_data = start_job_request.payload.encode()
             payload = BytesIO(payload_data)
-            storage.put_file(start_job_request.job_id, DEFAULT_PAYLOAD_PATH,
-                             payload, len(start_job_request.payload))
+            await storage.put_file(start_job_request.job_id, DEFAULT_PAYLOAD_PATH,
+                                   payload, len(start_job_request.payload))
 
         try:
-            shepherd.is_job_done(start_job_request.job_id)
+            await shepherd.is_job_done(start_job_request.job_id)
             # if the call didn't throw, the job is either done or being computed, no need to enqueue it
             return StartJobResponse()
         except UnknownJobError:
@@ -66,10 +66,10 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage):
         """
         job_id = request.match_info['job_id']
 
-        check_job_exists(storage, job_id)
+        await check_job_exists(storage, job_id)
 
-        ready = shepherd.is_job_done(job_id)
-        formatted_timestamp = storage.get_timestamp(job_id, DONE_FILE) if ready else None
+        ready = await shepherd.is_job_done(job_id)
+        formatted_timestamp = await storage.get_timestamp(job_id, DONE_FILE) if ready else None
 
         return JobReadyResponse({'ready': ready,
                                  'finished_at': formatted_timestamp})
@@ -85,10 +85,12 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage):
         """
         job_id = request.match_info['job_id']
 
-        check_job_exists(storage, job_id)
+        await check_job_exists(storage, job_id)
         async with shepherd.job_done_condition:
-            await shepherd.job_done_condition.wait_for(lambda: shepherd.is_job_done(job_id))
-        return JobStatusResponse({'ready': shepherd.is_job_done(job_id)})
+            while not await shepherd.is_job_done(job_id):
+                await shepherd.job_done_condition.wait()
+
+        return JobStatusResponse({'ready': await shepherd.is_job_done(job_id)})
 
     @api.get("/jobs/{job_id}/result/{result_file}")
     @api.get("/jobs/{job_id}/result")
@@ -107,17 +109,17 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage):
         job_id = request.match_info['job_id']
         result_file = request.match_info.get('result_file', DEFAULT_OUTPUT_FILE)
 
-        check_job_exists(storage, job_id)
+        await check_job_exists(storage, job_id)
 
-        if not storage.is_job_done(job_id):
+        if not await storage.is_job_done(job_id):
             return JobStatusResponse(dict(ready=False))
 
-        error = storage.get_file(job_id, ERROR_FILE)
+        error = await storage.get_file(job_id, ERROR_FILE)
         if error is not None:
             return JobErrorResponse(dict(message=error.read()))
 
         output_path = OUTPUT_DIR + "/" + result_file
-        output = storage.get_file(job_id, output_path)
+        output = await storage.get_file(job_id, output_path)
         if output is None:
             return ErrorResponse(dict(message="Requested file does not exist"))
 

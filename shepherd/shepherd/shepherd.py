@@ -139,7 +139,7 @@ class Shepherd:
         while True:
             await asyncio.sleep(1)
 
-            if not self.storage.is_accessible() and not self._storage_inaccessible_reported:
+            if not await self.storage.is_accessible() and not self._storage_inaccessible_reported:
                 logging.error("The remote storage is not accessible")
                 self._storage_inaccessible_reported = True
             else:
@@ -172,7 +172,7 @@ class Shepherd:
                         error = 'Sheep container died without notice'
                         logging.error('Sheep `%s` encountered error when processing job `%s`: %s',
                                       sheep_id, job_id, error)
-                        self.storage.report_job_failed(job_id, error)
+                        await self.storage.report_job_failed(job_id, error)
                     sheep.in_progress = set()
 
                     async with self.job_done_condition:
@@ -195,7 +195,7 @@ class Shepherd:
 
             # prepare working directory
             working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
-            self.storage.pull_job_data(job_id, working_directory)
+            await self.storage.pull_job_data(job_id, working_directory)
             create_clean_dir(path.join(working_directory, OUTPUT_DIR))
 
             # (re)start the sheep if needed
@@ -211,11 +211,11 @@ class Shepherd:
                 except SheepConfigurationError as sce:
                     error = 'Failed to start sheep for this job ({})'.format(str(sce))
                     logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep_id, job_id, error)
-                    self._report_job_failed(job_id, error, sheep)
+                    await self._report_job_failed(job_id, error, sheep)
                     continue
                 except Exception as e:
                     error = '`{}` thrown when starting sheep `{}` for job `{}`'.format(str(e), sheep_id, job_id)
-                    self._report_job_failed(job_id, error, sheep)
+                    await self._report_job_failed(job_id, error, sheep)
                     logging.exception(e)
                     continue
 
@@ -225,14 +225,13 @@ class Shepherd:
             logging.info('Sending InputMessage for job `%s` on `%s`', job_id, sheep_id)
             await Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
 
-
-    def _report_job_failed(self, job_id: str, error: str, sheep: BaseSheep) -> None:
+    async def _report_job_failed(self, job_id: str, error: str, sheep: BaseSheep) -> None:
         """
         A job has failed - remove the local copy of its data and mark it as failed in the remote storage.
         """
         try:
             shutil.rmtree(path.join(sheep.sheep_data_root, job_id))
-            self.storage.report_job_failed(job_id, error)
+            await self.storage.report_job_failed(job_id, error)
         except Exception as ex:
             logging.exception(f'Error when reporting job `{job_id}` as failed', ex)
 
@@ -253,16 +252,16 @@ class Shepherd:
 
                 # clean-up the working directory and upload the results
                 working_directory = path.join(self[sheep_id].sheep_data_root, job_id)
-                self.storage.push_job_data(job_id, working_directory)
+                await self.storage.push_job_data(job_id, working_directory)
                 shutil.rmtree(working_directory)
 
                 # save the done/error file
                 if isinstance(message, DoneMessage):
-                    self.storage.report_job_done(job_id)
+                    await self.storage.report_job_done(job_id)
                     logging.info('Job `%s` from sheep `%s` done', job_id, sheep_id)
                 elif isinstance(message, ErrorMessage):
                     error = (message.short_error + '\n' + message.long_error)
-                    self.storage.report_job_failed(job_id, error)
+                    await self.storage.report_job_failed(job_id, error)
                     logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep_id, message.short_error)
 
                 # notify about the finished job
@@ -291,7 +290,7 @@ class Shepherd:
         for sheep_id in self.sheep.keys():
             self._slaughter_sheep(sheep_id)
 
-    def is_job_done(self, job_id: str) -> bool:
+    async def is_job_done(self, job_id: str) -> bool:
         """
         Check if the specified job is already done.
 
@@ -299,7 +298,7 @@ class Shepherd:
         :raise UnknownJobError: if the job is not ready nor it is known to this shepherd
         :return: job ready flag
         """
-        if self.storage.is_job_done(job_id):
+        if await self.storage.is_job_done(job_id):
             return True
 
         for sheep in self.sheep.values():

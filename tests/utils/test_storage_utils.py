@@ -36,7 +36,7 @@ def test_minio_connectivity(minio: Minio):
     assert not minio.list_buckets()  # we expect an empty minio
 
 
-def test_minio_push(minio: Minio, bucket, tmpdir, caplog):
+async def test_minio_push(minio: Minio, bucket, tmpdir, caplog):
     job_dir = path.join(tmpdir, bucket)
     create_clean_dir(job_dir)
     inputs_dir = create_clean_dir(path.join(job_dir, OUTPUT_DIR))
@@ -44,7 +44,7 @@ def test_minio_push(minio: Minio, bucket, tmpdir, caplog):
     storage = MinioStorage(minio)
 
     # test warning
-    storage.push_job_data(bucket, job_dir)
+    await storage.push_job_data(bucket, job_dir)
     assert 'No output files pushed to bucket' in caplog.text
 
     # create two files
@@ -53,24 +53,24 @@ def test_minio_push(minio: Minio, bucket, tmpdir, caplog):
             file.write(f'{dir_}content')
 
     # test if only the one in the outputs folder is pushed
-    storage.push_job_data(bucket, job_dir)
+    await storage.push_job_data(bucket, job_dir)
     minio_objects = list(minio.list_objects_v2(bucket, recursive=True))
     assert len(minio_objects) == 1
     assert minio_objects[0].object_name == OUTPUT_DIR + '/file.txt'
 
     with pytest.raises(StorageError):
-        storage.push_job_data(f'{bucket}-missing', job_dir)
+        await storage.push_job_data(f'{bucket}-missing', job_dir)
 
     assert minio_object_exists(minio, bucket, OUTPUT_DIR + '/file.txt')
     assert not minio_object_exists(minio, bucket, 'another/file.txt')
 
 
-def test_minio_pull(minio: Minio, bucket, tmpdir, caplog):
+async def test_minio_pull(minio: Minio, bucket, tmpdir, caplog):
     job_dir = path.join(tmpdir, bucket)
     create_clean_dir(job_dir)
     storage = MinioStorage(minio)
 
-    storage.pull_job_data(bucket, job_dir)
+    await storage.pull_job_data(bucket, job_dir)
     assert 'No input objects pulled from bucket' in caplog.text
     data = b'some data'
     minio.put_object(bucket, INPUT_DIR + '/file.dat', io.BytesIO(data), len(data))
@@ -79,7 +79,7 @@ def test_minio_pull(minio: Minio, bucket, tmpdir, caplog):
     assert minio_object_exists(minio, bucket, INPUT_DIR + '/file.dat')
     assert minio_object_exists(minio, bucket, 'another/file.dat')
 
-    storage.pull_job_data(bucket, job_dir)
+    await storage.pull_job_data(bucket, job_dir)
     filepath = path.join(job_dir, INPUT_DIR, 'file.dat')
     assert path.exists(filepath)
     with open(filepath) as file:
@@ -87,4 +87,4 @@ def test_minio_pull(minio: Minio, bucket, tmpdir, caplog):
     assert not path.exists(path.join(job_dir, 'another', 'file.dat'))
 
     with pytest.raises(StorageError):
-        storage.pull_job_data(f'{bucket}-missing', job_dir)
+        await storage.pull_job_data(f'{bucket}-missing', job_dir)

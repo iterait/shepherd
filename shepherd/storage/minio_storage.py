@@ -9,6 +9,7 @@ from io import BytesIO
 
 from minio import Minio
 from minio.error import MinioError, BucketAlreadyExists, BucketAlreadyOwnedByYou
+from typing import Optional
 from urllib3.exceptions import HTTPError
 
 from ..errors.api import StorageError, StorageInaccessibleError, NameConflictError
@@ -34,7 +35,7 @@ class MinioStorage(Storage):
         """
         self._minio = minio
 
-    def init_job(self, job_id: str):
+    async def init_job(self, job_id: str):
         """
         Implementation of :py:meth:`shepherd.storage.Storage.init_job`.
         """
@@ -46,7 +47,7 @@ class MinioStorage(Storage):
         except (BucketAlreadyExists, BucketAlreadyOwnedByYou) as e:
             raise NameConflictError("A job with this ID was already submitted") from e
 
-    def is_accessible(self) -> bool:
+    async def is_accessible(self) -> bool:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.is_accessible`.
         """
@@ -56,7 +57,7 @@ class MinioStorage(Storage):
         except BaseException:
             return False
 
-    def job_data_exists(self, job_id: str) -> bool:
+    async def job_data_exists(self, job_id: str) -> bool:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.job_data_exists`.
         """
@@ -67,7 +68,7 @@ class MinioStorage(Storage):
         except MinioError as me:
             raise StorageError('Failed to check minio bucket `{}`'.format(job_id)) from me
 
-    def pull_job_data(self, job_id: str, target_directory: str) -> None:
+    async def pull_job_data(self, job_id: str, target_directory: str) -> None:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.pull_job_data`.
         """
@@ -89,7 +90,7 @@ class MinioStorage(Storage):
         except MinioError as me:
             raise StorageError('Failed to pull minio bucket `{}`'.format(job_id)) from me
 
-    def push_job_data(self, job_id: str, source_directory: str) -> None:
+    async def push_job_data(self, job_id: str, source_directory: str) -> None:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.push_job_data`.
         """
@@ -110,7 +111,7 @@ class MinioStorage(Storage):
         except MinioError as me:
             raise StorageError('Failed to push minio bucket `{}`'.format(job_id)) from me
 
-    def get_timestamp(self, job_id: str, file_path: str) -> datetime.datetime:
+    async def get_timestamp(self, job_id: str, file_path: str) -> datetime.datetime:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.get_timestamp`.
         """
@@ -123,7 +124,7 @@ class MinioStorage(Storage):
 
         return datetime.datetime.fromtimestamp(calendar.timegm(timestamp))
 
-    def report_job_failed(self, job_id: str, message: str) -> None:
+    async def report_job_failed(self, job_id: str, message: str) -> None:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.report_job_failed`.
         """
@@ -135,7 +136,7 @@ class MinioStorage(Storage):
         except MinioError as me:
             raise StorageError(f"Failed to report job `{job_id}` as failed") from me
 
-    def put_file(self, job_id: str, file_path: str, stream: BytesIO, length: int) -> None:
+    async def put_file(self, job_id: str, file_path: str, stream: BytesIO, length: int) -> None:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.put_file`.
         """
@@ -146,7 +147,7 @@ class MinioStorage(Storage):
         except MinioError as me:
             raise StorageError(f"Failed to save file `{file_path}` for job `{job_id}`") from me
 
-    def get_file(self, job_id: str, file_path: str) -> BytesIO:
+    async def get_file(self, job_id: str, file_path: str) -> Optional[BytesIO]:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.get_file`.
         """
@@ -159,7 +160,7 @@ class MinioStorage(Storage):
         except MinioError as me:
             raise StorageError(f"Failed to get file `{file_path}` from job `{job_id}`") from me
 
-    def report_job_done(self, job_id: str) -> None:
+    async def report_job_done(self, job_id: str) -> None:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.report_job_done`.
         """
@@ -170,7 +171,7 @@ class MinioStorage(Storage):
         except MinioError as me:
             raise StorageError(f"Failed to report job `{job_id}` as done") from me
 
-    def is_job_done(self, job_id: str) -> bool:
+    async def is_job_done(self, job_id: str) -> bool:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.is_job_done`.
         """

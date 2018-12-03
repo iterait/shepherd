@@ -11,8 +11,12 @@ from shepherd.constants import DEFAULT_PAYLOAD_PATH
 from shepherd.shepherd import Shepherd
 
 
+async def unknown_job_coroutine(job_id):
+    raise UnknownJobError()
+
+
 async def test_start_job_with_payload(minio_scoped: Minio, aiohttp_client, app, mock_shepherd: Union[Mock, Shepherd]):
-    mock_shepherd.is_job_done.side_effect = UnknownJobError()
+    mock_shepherd.is_job_done.side_effect = unknown_job_coroutine
     client = await aiohttp_client(app)
 
     response = await client.post("/start-job", headers={"Content-Type": "application/json"}, data=json.dumps({
@@ -35,7 +39,7 @@ async def test_start_job_with_payload(minio_scoped: Minio, aiohttp_client, app, 
 
 
 async def test_start_job_with_payload_conflict(minio_scoped: Minio, aiohttp_client, app, mock_shepherd: Union[Mock, Shepherd]):
-    mock_shepherd.is_job_done.side_effect = UnknownJobError()
+    mock_shepherd.is_job_done.side_effect = unknown_job_coroutine
     client = await aiohttp_client(app)
 
     minio_scoped.make_bucket("uuid-1")
@@ -72,7 +76,7 @@ async def test_start_job_no_payload(aiohttp_client, app):
 
 async def test_start_job_with_payload_in_minio(minio_scoped: Minio, aiohttp_client, app, mock_shepherd: Union[Mock, Shepherd]):
     client = await aiohttp_client(app)
-    mock_shepherd.is_job_done.side_effect = UnknownJobError()
+    mock_shepherd.is_job_done.side_effect = unknown_job_coroutine
 
     payload = b"Payload content"
     minio_scoped.make_bucket("uuid-3")

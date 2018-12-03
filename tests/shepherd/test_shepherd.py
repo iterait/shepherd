@@ -47,16 +47,17 @@ async def test_job(shepherd: Shepherd, job, minio, loop):
     job_id, job_meta = job
 
     with pytest.raises(UnknownJobError):
-        shepherd.is_job_done(job_id)
+        await shepherd.is_job_done(job_id)
 
     await shepherd.enqueue_job(job_id, job_meta)
-    assert not shepherd.is_job_done(job_id)
+    assert not await shepherd.is_job_done(job_id)
 
     async with shepherd.job_done_condition:
-        await shepherd.job_done_condition.wait_for(lambda: shepherd.is_job_done(job_id))
+        while not await shepherd.is_job_done(job_id):
+            await shepherd.job_done_condition.wait()
 
     assert shepherd['bare_sheep'].running
-    assert shepherd.is_job_done(job_id)
+    assert await shepherd.is_job_done(job_id)
     assert minio_object_exists(minio, job_id, DEFAULT_OUTPUT_PATH)
     assert minio_object_exists(minio, job_id, DONE_FILE)
     output = json.loads(minio.get_object(job_id, DEFAULT_OUTPUT_PATH).read().decode())
@@ -68,9 +69,10 @@ async def test_failed_job(shepherd, bad_job, minio):
     job_id, job_meta = bad_job
     await shepherd.enqueue_job(job_id, job_meta)  # runner should fail to process the job (and send an ErrorMessage)
     async with shepherd.job_done_condition:
-        await shepherd.job_done_condition.wait_for(lambda: shepherd.is_job_done(job_id))
+        while not await shepherd.is_job_done(job_id):
+            await shepherd.job_done_condition.wait()
     assert shepherd['bare_sheep'].running
-    assert shepherd.is_job_done(job_id)
+    assert await shepherd.is_job_done(job_id)
     assert minio_object_exists(minio, job_id, ERROR_FILE)
 
 
@@ -79,7 +81,7 @@ async def test_bad_configuration_job(shepherd, bad_configuration_job, minio):
     await shepherd.enqueue_job(job_id, job_meta)  # shepherd should get SheepConfigurationError
     await asyncio.sleep(1)
     assert not shepherd['bare_sheep'].running
-    assert shepherd.is_job_done(job_id)
+    assert await shepherd.is_job_done(job_id)
     assert minio_object_exists(minio, job_id, ERROR_FILE)
 
 
@@ -88,5 +90,5 @@ async def test_bad_runner_job(shepherd, bad_runner_job, minio):
     await shepherd.enqueue_job(job_id, job_meta)  # runner should not start (and health-check should discover it)
     await asyncio.sleep(3)
     assert not shepherd['bare_sheep'].running
-    assert shepherd.is_job_done(job_id)
+    assert await shepherd.is_job_done(job_id)
     assert minio_object_exists(minio, job_id, ERROR_FILE)
