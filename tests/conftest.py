@@ -1,5 +1,6 @@
 import asyncio
 
+import aiobotocore
 import logging
 import pytest
 from minio import Minio
@@ -9,7 +10,7 @@ import random
 import string
 from typing import Tuple
 
-from shepherd.config import RegistryConfig
+from shepherd.config import RegistryConfig, StorageConfig
 
 
 @pytest.fixture()
@@ -20,7 +21,16 @@ def registry_config():
 
 
 @pytest.fixture(scope='session')
-def minio(tmpdir_factory):
+def storage_config():
+    yield StorageConfig({
+        'url': 'http://0.0.0.0:7000',
+        'access_key': 'AKIAIOSFODNN7EXAMPLE',
+        'secret_key': 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
+    })
+
+
+@pytest.fixture(scope='session')
+def minio(storage_config: StorageConfig, tmpdir_factory):
     try:
         if subprocess.call(['minio']) != 0:
             raise RuntimeError()
@@ -32,13 +42,15 @@ def minio(tmpdir_factory):
     assert len(os.listdir(data_dir)) == 0
 
     env = os.environ.copy()
-    minio_key = 'AKIAIOSFODNN7EXAMPLE'
-    minio_secret = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
-    env['MINIO_ACCESS_KEY'] = minio_key
-    env['MINIO_SECRET_KEY'] = minio_secret
-    minio_host = '0.0.0.0:7000'
-    proc = subprocess.Popen(['minio', 'server', '--address', minio_host, data_dir], env=env)
-    yield Minio(minio_host, access_key=minio_key, secret_key=minio_secret, secure=False)
+    env['MINIO_ACCESS_KEY'] = storage_config.access_key
+    env['MINIO_SECRET_KEY'] = storage_config.secret_key
+    proc = subprocess.Popen(['minio', 'server', '--address', storage_config.schemeless_url, data_dir], env=env)
+    yield Minio(
+        storage_config.schemeless_url,
+        access_key=storage_config.access_key,
+        secret_key=storage_config.secret_key,
+        secure=False
+    )
     proc.kill()
 
 

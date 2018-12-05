@@ -2,7 +2,6 @@ import logging
 
 import click
 import emloop as el
-from minio import Minio
 
 from aiohttp import web
 import aiohttp_cors
@@ -40,9 +39,7 @@ def run(host, port, config_file) -> None:
 
     # create minio, shepherd and API handles
     logging.debug('Creating minio handle')
-    minio = Minio(config.storage.schemeless_url, config.storage.access_key, config.storage.secret_key,
-                  config.storage.secure)
-    storage = MinioStorage(minio)
+    storage = MinioStorage(config.storage)
 
     logging.debug('Creating shepherd')
     shepherd = Shepherd(config.sheep, config.data_root, storage, config.registry)

@@ -1,8 +1,6 @@
-from io import BytesIO
-
 import abc
 import datetime
-from typing import Optional
+from typing import Optional, BinaryIO
 
 
 class Storage(metaclass=abc.ABCMeta):
@@ -67,7 +65,7 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    async def put_file(self, job_id: str, file_path: str, stream: BytesIO, length: int) -> None:
+    async def put_file(self, job_id: str, file_path: str, stream: BinaryIO, length: int) -> None:
         """
         Store given file.
 
@@ -80,7 +78,7 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    async def get_file(self, job_id: str, file_path: str) -> Optional[BytesIO]:
+    async def get_file(self, job_id: str, file_path: str) -> Optional[BinaryIO]:
         """
         Download given file.
 

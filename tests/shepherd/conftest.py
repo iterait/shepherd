@@ -41,9 +41,9 @@ def valid_config(valid_config_file):
 
 
 @pytest.fixture(scope="function")
-async def shepherd(valid_config, minio, loop):
+async def shepherd(valid_config, storage_config, loop):
     """Shepherd with a single bare sheep which runs a emloop runner that doubles its inputs."""
-    shepherd = Shepherd(valid_config.sheep, valid_config.data_root, MinioStorage(minio), valid_config.registry)
+    shepherd = Shepherd(valid_config.sheep, valid_config.data_root, MinioStorage(storage_config), valid_config.registry)
     await shepherd.start()
     yield shepherd
     await shepherd.close()

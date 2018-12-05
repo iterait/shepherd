@@ -5,10 +5,32 @@ import io
 
 from minio import Minio
 
+from shepherd.config import StorageConfig
 from shepherd.constants import INPUT_DIR, OUTPUT_DIR
 from shepherd.storage import MinioStorage
 from shepherd.utils import *
-from shepherd.errors.api import StorageError
+from shepherd.errors.api import StorageError, StorageInaccessibleError
+
+
+@pytest.fixture()
+async def storage(storage_config: StorageConfig, loop):
+    yield MinioStorage(storage_config)
+
+
+@pytest.fixture()
+def job_dir(tmpdir, bucket):
+    dir_path = path.join(tmpdir, bucket)
+    create_clean_dir(dir_path)
+    yield dir_path
+
+
+@pytest.fixture()
+def storage_config_inaccessible():
+    yield StorageConfig({
+        'url': 'http://0.0.0.0:65535',
+        'access_key': 'AKIAIOSFODNN7EXAMPLE',
+        'secret_key': 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
+    })
 
 
 def test_create_clean_dir(tmpdir):
@@ -36,16 +58,9 @@ def test_minio_connectivity(minio: Minio):
     assert not minio.list_buckets()  # we expect an empty minio
 
 
-async def test_minio_push(minio: Minio, bucket, tmpdir, caplog):
-    job_dir = path.join(tmpdir, bucket)
-    create_clean_dir(job_dir)
+async def test_minio_push(storage: MinioStorage, minio: Minio, bucket, job_dir):
     inputs_dir = create_clean_dir(path.join(job_dir, OUTPUT_DIR))
     another_dir = create_clean_dir(path.join(job_dir, 'another'))
-    storage = MinioStorage(minio)
-
-    # test warning
-    await storage.push_job_data(bucket, job_dir)
-    assert 'No output files pushed to bucket' in caplog.text
 
     # create two files
     for dir_ in (inputs_dir, another_dir):
@@ -58,20 +73,22 @@ async def test_minio_push(minio: Minio, bucket, tmpdir, caplog):
     assert len(minio_objects) == 1
     assert minio_objects[0].object_name == OUTPUT_DIR + '/file.txt'
 
-    with pytest.raises(StorageError):
-        await storage.push_job_data(f'{bucket}-missing', job_dir)
-
     assert minio_object_exists(minio, bucket, OUTPUT_DIR + '/file.txt')
     assert not minio_object_exists(minio, bucket, 'another/file.txt')
 
 
-async def test_minio_pull(minio: Minio, bucket, tmpdir, caplog):
-    job_dir = path.join(tmpdir, bucket)
-    create_clean_dir(job_dir)
-    storage = MinioStorage(minio)
+async def test_minio_push_empty(storage: MinioStorage, bucket, job_dir, caplog):
+    # test warning
+    await storage.push_job_data(bucket, job_dir)
+    assert 'No output files pushed to bucket' in caplog.text
 
-    await storage.pull_job_data(bucket, job_dir)
-    assert 'No input objects pulled from bucket' in caplog.text
+
+async def test_minio_push_missing(storage: MinioStorage, job_dir, bucket):
+    with pytest.raises(StorageError):
+        await storage.push_job_data(f'{bucket}-missing', job_dir)
+
+
+async def test_minio_pull(storage: MinioStorage, minio: Minio, bucket, job_dir):
     data = b'some data'
     minio.put_object(bucket, INPUT_DIR + '/file.dat', io.BytesIO(data), len(data))
     minio.put_object(bucket, 'another/file.dat', io.BytesIO(data), len(data))
@@ -86,5 +103,28 @@ async def test_minio_pull(minio: Minio, bucket, tmpdir, caplog):
         assert file.read() == 'some data'
     assert not path.exists(path.join(job_dir, 'another', 'file.dat'))
 
+
+async def test_minio_pull_empty(storage: MinioStorage, job_dir, bucket, caplog):
+    await storage.pull_job_data(bucket, job_dir)
+    assert 'No input objects pulled from bucket' in caplog.text
+
+
+async def test_minio_pull_missing(storage: MinioStorage, bucket, job_dir):
     with pytest.raises(StorageError):
         await storage.pull_job_data(f'{bucket}-missing', job_dir)
+
+
+async def test_minio_pull_inaccessible(job_dir, storage_config_inaccessible):
+    storage = MinioStorage(storage_config_inaccessible)
+
+    with pytest.raises(StorageInaccessibleError):
+        await storage.pull_job_data(f'whatever', job_dir)
+
+
+async def test_minio_accessibility_positive(storage: MinioStorage):
+    assert await storage.is_accessible()
+
+
+async def test_minio_accessibility_negative(storage_config_inaccessible):
+    storage = MinioStorage(storage_config_inaccessible)
+    assert not await storage.is_accessible()

@@ -36,9 +36,9 @@ def mock_shepherd():
 
 
 @pytest.fixture(scope="function")
-def app(minio, mock_shepherd):
+def app(storage_config, mock_shepherd, minio):
     app = create_app(debug=True)
-    app.add_routes(create_shepherd_routes(mock_shepherd, MinioStorage(minio)))
+    app.add_routes(create_shepherd_routes(mock_shepherd, MinioStorage(storage_config)))
     swagger.init_app(app)
 
     yield app
