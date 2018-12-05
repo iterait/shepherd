@@ -77,13 +77,13 @@ async def test_minio_push(storage: MinioStorage, minio: Minio, bucket, job_dir):
     assert not minio_object_exists(minio, bucket, 'another/file.txt')
 
 
-async def test_minio_push_empty(storage: MinioStorage, bucket, job_dir, caplog):
+async def test_minio_push_empty(storage: MinioStorage, bucket, job_dir, caplog, minio):
     # test warning
     await storage.push_job_data(bucket, job_dir)
     assert 'No output files pushed to bucket' in caplog.text
 
 
-async def test_minio_push_missing(storage: MinioStorage, job_dir, bucket):
+async def test_minio_push_missing(storage: MinioStorage, job_dir, bucket, minio):
     with pytest.raises(StorageError):
         await storage.push_job_data(f'{bucket}-missing', job_dir)
 
@@ -104,31 +104,31 @@ async def test_minio_pull(storage: MinioStorage, minio: Minio, bucket, job_dir):
     assert not path.exists(path.join(job_dir, 'another', 'file.dat'))
 
 
-async def test_minio_pull_empty(storage: MinioStorage, job_dir, bucket, caplog):
+async def test_minio_pull_empty(storage: MinioStorage, job_dir, bucket, caplog, minio):
     await storage.pull_job_data(bucket, job_dir)
     assert 'No input objects pulled from bucket' in caplog.text
 
 
-async def test_minio_pull_missing(storage: MinioStorage, bucket, job_dir):
+async def test_minio_pull_missing(storage: MinioStorage, bucket, job_dir, minio):
     with pytest.raises(StorageError):
         await storage.pull_job_data(f'{bucket}-missing', job_dir)
 
 
-async def test_minio_pull_inaccessible(job_dir, storage_config_inaccessible):
+async def test_minio_pull_inaccessible(job_dir, storage_config_inaccessible, minio):
     storage = MinioStorage(storage_config_inaccessible)
 
     with pytest.raises(StorageInaccessibleError):
         await storage.pull_job_data(f'whatever', job_dir)
 
 
-async def test_minio_accessibility_positive(storage: MinioStorage):
+async def test_minio_accessibility_positive(storage: MinioStorage, minio):
     assert await storage.is_accessible()
 
 
-async def test_minio_accessibility_negative(storage_config_inaccessible):
+async def test_minio_accessibility_negative(storage_config_inaccessible, minio):
     storage = MinioStorage(storage_config_inaccessible)
     assert not await storage.is_accessible()
 
 
-async def test_nonexistent_job_done(storage: MinioStorage):
+async def test_nonexistent_job_done(storage: MinioStorage, minio):
     assert not await storage.is_job_done("whatever-i-dont-exist")
