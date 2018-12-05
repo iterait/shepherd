@@ -223,7 +223,6 @@ class Shepherd:
 
             # send the InputMessage to the sheep
             sheep.in_progress.add(job_id)
-            sheep.jobs_meta.pop(job_id)
             logging.info('Sending InputMessage for job `%s` on `%s`', job_id, sheep_id)
             await Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
 
@@ -231,6 +230,8 @@ class Shepherd:
         """
         A job has failed - remove the local copy of its data and mark it as failed in the remote storage.
         """
+        sheep.jobs_meta.pop(job_id)
+
         try:
             shutil.rmtree(path.join(sheep.sheep_data_root, job_id))
             await self._storage.report_job_failed(job_id, error)
@@ -259,6 +260,7 @@ class Shepherd:
 
                 # save the done/error file
                 if isinstance(message, DoneMessage):
+                    sheep.jobs_meta.pop(job_id)
                     await self._storage.report_job_done(job_id)
                     logging.info('Job `%s` from sheep `%s` done', job_id, sheep_id)
                 elif isinstance(message, ErrorMessage):
@@ -306,7 +308,7 @@ class Shepherd:
             return True
 
         for sheep in self._sheep.values():
-            if job_id in sheep.jobs_meta.keys() or job_id in sheep.in_progress:
+            if job_id in sheep.jobs_meta.keys():
                 return False
         else:
             # If the job was completed while we waited for the first storage call, we might throw an exception
