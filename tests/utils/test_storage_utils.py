@@ -25,9 +25,9 @@ def job_dir(tmpdir, bucket):
 
 
 @pytest.fixture()
-def storage_config_inaccessible():
+def storage_config_inaccessible(aiohttp_unused_port):
     yield StorageConfig({
-        'url': 'http://0.0.0.0:65535',
+        'url': f'http://0.0.0.0:{aiohttp_unused_port()}',
         'access_key': 'AKIAIOSFODNN7EXAMPLE',
         'secret_key': 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
     })
