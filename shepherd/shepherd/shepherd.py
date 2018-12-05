@@ -293,6 +293,8 @@ class Shepherd:
     async def is_job_done(self, job_id: str) -> bool:
         """
         Check if the specified job is already done.
+        The behavior of this method is undefined when `enqueue_job` is called in the middle of its execution
+        (with the same job_id).
 
         :param job_id: id of the job to be checked
         :raise UnknownJobError: if the job is not ready nor it is known to this shepherd
@@ -305,6 +307,15 @@ class Shepherd:
             if job_id in sheep.jobs_meta.keys() or job_id in sheep.in_progress:
                 return False
         else:
+            # If the job was completed while we waited for the first storage call, we might throw an exception
+            # unnecessarily. At this point, we know that
+            #   1. The job was not done when we started
+            #   2. No sheep was processing the job after the call
+            # It is however possible that the job has been processed after we got False from the storage query,
+            # but *before* we resumed execution. Without checking again, we would throw UnknownJobError.
+            if await self.storage.is_job_done(job_id):
+                return True
+
             raise UnknownJobError('Job `{}` is not known to this shepherd'.format(job_id))
 
     async def close(self):

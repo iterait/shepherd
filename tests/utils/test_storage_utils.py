@@ -128,3 +128,7 @@ async def test_minio_accessibility_positive(storage: MinioStorage):
 async def test_minio_accessibility_negative(storage_config_inaccessible):
     storage = MinioStorage(storage_config_inaccessible)
     assert not await storage.is_accessible()
+
+
+async def test_nonexistent_job_done(storage: MinioStorage):
+    assert not await storage.is_job_done("whatever-i-dont-exist")

@@ -114,6 +114,7 @@ class Storage(metaclass=abc.ABCMeta):
     async def is_job_done(self, job_id: str) -> bool:
         """
         Query the remote storage to find out if the job is done (either finished or failed).
+        This should not throw an error if the job does not exist (yet).
 
         :param job_id: identifier of the queried job
         :raises StorageInaccessibleError: the remote storage is not accessible
