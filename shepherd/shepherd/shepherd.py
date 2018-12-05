@@ -43,11 +43,11 @@ class Shepherd:
             if config["type"] == "docker" and registry_config is None:
                 raise SheepConfigurationError("To use docker sheep, you need to configure a registry URL")
 
-        self.registry_config = registry_config
-        self.storage = storage
-        self.poller = zmq.asyncio.Poller()
         self.job_done_condition = asyncio.Condition()
 
+        self._registry_config = registry_config
+        self._storage = storage
+        self._poller = zmq.asyncio.Poller()
         self._sheep: Dict[str, BaseSheep] = {}
         self._sheep_config = sheep_config
         self._sheep_tasks = {}
@@ -68,7 +68,7 @@ class Shepherd:
 
             logging.info('Created sheep `%s` of type `%s`', sheep_id, sheep_type)
             self._sheep[sheep_id] = sheep
-            self.poller.register(socket, zmq.POLLIN)
+            self._poller.register(socket, zmq.POLLIN)
 
         self._storage_inaccessible_reported = False
         self._registry_inaccessible_reported = False
@@ -141,15 +141,15 @@ class Shepherd:
         while True:
             await asyncio.sleep(1)
 
-            if not await self.storage.is_accessible() and not self._storage_inaccessible_reported:
+            if not await self._storage.is_accessible() and not self._storage_inaccessible_reported:
                 logging.error("The remote storage is not accessible")
                 self._storage_inaccessible_reported = True
             else:
                 self._storage_inaccessible_reported = False
 
-            if self.registry_config is not None:
+            if self._registry_config is not None:
                 try:
-                    list_images_in_registry(self.registry_config)
+                    list_images_in_registry(self._registry_config)
                     self._registry_inaccessible_reported = False
                 except:
                     logging.error("The Docker registry is not accessible")
@@ -174,7 +174,7 @@ class Shepherd:
                         error = 'Sheep container died without notice'
                         logging.error('Sheep `%s` encountered error when processing job `%s`: %s',
                                       sheep_id, job_id, error)
-                        await self.storage.report_job_failed(job_id, error)
+                        await self._storage.report_job_failed(job_id, error)
                     sheep.in_progress = set()
 
                     async with self.job_done_condition:
@@ -197,7 +197,7 @@ class Shepherd:
 
             # prepare working directory
             working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
-            await self.storage.pull_job_data(job_id, working_directory)
+            await self._storage.pull_job_data(job_id, working_directory)
             create_clean_dir(path.join(working_directory, OUTPUT_DIR))
 
             # (re)start the sheep if needed
@@ -233,7 +233,7 @@ class Shepherd:
         """
         try:
             shutil.rmtree(path.join(sheep.sheep_data_root, job_id))
-            await self.storage.report_job_failed(job_id, error)
+            await self._storage.report_job_failed(job_id, error)
         except Exception as ex:
             logging.exception(f'Error when reporting job `{job_id}` as failed', ex)
 
@@ -243,7 +243,7 @@ class Shepherd:
         """
         while True:
             # poll the output sockets
-            result = await self.poller.poll()
+            result = await self._poller.poll()
             sheep_ids = (sheep_id for sheep_id, sheep in self._sheep.items() if (sheep.socket, zmq.POLLIN) in result)
 
             # process the sheep with pending outputs
@@ -254,16 +254,16 @@ class Shepherd:
 
                 # clean-up the working directory and upload the results
                 working_directory = path.join(self._get_sheep(sheep_id).sheep_data_root, job_id)
-                await self.storage.push_job_data(job_id, working_directory)
+                await self._storage.push_job_data(job_id, working_directory)
                 shutil.rmtree(working_directory)
 
                 # save the done/error file
                 if isinstance(message, DoneMessage):
-                    await self.storage.report_job_done(job_id)
+                    await self._storage.report_job_done(job_id)
                     logging.info('Job `%s` from sheep `%s` done', job_id, sheep_id)
                 elif isinstance(message, ErrorMessage):
                     error = (message.short_error + '\n' + message.long_error)
-                    await self.storage.report_job_failed(job_id, error)
+                    await self._storage.report_job_failed(job_id, error)
                     logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep_id, message.short_error)
 
                 # notify about the finished job
@@ -302,7 +302,7 @@ class Shepherd:
         :raise UnknownJobError: if the job is not ready nor it is known to this shepherd
         :return: job ready flag
         """
-        if await self.storage.is_job_done(job_id):
+        if await self._storage.is_job_done(job_id):
             return True
 
         for sheep in self._sheep.values():
@@ -315,7 +315,7 @@ class Shepherd:
             #   2. No sheep was processing the job after the call
             # It is however possible that the job has been processed after we got False from the storage query,
             # but *before* we resumed execution. Without checking again, we would throw UnknownJobError.
-            if await self.storage.is_job_done(job_id):
+            if await self._storage.is_job_done(job_id):
                 return True
 
             raise UnknownJobError('Job `{}` is not known to this shepherd'.format(job_id))
