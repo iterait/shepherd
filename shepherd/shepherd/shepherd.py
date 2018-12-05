@@ -46,8 +46,9 @@ class Shepherd:
         self.registry_config = registry_config
         self.storage = storage
         self.poller = zmq.asyncio.Poller()
-        self.sheep: Dict[str, BaseSheep] = {}
         self.job_done_condition = asyncio.Condition()
+
+        self._sheep: Dict[str, BaseSheep] = {}
         self._sheep_config = sheep_config
         self._sheep_tasks = {}
         self._listener = None
@@ -66,7 +67,7 @@ class Shepherd:
                 raise SheepConfigurationError("Unknown sheep type: {}".format(sheep_type))
 
             logging.info('Created sheep `%s` of type `%s`', sheep_id, sheep_type)
-            self.sheep[sheep_id] = sheep
+            self._sheep[sheep_id] = sheep
             self.poller.register(socket, zmq.POLLIN)
 
         self._storage_inaccessible_reported = False
@@ -82,7 +83,7 @@ class Shepherd:
         self._listener = asyncio.create_task(self._listen())
         self._health_checker = asyncio.create_task(self._shepherd_health_check())
 
-    def __getitem__(self, sheep_id: str) -> BaseSheep:
+    def _get_sheep(self, sheep_id: str) -> BaseSheep:
         """
         Get the sheep with the given ``sheep_id``.
 
@@ -90,9 +91,10 @@ class Shepherd:
         :return: sheep with the given ``sheep_id``
         :raise UnknownSheepError: if the given ``sheep_id`` is not known to this shepherd
         """
-        if sheep_id not in self.sheep:
+        try:
+            return self._sheep[sheep_id]
+        except KeyError:
             raise UnknownSheepError('Unknown sheep id `{}`'.format(sheep_id))
-        return self.sheep[sheep_id]
 
     def _start_sheep(self, sheep_id: str, model: str, version: str) -> None:
         """
@@ -103,7 +105,7 @@ class Shepherd:
         :param version: mode version to be loaded
         """
         logging.info('Starting sheep `%s` with model `%s:%s`', sheep_id, model, version)
-        self[sheep_id].start(model, version)
+        self._get_sheep(sheep_id).start(model, version)
 
     def _slaughter_sheep(self, sheep_id: str) -> None:
         """
@@ -114,7 +116,7 @@ class Shepherd:
         """
         logging.info('Slaughtering sheep `%s`', sheep_id)
 
-        self[sheep_id].slaughter()
+        self._get_sheep(sheep_id).slaughter()
 
     async def enqueue_job(self, job_id: str, job_meta: ModelModel, sheep_id: Optional[str]=None) -> None:
         """
@@ -126,10 +128,10 @@ class Shepherd:
         """
         logging.info('En-queueing job `%s` for sheep `%s`', job_id, sheep_id)
         if sheep_id is None:
-            sheep_id = next(iter(self.sheep.keys()))
+            sheep_id = next(iter(self._sheep.keys()))
             logging.info('Job `%s` is auto-assigned to sheep `%s`', job_id, sheep_id)
-        self[sheep_id].jobs_meta[job_id] = job_meta
-        await self[sheep_id].jobs_queue.put(job_id)
+        self._get_sheep(sheep_id).jobs_meta[job_id] = job_meta
+        await self._get_sheep(sheep_id).jobs_queue.put(job_id)
 
     async def _shepherd_health_check(self) -> None:
         """
@@ -161,12 +163,12 @@ class Shepherd:
         """
         while True:
             await asyncio.sleep(1)
-            sheep = self[sheep_id]
+            sheep = self._get_sheep(sheep_id)
             try:
                 if not sheep.running:
                     for job_id in sheep.in_progress:
                         # clean-up the working directory
-                        shutil.rmtree(path.join(self[sheep_id].sheep_data_root, job_id))
+                        shutil.rmtree(path.join(self._get_sheep(sheep_id).sheep_data_root, job_id))
 
                         # save the error
                         error = 'Sheep container died without notice'
@@ -189,7 +191,7 @@ class Shepherd:
         :param sheep_id: sheep id to be fed
         """
         while True:
-            sheep = self[sheep_id]
+            sheep = self._get_sheep(sheep_id)
             job_id = await sheep.jobs_queue.get()
             logging.info('Preparing working directory for job `%s` on `%s`', job_id, sheep_id)
 
@@ -242,16 +244,16 @@ class Shepherd:
         while True:
             # poll the output sockets
             result = await self.poller.poll()
-            sheep_ids = (sheep_id for sheep_id, sheep in self.sheep.items() if (sheep.socket, zmq.POLLIN) in result)
+            sheep_ids = (sheep_id for sheep_id, sheep in self._sheep.items() if (sheep.socket, zmq.POLLIN) in result)
 
             # process the sheep with pending outputs
             for sheep_id in sheep_ids:
-                sheep = self[sheep_id]
+                sheep = self._get_sheep(sheep_id)
                 message = await Messenger.recv(sheep.socket, [DoneMessage, ErrorMessage], noblock=True)
                 job_id = message.job_id
 
                 # clean-up the working directory and upload the results
-                working_directory = path.join(self[sheep_id].sheep_data_root, job_id)
+                working_directory = path.join(self._get_sheep(sheep_id).sheep_data_root, job_id)
                 await self.storage.push_job_data(job_id, working_directory)
                 shutil.rmtree(working_directory)
 
@@ -276,7 +278,7 @@ class Shepherd:
 
         :return: a generator of status information
         """
-        for sheep_id, sheep in self.sheep.items():
+        for sheep_id, sheep in self._sheep.items():
             yield sheep_id, SheepModel({
                 "running": sheep.running,
                 "model": {
@@ -287,7 +289,7 @@ class Shepherd:
 
     def _slaughter_all(self) -> None:
         """Slaughter all sheep."""
-        for sheep_id in self.sheep.keys():
+        for sheep_id in self._sheep.keys():
             self._slaughter_sheep(sheep_id)
 
     async def is_job_done(self, job_id: str) -> bool:
@@ -303,7 +305,7 @@ class Shepherd:
         if await self.storage.is_job_done(job_id):
             return True
 
-        for sheep in self.sheep.values():
+        for sheep in self._sheep.values():
             if job_id in sheep.jobs_meta.keys() or job_id in sheep.in_progress:
                 return False
         else:
