@@ -226,6 +226,9 @@ class Shepherd:
             logging.info('Sending InputMessage for job `%s` on `%s`', job_id, sheep_id)
             await Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
 
+            # notify the queue that the task is done
+            sheep.jobs_queue.task_done()
+
     async def _report_job_failed(self, job_id: str, error: str, sheep: BaseSheep) -> None:
         """
         A job has failed - remove the local copy of its data and mark it as failed in the remote storage.
