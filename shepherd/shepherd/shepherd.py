@@ -247,7 +247,7 @@ class Shepherd:
             # process the sheep with pending outputs
             for sheep_id in sheep_ids:
                 sheep = self[sheep_id]
-                message = await Messenger.recv(sheep.socket, [DoneMessage, ErrorMessage])
+                message = await Messenger.recv(sheep.socket, [DoneMessage, ErrorMessage], noblock=True)
                 job_id = message.job_id
 
                 # clean-up the working directory and upload the results

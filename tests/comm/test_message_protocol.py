@@ -1,4 +1,5 @@
 import pytest
+import asyncio
 from shepherd.comm import *
 from shepherd.errors.comm import MessageError, UnexpectedMessageTypeError
 
@@ -26,14 +27,20 @@ async def test_wrong_type(dealer_socket):
         await Messenger.send(dealer_socket, 'jadyda')
 
 
-@pytest.mark.skip
-async def test_bad_socket(bad_socket):
-    # TODO it looks like you don't get an error when calling .recv() on an unconnected socket anymore
-    with pytest.raises(MessageError):
-        await Messenger.recv(bad_socket)
+async def test_bad_socket_send(bad_socket):
     with pytest.raises(MessageError):
         bad_socket.close()
         await Messenger.send(bad_socket, DoneMessage(dict(job_id='')))
+
+
+async def test_bad_socket_recv(bad_socket):
+    with pytest.raises(MessageError):
+        await Messenger.recv(bad_socket, noblock=True)
+
+
+async def test_bad_socket_recv_blocking(bad_socket):
+    with pytest.raises(asyncio.TimeoutError):
+        await asyncio.wait_for(Messenger.recv(bad_socket), timeout=1)
 
 
 async def test_unexpected(dealer_socket, router_socket):

@@ -41,7 +41,6 @@ def http_error_handler(error: HTTPError):
 
 def create_app(debug=None):
     app = web.Application(debug=debug if debug is not None else os.getenv('DEBUG', False))
-    # TODO CORS(app, expose_headers=["Content-Disposition"], send_wildcard=True, origins=[])
 
     swagger.error_middleware.add_handler(NameConflictError, partial(error_handler, 409))
     swagger.error_middleware.add_handler(ClientActionError, partial(error_handler, 400))

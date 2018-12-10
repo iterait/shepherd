@@ -1,4 +1,5 @@
 import json
+import asyncio
 import pytest
 from io import BytesIO
 from datetime import datetime, timedelta
@@ -47,8 +48,7 @@ async def test_ready(aiohttp_client, minio_scoped, app):
     assert timestamp_diff < timedelta(seconds=1)
 
 
-@pytest.mark.skip
-async def test_not_ready(aiohttp_client, app):
+async def test_not_ready(aiohttp_client, app, minio_scoped):  # no idea why but minio_scoped is required here
     client = await aiohttp_client(app)
     response = await client.post('/start-job', headers={'Content-Type': 'application/json'}, data=json.dumps({
         'job_id': 'uuid-not-ready',
@@ -61,10 +61,8 @@ async def test_not_ready(aiohttp_client, app):
     }))
     assert response.status == 200
 
-    response = await client.get('/jobs/uuid-not-ready/wait_ready')
-    data = await response.json()
-    assert response.status == 200
-    assert data == {'ready': False}  # TODO how is this supposed to happen??
+    with pytest.raises(asyncio.TimeoutError):
+        _ = await asyncio.wait_for(client.get('/jobs/uuid-not-ready/wait_ready'), timeout=1)
 
     response = await client.get('/jobs/uuid-not-ready/ready')
     data = await response.json()
