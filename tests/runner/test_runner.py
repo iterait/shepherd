@@ -49,7 +49,7 @@ async def test_json_runner_exception(job, feeding_socket):
     error = await Messenger.recv(socket, [ErrorMessage])
     task.cancel()
 
-    assert error.short_error == 'AttributeError: \'DummyDataset\' object has no attribute \'does_not_exist_stream\''
+    assert error.message == 'AttributeError: \'DummyDataset\' object has no attribute \'does_not_exist_stream\''
 
 
 def start_cli(command, mocker):

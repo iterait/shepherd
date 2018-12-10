@@ -130,13 +130,14 @@ class BaseRunner:
                     logging.info('Job `%s` done, sending DoneMessage', job_id)
                     await Messenger.send(self._socket, DoneMessage(dict(job_id=job_id)), input_message)
 
-                except BaseException as e:
-                    logging.exception(e)
+                except BaseException as ex:
+                    logging.exception(ex)
 
                     logging.error('Sending ErrorMessage for job `%s`', job_id)
-                    short_erorr = "{}: {}".format(type(e).__name__, str(e))
-                    long_error = str(traceback.format_tb(e.__traceback__))
-                    error_message = ErrorMessage(dict(job_id=job_id, short_error=short_erorr, long_error=long_error))
+                    short_erorr = "{}: {}".format(type(ex).__name__, str(ex))
+                    long_error = str(traceback.format_tb(ex.__traceback__))
+                    error_message = ErrorMessage(dict(job_id=job_id, message=short_erorr,
+                                                      exception_traceback=long_error, exception_type=str(type(ex))))
                     await Messenger.send(self._socket, error_message, input_message)
         finally:
             if self._socket is not None:

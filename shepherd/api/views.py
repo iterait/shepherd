@@ -6,7 +6,8 @@ from io import BytesIO
 import mimetypes
 
 from ..storage import Storage
-from ..constants import DONE_FILE, ERROR_FILE, DEFAULT_OUTPUT_FILE, OUTPUT_DIR, DEFAULT_PAYLOAD_PATH
+from ..constants import DEFAULT_OUTPUT_FILE, OUTPUT_DIR, DEFAULT_PAYLOAD_PATH
+from ..api.models import JobStatus
 from ..shepherd import Shepherd
 from .requests import StartJobRequest
 from .responses import StartJobResponse, StatusResponse, JobStatusResponse, ErrorResponse, \
@@ -15,12 +16,26 @@ from ..errors.api import ClientActionError, UnknownJobError
 from .swagger import swagger
 
 
-async def check_job_exists(storage: Storage, job_id: str):
+async def check_job_exists(storage: Storage, job_id: str) -> None:
+    """
+    Check if a job exists and raise an error if it doesn't.
+
+    :param storage: a storage adapter to be checked
+    :param job_id: an identifier of the job
+    """
     if not await storage.job_data_exists(job_id):
         raise ClientActionError('Data for job `{}` does not exist'.format(job_id))
 
 
-def create_shepherd_routes(shepherd: Shepherd, storage: Storage):
+def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTableDef:
+    """
+    Create shepherd API endpoint handlers.
+
+    :param shepherd: the shepherd exposed by the API
+    :param storage: the storage used by the shepherd
+    :return: a route table containing the API endpoint handlers
+    """
+
     api = web.RouteTableDef()
 
     @api.post('/start-job')
@@ -54,6 +69,24 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage):
 
         return StartJobResponse()
 
+    @api.get("/jobs/{job_id}/status")
+    @swagger.autodoc()
+    @swagger.responds_with(JobStatusResponse)
+    async def get_job_status(request: Request):
+        """
+        Get status information for a job.
+
+        :param job_id: An identifier of the queried job
+        """
+        job_id = request.match_info['job_id']
+
+        status = await storage.get_job_status(job_id)
+
+        if status is None:
+            raise UnknownJobError()
+
+        return status
+
     @api.get("/jobs/{job_id}/ready")
     @swagger.autodoc()
     @swagger.responds_with(JobReadyResponse)
@@ -68,11 +101,15 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage):
 
         await check_job_exists(storage, job_id)
 
-        ready = await shepherd.is_job_done(job_id)
-        formatted_timestamp = await storage.get_timestamp(job_id, DONE_FILE) if ready else None
+        status = await storage.get_job_status(job_id)
 
-        return JobReadyResponse({'ready': ready,
-                                 'finished_at': formatted_timestamp})
+        if status is None:
+            return JobReadyResponse({
+                'ready': False
+            })
+
+        return JobReadyResponse({'ready': status.status in (JobStatus.DONE, JobStatus.FAILED),
+                                 'finished_at': status.finished_at})
 
     @api.get("/jobs/{job_id}/wait_ready")
     @swagger.autodoc()
@@ -90,12 +127,12 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage):
             while not await shepherd.is_job_done(job_id):
                 await shepherd.job_done_condition.wait()
 
-        return JobStatusResponse({'ready': await shepherd.is_job_done(job_id)})
+        return await storage.get_job_status(job_id)
 
     @api.get("/jobs/{job_id}/result/{result_file}")
     @api.get("/jobs/{job_id}/result")
     @swagger.autodoc()
-    @swagger.responds_with(JobStatusResponse, code=202)
+    @swagger.responds_with(JobReadyResponse, code=202)
     @swagger.responds_with(ErrorResponse, code=404)
     @swagger.responds_with(JobErrorResponse, code=500)
     @swagger.responds_with(FileResponse, code=200)
@@ -110,13 +147,15 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage):
         result_file = request.match_info.get('result_file', DEFAULT_OUTPUT_FILE)
 
         await check_job_exists(storage, job_id)
+        status = await storage.get_job_status(job_id)
 
-        if not await storage.is_job_done(job_id):
-            return JobStatusResponse(dict(ready=False))
+        if status is not None and status.status == JobStatus.FAILED:
+            return JobErrorResponse(dict(message=status.error_details.message))
 
-        error = await storage.get_file(job_id, ERROR_FILE)
-        if error is not None:
-            return JobErrorResponse(dict(message=error.read()))
+        if status is None or status.status != JobStatus.DONE:
+            return JobReadyResponse({
+                "ready": False
+            })
 
         output_path = OUTPUT_DIR + "/" + result_file
         output = await storage.get_file(job_id, output_path)

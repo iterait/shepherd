@@ -54,5 +54,5 @@ async def test_task_queue_exception(loop):
 
     with pytest.raises(ValueError):
         await f1
-        
+
     await q.close()

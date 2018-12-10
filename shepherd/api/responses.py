@@ -4,7 +4,7 @@ from datetime import datetime
 from schematics import Model
 from schematics.types import StringType, BooleanType, DictType, ModelType, DateTimeType
 
-from shepherd.api.models import SheepModel
+from .models import SheepModel, JobStatusModel
 
 
 class ErrorResponse(Model):
@@ -23,9 +23,9 @@ class StartJobResponse(Model):
     success: bool = BooleanType(default=True, required=True)
 
 
-class JobStatusResponse(Model):
+JobStatusResponse = JobStatusModel
+
+
+class JobReadyResponse(Model):
     ready: bool = BooleanType(required=True)
-
-
-class JobReadyResponse(JobStatusResponse):
     finished_at: datetime = DateTimeType(required=False)

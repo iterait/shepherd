@@ -2,9 +2,9 @@ import json
 import asyncio
 import pytest
 from io import BytesIO
-from datetime import datetime, timedelta
 
-from shepherd.constants import DONE_FILE
+from shepherd.constants import JOB_STATUS_FILE
+from shepherd.api.models import JobStatus
 
 
 async def test_get_status(aiohttp_client, app):
@@ -18,9 +18,7 @@ async def test_get_status(aiohttp_client, app):
                                                            'version': 'latest'}}}
 
 
-async def test_ready(aiohttp_client, minio_scoped, app):
-    minio = minio_scoped
-
+async def test_ready(aiohttp_client, minio, app):
     client = await aiohttp_client(app)
     response = await client.post('/start-job', headers={'Content-Type': 'application/json'}, data=json.dumps({
         'job_id': 'uuid-ready',
@@ -32,23 +30,31 @@ async def test_ready(aiohttp_client, minio_scoped, app):
         'payload': 'Payload content'
     }))
     assert response.status == 200
-    minio.put_object('uuid-ready', DONE_FILE, BytesIO(), 0)
-    timestamp = datetime.now()
+
+    status = json.dumps({
+        "status": JobStatus.DONE,
+        "finished_at": '2000-06-10T12:15:30.005000',
+        "model": {
+            "name": "abcd",
+            "version": "abcd"
+        }
+    }).encode()
+
+    minio.put_object('uuid-ready', JOB_STATUS_FILE, BytesIO(status), len(status))
 
     response = await client.get('/jobs/uuid-ready/wait_ready')
     assert response.status == 200
     data = await response.json()
-    assert data == {'ready': True}
+    assert data["status"] == JobStatus.DONE
 
     response = await client.get('/jobs/uuid-ready/ready')
     assert response.status == 200
     data = await response.json()
     assert data['ready'] is True
-    timestamp_diff = timestamp - datetime.strptime(data['finished_at'], '%Y-%m-%dT%H:%M:%S.%f')
-    assert timestamp_diff < timedelta(seconds=1)
+    assert data['finished_at'] == '2000-06-10T12:15:30.005000'
 
 
-async def test_not_ready(aiohttp_client, app, minio_scoped):  # no idea why but minio_scoped is required here
+async def test_not_ready(aiohttp_client, app):
     client = await aiohttp_client(app)
     response = await client.post('/start-job', headers={'Content-Type': 'application/json'}, data=json.dumps({
         'job_id': 'uuid-not-ready',

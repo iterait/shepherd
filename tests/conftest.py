@@ -30,7 +30,7 @@ def storage_config():
 
 
 @pytest.fixture(scope='session')
-def minio(storage_config: StorageConfig, tmpdir_factory):
+def minio_connection(storage_config: StorageConfig, tmpdir_factory):
     try:
         if subprocess.call(['minio']) != 0:
             raise RuntimeError()
@@ -55,35 +55,26 @@ def minio(storage_config: StorageConfig, tmpdir_factory):
 
 
 @pytest.fixture(scope='function')
-def minio_scoped(minio: Minio):
-    assert not minio.list_buckets()
+def minio(minio_connection: Minio):
+    assert not minio_connection.list_buckets()
 
-    yield minio
+    yield minio_connection
 
-    for bucket in minio.list_buckets():
-        for obj in minio.list_objects_v2(bucket.name, recursive=True):
-            minio.remove_object(obj.bucket_name, obj.object_name)
-        minio.remove_bucket(bucket.name)
+    for bucket in minio_connection.list_buckets():
+        for obj in minio_connection.list_objects_v2(bucket.name, recursive=True):
+            minio_connection.remove_object(obj.bucket_name, obj.object_name)
+        minio_connection.remove_bucket(bucket.name)
+
+    assert not minio_connection.list_buckets()
 
 
 @pytest.fixture()
 def bucket(minio: Minio):
     request_id = 'test-request-' + (''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
-    if minio.bucket_exists(request_id):
-        for obj in minio.list_objects_v2(request_id, recursive=True):
-            minio.remove_object(request_id, obj.object_name)
-        minio.remove_bucket(request_id)
     minio.make_bucket(request_id)
     assert not list(minio.list_objects_v2(request_id, recursive=True))
 
     yield request_id
-
-    if minio.bucket_exists(request_id):
-        for obj in minio.list_objects_v2(request_id, recursive=True):
-            minio.remove_object(request_id, obj.object_name)
-        minio.remove_bucket(request_id)
-
-    assert not minio.bucket_exists(request_id)
 
 
 @pytest.fixture()

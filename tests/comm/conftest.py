@@ -7,7 +7,7 @@ from shepherd.comm import InputMessage, DoneMessage, ErrorMessage
 
 messages = (InputMessage(dict(job_id='test_job', io_data_root='/tmp')),
             DoneMessage(dict(job_id='done_job')),
-            ErrorMessage(dict(job_id='test_job', short_error='short err', long_error='it was really bad')))
+            ErrorMessage(dict(job_id='test_job', message='short err', exception_traceback='it was really bad')))
 
 
 @pytest.fixture(params=messages)

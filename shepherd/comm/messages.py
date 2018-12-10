@@ -47,11 +47,14 @@ class DoneMessage(Message):
 class ErrorMessage(Message):
     """Message informing :py:class:`shepherd.shepherd.Shepherd` about an encountered error."""
 
-    short_error = StringType()
+    message = StringType()
     """Human-readable short error message."""
 
-    long_error = StringType()
-    """Longer error message (e.g.: stacktrace)."""
+    exception_type = StringType()
+    """Type of the error (e.g. ValueError)."""
+
+    exception_traceback = StringType()
+    """Exception traceback (where applicable)."""
 
 
 class MessageWrapper(Model):
