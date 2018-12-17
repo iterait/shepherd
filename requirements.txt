@@ -1,6 +1,4 @@
 click
-Flask
-Flask-CORS
 simplejson
 pyzmq
 PyYaml
