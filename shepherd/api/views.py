@@ -1,128 +1,151 @@
+from aiohttp import web
+from aiohttp.web_request import Request
+from apistrap.types import FileResponse
 from io import BytesIO
-from datetime import datetime
-import calendar
 
 import mimetypes
 
-from flask import Blueprint, send_file
-from minio import Minio
-from minio.error import MinioError, BucketAlreadyExists, BucketAlreadyOwnedByYou
-
-from ..constants import DONE_FILE, ERROR_FILE, DEFAULT_OUTPUT_FILE, OUTPUT_DIR, DEFAULT_PAYLOAD_PATH
+from ..storage import Storage
+from ..constants import DEFAULT_OUTPUT_FILE, OUTPUT_DIR, DEFAULT_PAYLOAD_PATH
+from ..api.models import JobStatus
 from ..shepherd import Shepherd
-from ..utils import minio_object_exists
 from .requests import StartJobRequest
 from .responses import StartJobResponse, StatusResponse, JobStatusResponse, ErrorResponse, \
-    JobErrorResponse, JobReadyResponse
-from ..errors.api import ClientActionError, StorageError, UnknownJobError, NameConflictError
+    JobErrorResponse, JobNotReadyResponse
+from ..errors.api import ClientActionError, UnknownJobError
 from .swagger import swagger
 
 
-def check_job_exists(minio, job_id):
-    try:
-        if not minio.bucket_exists(job_id):
-            raise ClientActionError('Minio bucket `{}` does not exist'.format(job_id))
-    except MinioError as me:
-        raise StorageError('Failed to check minio bucket `{}`'.format(job_id)) from me
+async def check_job_exists(storage: Storage, job_id: str) -> None:
+    """
+    Check if a job exists and raise an error if it doesn't.
+
+    :param storage: a storage adapter to be checked
+    :param job_id: an identifier of the job
+    """
+    if not await storage.job_data_exists(job_id):
+        raise ClientActionError('Data for job `{}` does not exist'.format(job_id))
 
 
-def create_shepherd_blueprint(shepherd: Shepherd, minio: Minio):
-    api = Blueprint('shepherd', __name__)
+def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTableDef:
+    """
+    Create shepherd API endpoint handlers.
 
-    @api.route('/start-job', methods=['POST'])
+    :param shepherd: the shepherd exposed by the API
+    :param storage: the storage used by the shepherd
+    :return: a route table containing the API endpoint handlers
+    """
+
+    api = web.RouteTableDef()
+
+    @api.post('/start-job')
     @swagger.autodoc()
     @swagger.accepts(StartJobRequest)
     @swagger.responds_with(StartJobResponse)
-    def start_job(start_job_request: StartJobRequest):
-        """Start a new job."""
+    async def start_job(request: Request, start_job_request: StartJobRequest):
+        """
+        Start a new job.
+
+        :raises NameConflictError: a job with given id was already submitted
+        """
         if not start_job_request.payload:
-            check_job_exists(minio, start_job_request.job_id)
+            await check_job_exists(storage, start_job_request.job_id)
         else:
-            try:
-                minio.make_bucket(start_job_request.job_id)
-            except (BucketAlreadyExists, BucketAlreadyOwnedByYou) as e:
-                raise NameConflictError("A job with this ID was already submitted") from e
+            await storage.init_job(start_job_request.job_id)
 
             payload_data = start_job_request.payload.encode()
             payload = BytesIO(payload_data)
-            minio.put_object(start_job_request.job_id, DEFAULT_PAYLOAD_PATH,
-                             payload, len(start_job_request.payload))
+            await storage.put_file(start_job_request.job_id, DEFAULT_PAYLOAD_PATH,
+                                   payload, len(start_job_request.payload))
 
         try:
-            shepherd.is_job_done(start_job_request.job_id)
+            await shepherd.is_job_done(start_job_request.job_id)
             # if the call didn't throw, the job is either done or being computed, no need to enqueue it
             return StartJobResponse()
         except UnknownJobError:
             pass
-        shepherd.enqueue_job(start_job_request.job_id, start_job_request.model, start_job_request.sheep_id)
+
+        await shepherd.enqueue_job(start_job_request.job_id, start_job_request.model, start_job_request.sheep_id)
+
         return StartJobResponse()
 
-    @api.route("/jobs/<job_id>/ready", methods=["GET"])
+    @api.get("/jobs/{job_id}/status")
     @swagger.autodoc()
-    @swagger.responds_with(JobReadyResponse)
-    def is_ready(job_id: str):
+    @swagger.responds_with(JobStatusResponse)
+    async def get_job_status(request: Request):
         """
-        Check if a job has already been processed.
-        A job that ended with an error is considered ready.
+        Get status information for a job.
 
         :param job_id: An identifier of the queried job
         """
-        check_job_exists(minio, job_id)
-        ready = shepherd.is_job_done(job_id)
-        if ready:
-            timestamp = minio.stat_object(job_id, 'done').last_modified
-            formatted_timestamp = datetime.fromtimestamp(calendar.timegm(timestamp))
-        else:
-            formatted_timestamp = None
-        return JobReadyResponse({'ready': ready,
-                                 'finished_at': formatted_timestamp})
+        job_id = request.match_info['job_id']
 
-    @api.route("/jobs/<job_id>/wait_ready", methods=["GET"])
+        status = shepherd.get_job_status(job_id)
+        if status is not None:
+            return status
+
+        status = await storage.get_job_status(job_id)
+        if status is None:
+            raise UnknownJobError()
+
+        return status
+
+    @api.get("/jobs/{job_id}/wait_ready")
     @swagger.autodoc()
     @swagger.responds_with(JobStatusResponse)
-    def wait_ready(job_id: str):
+    async def wait_ready(request: Request):
         """
         Wait until the specified job is ready.
 
         :param job_id: An identifier of the queried job
         """
-        check_job_exists(minio, job_id)
-        shepherd.notifier.wait_for(lambda: shepherd.is_job_done(job_id))
-        return JobStatusResponse({'ready': shepherd.is_job_done(job_id)})
+        job_id = request.match_info['job_id']
 
-    @api.route("/jobs/<job_id>/result/<result_file>", methods=["GET"])
-    @api.route("/jobs/<job_id>/result", methods=["GET"])
+        await check_job_exists(storage, job_id)
+        async with shepherd.job_done_condition:
+            while not await shepherd.is_job_done(job_id):
+                await shepherd.job_done_condition.wait()
+
+        return await storage.get_job_status(job_id)
+
+    @api.get("/jobs/{job_id}/result/{result_file}")
+    @api.get("/jobs/{job_id}/result")
     @swagger.autodoc()
-    @swagger.responds_with(JobStatusResponse, code=202)
+    @swagger.responds_with(JobNotReadyResponse, code=202)
     @swagger.responds_with(ErrorResponse, code=404)
     @swagger.responds_with(JobErrorResponse, code=500)
-    def get_job_result(job_id: str, result_file: str = DEFAULT_OUTPUT_FILE):
+    @swagger.responds_with(FileResponse, code=200)
+    async def get_job_result(request: Request):
         """
         Get the result of the specified job.
 
         :param job_id: An identifier of the job
         :param result_file: Name of the requested file
         """
-        check_job_exists(minio, job_id)
+        job_id = request.match_info['job_id']
+        result_file = request.match_info.get('result_file', DEFAULT_OUTPUT_FILE)
 
-        if minio_object_exists(minio, job_id, ERROR_FILE):
-            message = minio.get_object(job_id, ERROR_FILE)
-            return JobErrorResponse(dict(message=message.read()))
+        await check_job_exists(storage, job_id)
+        status = await storage.get_job_status(job_id)
 
-        if not minio_object_exists(minio, job_id, DONE_FILE):
-            return JobStatusResponse(dict(ready=False))
+        if status is not None and status.status == JobStatus.FAILED:
+            return JobErrorResponse(dict(message=status.error_details.message))
+
+        if status is None or status.status != JobStatus.DONE:
+            return JobNotReadyResponse()
 
         output_path = OUTPUT_DIR + "/" + result_file
-        if not minio_object_exists(minio, job_id, output_path):
+        output = await storage.get_file(job_id, output_path)
+        if output is None:
             return ErrorResponse(dict(message="Requested file does not exist"))
 
         mime = mimetypes.guess_type(result_file)[0] or "application/octet-stream"
-        return send_file(minio.get_object(job_id, output_path), mimetype=mime)
+        return FileResponse(output, mimetype=mime)
 
-    @api.route('/status', methods=['GET'])
+    @api.get('/status')
     @swagger.autodoc()
     @swagger.responds_with(StatusResponse)
-    def get_status():
+    async def get_status(request: Request):
         """Get status of all the sheep available."""
         response = StatusResponse()
         response.containers = dict(shepherd.get_status())

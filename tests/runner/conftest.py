@@ -1,5 +1,7 @@
+import asyncio
 import pytest
-import zmq.green as zmq
+import zmq
+import zmq.asyncio
 import os
 import json
 import os.path as path
@@ -17,8 +19,8 @@ def json_data(request):
 
 
 @pytest.fixture()
-def feeding_socket():
-    sock = zmq.Context.instance().socket(zmq.DEALER)
+async def feeding_socket(loop):
+    sock = zmq.asyncio.Context.instance().socket(zmq.DEALER)
     sock.connect('tcp://0.0.0.0:9009')
     yield sock, 9009
     sock.disconnect('tcp://0.0.0.0:9009')

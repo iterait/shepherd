@@ -1,12 +1,13 @@
 import pytest
-import zmq.green as zmq
+import zmq
+import zmq.asyncio
 
-from shepherd.comm import InputMessage, DoneMessage, ErrorMessage, JobDoneNotifier
+from shepherd.comm import InputMessage, DoneMessage, ErrorMessage
 
 
 messages = (InputMessage(dict(job_id='test_job', io_data_root='/tmp')),
             DoneMessage(dict(job_id='done_job')),
-            ErrorMessage(dict(job_id='test_job', short_error='short err', long_error='it was really bad')))
+            ErrorMessage(dict(job_id='test_job', message='short err', exception_traceback='it was really bad')))
 
 
 @pytest.fixture(params=messages)
@@ -15,8 +16,8 @@ def message(request):
 
 
 @pytest.fixture()
-def dealer_socket():
-    sock = zmq.Context.instance().socket(zmq.DEALER)
+async def dealer_socket(loop):
+    sock = zmq.asyncio.Context.instance().socket(zmq.DEALER)
     sock.bind('inproc://protocol')
     yield sock
     sock.disconnect('inproc://protocol')
@@ -24,8 +25,8 @@ def dealer_socket():
 
 
 @pytest.fixture()
-def router_socket():
-    sock = zmq.Context.instance().socket(zmq.ROUTER)
+async def router_socket(loop):
+    sock = zmq.asyncio.Context.instance().socket(zmq.ROUTER)
     sock.setsockopt(zmq.IDENTITY, b'router')
     sock.connect('inproc://protocol')
     yield sock
@@ -34,14 +35,7 @@ def router_socket():
 
 
 @pytest.fixture()
-def bad_socket():
-    sock = zmq.Context.instance().socket(zmq.REQ)
+async def bad_socket(loop):
+    sock = zmq.asyncio.Context.instance().socket(zmq.REQ)
     # socket is not connected
     yield sock
-
-
-@pytest.fixture()
-def notifier():
-    notifier = JobDoneNotifier()
-    yield notifier
-    notifier.close()

@@ -1,10 +1,13 @@
 from unittest import mock
 import pytest
+import asyncio
 
 from shepherd.api import create_app
+from shepherd.api.swagger import swagger
 from shepherd.api.models import SheepModel
-from shepherd.api.views import create_shepherd_blueprint
+from shepherd.api.views import create_shepherd_routes
 from shepherd.shepherd import Shepherd
+from shepherd.storage import MinioStorage
 
 
 @pytest.fixture(scope="function")
@@ -18,21 +21,24 @@ def mock_shepherd():
                 }
             })
 
-    def ready(*args):
+    async def ready(*args):
         return args[0] == 'uuid-ready'
+
+    async def nothing(*args, **kwargs):
+        return None
 
     m = mock.create_autospec(Shepherd)
     m.get_status.side_effect = status_gen
     m.is_job_done.side_effect = ready
-    m.notifier = mock.MagicMock()
+    m.job_done_condition = asyncio.Condition()
+    m.enqueue_job.side_effect = nothing
     yield m
 
 
 @pytest.fixture(scope="function")
-def app(minio, mock_shepherd):
-    app = create_app(__name__)
-    app.register_blueprint(create_shepherd_blueprint(mock_shepherd, minio))
-    app.debug = True
+def app(storage_config, mock_shepherd, minio):
+    app = create_app(debug=True)
+    app.add_routes(create_shepherd_routes(mock_shepherd, MinioStorage(storage_config)))
+    swagger.init_app(app)
 
-    with app.app_context():
-        yield app
+    yield app

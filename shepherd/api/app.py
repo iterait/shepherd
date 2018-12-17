@@ -1,11 +1,12 @@
 import logging
 import os
+from aiohttp import web
+from aiohttp.web_exceptions import HTTPError
 
-from flask import Flask, jsonify
-from flask_cors import CORS
 from functools import partial
 
-from ..errors.api import ClientActionError, AppError, NameConflictError, StorageInaccessibleError
+from ..errors.api import ClientActionError, AppError, NameConflictError, StorageInaccessibleError, UnknownJobError, \
+    UnknownSheepError
 from .responses import ErrorResponse
 from .swagger import swagger
 
@@ -16,10 +17,8 @@ def internal_error_handler(error: Exception):
     :param error: an exception object
     :return: a Flask response
     """
-
-    response = ErrorResponse({"message": 'Internal server error ({})'.format(str(error))})
     logging.exception(error)
-    return jsonify(response.to_primitive()), 500
+    return (ErrorResponse({"message": 'Internal server error ({})'.format(str(error))})), 500
 
 
 def error_handler(http_code, error: AppError):
@@ -29,22 +28,37 @@ def error_handler(http_code, error: AppError):
     :param error: an exception object
     :return: a Flask response
     """
-
-    response = ErrorResponse({"message": str(error)})
-    return jsonify(response.to_primitive()), http_code
+    return (ErrorResponse({"message": str(error)})), http_code
 
 
-def create_app(name: str):
-    app = Flask(name)
-    CORS(app, expose_headers=["Content-Disposition"], send_wildcard=True, origins=[])
+def http_error_handler(error: HTTPError):
+    """
+    Handles HTTP errors
+    :param error: an exception object
+    :return: a Flask response
+    """
+    return (ErrorResponse({"message": error.text})), error.status_code
 
-    app.register_error_handler(NameConflictError, partial(error_handler, 409))
-    app.register_error_handler(ClientActionError, partial(error_handler, 400))
-    app.register_error_handler(StorageInaccessibleError, partial(error_handler, 503))
-    app.register_error_handler(AppError, partial(error_handler, 500))
-    app.register_error_handler(Exception, internal_error_handler)
 
-    app.debug = os.getenv('DEBUG', False)
+def create_app(debug=None) -> web.Application:
+    """
+    Create the AioHTTP app.
+
+    :param debug: If set, determines whether the app should run in debug mode.
+                  If not set, the `DEBUG` environment variable is used (with False as default).
+    :return: a new application object
+    """
+
+    app = web.Application(debug=debug if debug is not None else os.getenv('DEBUG', False))
+
+    swagger.error_middleware.add_handler(NameConflictError, partial(error_handler, 409))
+    swagger.error_middleware.add_handler(ClientActionError, partial(error_handler, 400))
+    swagger.error_middleware.add_handler(UnknownJobError, partial(error_handler, 404))
+    swagger.error_middleware.add_handler(UnknownSheepError, partial(error_handler, 404))
+    swagger.error_middleware.add_handler(StorageInaccessibleError, partial(error_handler, 503))
+    swagger.error_middleware.add_handler(HTTPError, http_error_handler)
+    swagger.error_middleware.add_handler(AppError, partial(error_handler, 500))
+    swagger.error_middleware.add_handler(Exception, internal_error_handler)
 
     swagger.init_app(app)
 

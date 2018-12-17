@@ -1,3 +1,4 @@
+import asyncio
 import os
 import sys
 import logging
@@ -7,7 +8,7 @@ from argparse import ArgumentParser
 import emloop as el
 
 
-__all__ = ['run']
+__all__ = ['main']
 
 
 def create_argparser():
@@ -20,7 +21,7 @@ def create_argparser():
     return parser
 
 
-def run() -> None:
+def main() -> None:
     """
     Create a runner and list on the configured port for job ``InputMessage`` s.
 
@@ -51,8 +52,8 @@ def run() -> None:
     runner = el.utils.create_object(module, class_, args=(args.config_path, args.port, args.stream))
 
     # listen for input messages
-    runner.process_all()
+    asyncio.run(runner.process_all())
 
 
 if __name__ == '__main__':
-    run()  # pragma: no cover
+    main()  # pragma: no cover

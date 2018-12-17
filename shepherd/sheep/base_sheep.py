@@ -1,14 +1,12 @@
 import abc
 import logging
-from typing import List, Optional, Dict
+from typing import List, Optional
+from asyncio import Queue
 
-import zmq.green as zmq
+import zmq.asyncio
 from zmq.error import ZMQBaseError
-from gevent.queue import Queue
 from schematics import Model
 from schematics.types import StringType, IntType, ListType
-
-from ..api.models import ModelModel
 
 
 class BaseSheep(metaclass=abc.ABCMeta):
@@ -23,7 +21,7 @@ class BaseSheep(metaclass=abc.ABCMeta):
 
     _config: Config
 
-    def __init__(self, socket: zmq.Socket, sheep_data_root: str):
+    def __init__(self, socket: zmq.asyncio.Socket, sheep_data_root: str):
         """
         Create new :py:class:`BaseSheep`.
 
@@ -31,9 +29,8 @@ class BaseSheep(metaclass=abc.ABCMeta):
         :param sheep_data_root: sheep data root with job working directories
         """
         self._config: Optional[self.Config] = None
-        self.socket: zmq.Socket = socket
+        self.socket: zmq.asyncio.Socket = socket
         self.jobs_queue: Queue = Queue()  # queue of jobs to be processed
-        self.jobs_meta: Dict[str, ModelModel] = dict()  # mapping from job_id to job meta (model name/version)
         self.model_name: Optional[str] = None  # current model name
         self.model_version: Optional[str] = None  # current model version
         self.sheep_data_root: Optional[str] = sheep_data_root
