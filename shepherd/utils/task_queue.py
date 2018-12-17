@@ -3,7 +3,7 @@ import asyncio
 
 class TaskQueue:
     """
-    A helper for running asyncio tasks in the background with a limit on the number of tasks running in parallel.
+    A little helper for running asyncio tasks in the background with a limit on the number of tasks running in parallel.
     """
 
     def __init__(self, worker_count: int = 1):
@@ -27,7 +27,6 @@ class TaskQueue:
 
             self._queue.task_done()
 
-    # TODO no suitable type definition for awaitable exists yet
     async def enqueue_task(self, awaitable) -> asyncio.Future:
         """
         Enqueue a task and return a future that resolves on its completion.
