@@ -1,0 +1,2 @@
+runner:
+  class: missing.Runner  # this should cause an exception of the shepherd-runner

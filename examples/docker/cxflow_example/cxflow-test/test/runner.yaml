@@ -1,2 +1,0 @@
-runner:
-  class: missing.Runner  # this should cause an exception of the cxworker-runner

@@ -6,10 +6,10 @@ from minio import Minio
 from unittest.mock import Mock
 from werkzeug.test import Client
 
-from cxworker.api.errors import UnknownJobError
+from shepherd.errors.api import UnknownJobError
 
-from cxworker.constants import DEFAULT_PAYLOAD_PATH
-from cxworker.shepherd import Shepherd
+from shepherd.constants import DEFAULT_PAYLOAD_PATH
+from shepherd.shepherd import Shepherd
 
 
 def test_start_job_with_payload(minio_scoped: Minio, client: Client, mock_shepherd: Union[Mock, Shepherd]):

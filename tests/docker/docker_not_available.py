@@ -1,5 +1,5 @@
-from cxworker.docker.utils import run_docker_command
-from cxworker.docker import DockerError
+from shepherd.docker.utils import run_docker_command
+from shepherd.errors.docker import DockerError
 
 
 def docker_not_available():

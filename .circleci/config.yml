@@ -9,12 +9,13 @@ references:
         export DEBIAN_FRONTEND=noninteractive
         apt-get update -qy
         apt-get install -y git python3-dev python3-pip curl
+        pip3 install -r requirements.txt
         pip3 install -e .
-        echo "$(tail -n +2 cxworker/manage.py)" > cxworker/manage.py  # remove gevent monkey patch (it breaks sphinx)
+        echo "$(tail -n +2 shepherd/manage.py)" > shepherd/manage.py  # remove gevent monkey patch (it breaks sphinx)
 
   install: &install
     run:
-      name: Install dependencies and cxworker on Archlinux
+      name: Install dependencies and shepherd on Archlinux
       command: |
         set -x
         VER="17.11.0-ce"
@@ -22,9 +23,9 @@ references:
         tar -xz -C /tmp -f /tmp/docker-$VER.tgz
         mv /tmp/docker/* /usr/bin
         pacman --noconfirm --needed -Syu minio
-        mkdir examples/docker/cxflow_example/ssh
-        echo $PRIVATE_SSH_KEY_PRIVATE | tr ' ' '\n' | base64 -d > examples/docker/cxflow_example/ssh/id_rsa
-        pip install -e .
+        mkdir examples/docker/emloop_example/ssh
+        pip3 install -r requirements.txt
+        pip3 install -e .
 
   add_rw_key: &add_rw_key
     add_ssh_keys:
@@ -35,20 +36,23 @@ references:
     run:
       name: Run tests.
       command: |
-        python setup.py test
+        useradd -m -s /bin/bash test
+        passwd -d test
+        chown -R test /root
+        sudo -u test pytest --forked
 
   doc: &doc
     run:
       name: Generate documentation
       command: |
-        bash <(curl -fsSL https://raw.githubusercontent.com/Cognexa/ci-utils/master/doc_deploy.sh)
+        bash <(curl -fsSL https://raw.githubusercontent.com/iterait/ci-utils/master/doc_deploy.sh)
 
 jobs:
 
   test_archlinux:
     docker:
-      - image: cognexa/cxflow:latest
-    working_directory: ~/cxworker
+      - image: iterait/emloop
+    working_directory: ~/shepherd
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
@@ -60,7 +64,7 @@ jobs:
   generate_documentation:
     docker:
       - image: ubuntu:rolling
-    working_directory: ~/cxworker
+    working_directory: ~/shepherd
     steps:
       - checkout
       - *ubuntu_install
@@ -72,9 +76,21 @@ workflows:
   test:
     jobs:
       - test_archlinux
-      - generate_documentation:
+#      - generate_documentation:
+#          filters:
+#            branches:
+#              only: dev
+#          requires:
+#            - test_archlinux
+
+  nightly-build:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
           filters:
             branches:
-              only: dev
-          requires:
-            - test_archlinux
+              only:
+                - master
+                - dev
+    jobs:
+      - test_archlinux

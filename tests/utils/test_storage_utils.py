@@ -5,9 +5,10 @@ import io
 
 from minio import Minio
 
-from cxworker.constants import INPUT_DIR, OUTPUT_DIR
-from cxworker.utils import *
-from cxworker.api.errors import StorageError
+from shepherd.constants import INPUT_DIR, OUTPUT_DIR
+from shepherd.storage import MinioStorage
+from shepherd.utils import *
+from shepherd.errors.api import StorageError
 
 
 def test_create_clean_dir(tmpdir):
@@ -40,24 +41,25 @@ def test_minio_push(minio: Minio, bucket, tmpdir, caplog):
     create_clean_dir(job_dir)
     inputs_dir = create_clean_dir(path.join(job_dir, OUTPUT_DIR))
     another_dir = create_clean_dir(path.join(job_dir, 'another'))
+    storage = MinioStorage(minio)
 
     # test warning
-    push_minio_bucket(minio, bucket, job_dir)
+    storage.push_job_data(bucket, job_dir)
     assert 'No output files pushed to bucket' in caplog.text
 
     # create two files
     for dir_ in (inputs_dir, another_dir):
         with open(path.join(inputs_dir, 'file.txt'), 'w') as file:
-            file.write(dir_+'content')
+            file.write(f'{dir_}content')
 
     # test if only the one in the outputs folder is pushed
-    push_minio_bucket(minio, bucket, job_dir)
+    storage.push_job_data(bucket, job_dir)
     minio_objects = list(minio.list_objects_v2(bucket, recursive=True))
     assert len(minio_objects) == 1
     assert minio_objects[0].object_name == OUTPUT_DIR + '/file.txt'
 
     with pytest.raises(StorageError):
-        push_minio_bucket(minio, bucket+'-missing', job_dir)
+        storage.push_job_data(f'{bucket}-missing', job_dir)
 
     assert minio_object_exists(minio, bucket, OUTPUT_DIR + '/file.txt')
     assert not minio_object_exists(minio, bucket, 'another/file.txt')
@@ -66,7 +68,9 @@ def test_minio_push(minio: Minio, bucket, tmpdir, caplog):
 def test_minio_pull(minio: Minio, bucket, tmpdir, caplog):
     job_dir = path.join(tmpdir, bucket)
     create_clean_dir(job_dir)
-    pull_minio_bucket(minio, bucket, job_dir)
+    storage = MinioStorage(minio)
+
+    storage.pull_job_data(bucket, job_dir)
     assert 'No input objects pulled from bucket' in caplog.text
     data = b'some data'
     minio.put_object(bucket, INPUT_DIR + '/file.dat', io.BytesIO(data), len(data))
@@ -75,7 +79,7 @@ def test_minio_pull(minio: Minio, bucket, tmpdir, caplog):
     assert minio_object_exists(minio, bucket, INPUT_DIR + '/file.dat')
     assert minio_object_exists(minio, bucket, 'another/file.dat')
 
-    pull_minio_bucket(minio, bucket, job_dir)
+    storage.pull_job_data(bucket, job_dir)
     filepath = path.join(job_dir, INPUT_DIR, 'file.dat')
     assert path.exists(filepath)
     with open(filepath) as file:
@@ -83,4 +87,4 @@ def test_minio_pull(minio: Minio, bucket, tmpdir, caplog):
     assert not path.exists(path.join(job_dir, 'another', 'file.dat'))
 
     with pytest.raises(StorageError):
-        pull_minio_bucket(minio, bucket+'-missing', job_dir)
+        storage.pull_job_data(f'{bucket}-missing', job_dir)

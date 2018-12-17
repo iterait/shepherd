@@ -5,7 +5,7 @@ sys.path.insert(0, '_base')
 from conf import *
 
 autoapi_modules = {
-    'cxworker': {
+    'shepherd': {
         # 'override': True,
         # 'output': 'auto',
         'prune': True
@@ -13,20 +13,20 @@ autoapi_modules = {
 }
 
 # General information about the project.
-project = 'cxworker'
-copyright = '2017, Cognexa Solutions s.r.o.'
+project = 'shepherd'
+copyright = '2018, Iterait a.s.'
 author = 'Jan Buchar, Adam Blazek, Petr Belohlavek'
 
 # The short X.Y version.
-version = '.'.join(pkg_resources.get_distribution("cxworker").version.split('.')[:2])
+version = '.'.join(pkg_resources.get_distribution("shepherd").version.split('.')[:2])
 # The full version, including alpha/beta/rc tags.
-release = pkg_resources.get_distribution("cxworker").version
+release = pkg_resources.get_distribution("shepherd").version
 
 html_context.update(analytics_id="UA-108491604-2")
 
 html_theme_options.update({
     # Navigation bar title. (Default: ``project`` value)
-    'navbar_title': "cxworker",
+    'navbar_title': "shepherd",
 
     # Tab name for entire site. (Default: "Site")
     'navbar_site_name': "Pages",
@@ -38,7 +38,7 @@ html_theme_options.update({
         ("Docker Sheep", "docker_sheep"),
         ("Runners", "runners"),
         ("API", "api"),
-        ("Package Reference", "cxworker/index"),
+        ("Package Reference", "shepherd/index"),
     ],
 
     # HTML navbar class (Default: "navbar") to attach to <div> element.

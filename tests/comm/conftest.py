@@ -1,7 +1,7 @@
 import pytest
 import zmq.green as zmq
 
-from cxworker.comm import InputMessage, DoneMessage, ErrorMessage, JobDoneNotifier
+from shepherd.comm import InputMessage, DoneMessage, ErrorMessage, JobDoneNotifier
 
 
 messages = (InputMessage(dict(job_id='test_job', io_data_root='/tmp')),

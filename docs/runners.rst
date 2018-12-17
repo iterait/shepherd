@@ -2,23 +2,23 @@ Runners
 =======
 
 Runners are rather small classes which only purpose is to process *jobs*, one by one.
-**cxworker** provides a :py:class:`cxworker.runner.BaseRunner` to inherit your *runners* from.
+**Shepherd** provides a :py:class:`shepherd.runner.BaseRunner` to inherit your *runners* from.
 
-All the runners may be invoked with ``cxworker-runner`` command.
+All the runners may be invoked with ``shepherd-runner`` command.
 
-cxworker-runner
+shepherd-runner
 ---------------
 .. argparse::
-   :ref: cxworker.runner.runner_entry_point.create_argparser
-   :prog: cxworker-runner
+   :ref: shepherd.runner.runner_entry_point.create_argparser
+   :prog: shepherd-runner
 
 Custom Runners
 **************
 
-In most cases, you can just inherit from :py:class:`cxworker.runner.BaseRunner` and override
-:py:meth:`cxworker.runner.BaseRunner._process_job`.
+In most cases, you can just inherit from :py:class:`shepherd.runner.BaseRunner` and override
+:py:meth:`shepherd.runner.BaseRunner._process_job`.
 
-This is exactly what is done by the :py:class:`cxworker.runner.JSONRunner` class.
+This is exactly what is done by the :py:class:`shepherd.runner.JSONRunner` class.
 
 .. code-block:: python
 

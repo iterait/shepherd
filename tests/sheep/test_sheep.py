@@ -1,9 +1,14 @@
+import os
+
 import pytest
 import logging
+from pathlib import Path
+from typing import Tuple
 
-from cxworker.sheep import BareSheep, DockerSheep, SheepConfigurationError
-from cxworker.sheep.docker_sheep import extract_gpu_number
-from cxworker.sheep.welcome import welcome
+from shepherd.sheep import BareSheep, DockerSheep
+from shepherd.sheep.docker_sheep import extract_gpu_number
+from shepherd.sheep.welcome import welcome
+from shepherd.errors.sheep import SheepConfigurationError
 
 from ..docker.docker_not_available import docker_not_available
 
@@ -17,40 +22,69 @@ def test_extract_gpu_number():
 
 def test_bare_sheep_start_stop(bare_sheep: BareSheep):
     bare_sheep.slaughter()
-    bare_sheep.start('cxflow-test', 'latest')
+    bare_sheep.start('emloop-test', 'latest')
     assert bare_sheep.running
     bare_sheep.slaughter()
     assert not bare_sheep.running
-    bare_sheep.start('cxflow-test', 'latest')
+    bare_sheep.start('emloop-test', 'latest')
 
 
 def test_bare_configuration_error(bare_sheep: BareSheep):
 
-    with pytest.raises(SheepConfigurationError):  # path does not exist
-        bare_sheep.start('cxflow-test', 'i-do-not-exist')
+    with pytest.raises(SheepConfigurationError):  # model version does not exist
+        bare_sheep.start('emloop-test', 'i-do-not-exist')
+
+
+@pytest.fixture()
+def image_valid2() -> Tuple[str, str]:
+    yield 'library/alpine', 'edge'
 
 
 @pytest.mark.skipif(docker_not_available(), reason='Docker is not available.')
-def test_docker_sheep_start_stop(docker_sheep: DockerSheep):
-    docker_sheep.start('pritunl/archlinux', 'latest')
+def test_docker_sheep_start_stop(docker_sheep: DockerSheep, image_valid, image_valid2):
+    docker_sheep.start(*image_valid)
     assert docker_sheep.running
     docker_sheep.slaughter()
     assert not docker_sheep.running
-    docker_sheep.start('base/archlinux', '')
-    docker_sheep.start('base/archlinux', '')
+    docker_sheep.start(*image_valid2)
+    docker_sheep.start(*image_valid2)
 
 
 @pytest.mark.skipif(docker_not_available(), reason='Docker is not available.')
-def test_docker_configuration_error(docker_sheep: DockerSheep):
+def test_docker_configuration_error(docker_sheep: DockerSheep, image_valid, image_invalid):
     with pytest.raises(SheepConfigurationError):  # image pull should fail
-        docker_sheep.start('missing/image-sosjshd', 'latest')
+        docker_sheep.start(*image_invalid)
 
     docker_sheep.sheep_data_root = 'i-do-not/exist'
     with pytest.raises(SheepConfigurationError):  # container start should fail
-        docker_sheep.start('pritunl/archlinux', 'latest')
+        docker_sheep.start(*image_valid)
 
 
 def test_welcome(caplog):
     caplog.set_level(logging.INFO)
     welcome()
     assert len(caplog.text) > 0
+
+
+def test_bare_sheep_stderr_file_permission_denied(sheep_socket, tmpdir: Path, bare_sheep_config):
+    stderr = tmpdir / "stderr"
+    stderr.write_text("", "ascii")
+    os.chmod(str(stderr), 0o444)
+
+    bare_sheep_config["stderr_file"] = str(stderr)
+    bare_sheep = BareSheep(bare_sheep_config, socket=sheep_socket, sheep_data_root=str(tmpdir))
+    
+    with pytest.raises(SheepConfigurationError):
+        bare_sheep.start('emloop-test', 'latest')
+
+
+def test_bare_sheep_stdout_file_permission_denied(sheep_socket, tmpdir: Path, bare_sheep_config):
+    stdout = tmpdir / "stdout"
+    stdout.write_text("", "ascii")
+    os.chmod(str(stdout), 0o444)
+
+    bare_sheep_config["stdout_file"] = str(stdout)
+    bare_sheep = BareSheep(bare_sheep_config, socket=sheep_socket, sheep_data_root=str(tmpdir))
+
+    with pytest.raises(SheepConfigurationError):
+        bare_sheep.start('emloop-test', 'latest')
