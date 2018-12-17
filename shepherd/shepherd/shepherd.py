@@ -215,13 +215,13 @@ class Shepherd:
             create_clean_dir(path.join(working_directory, OUTPUT_DIR))
 
             # update the job status
-            status = self._job_status[job_id].copy()
+            status = self._job_status[job_id]
             status.status = JobStatus.PROCESSING
             status.processing_started_at = datetime.utcnow()
-            await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status))
+            await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status.copy()))
 
             # (re)start the sheep if needed
-            model = self._job_status[job_id].model
+            model = status.model
             if model.name != sheep.model_name or model.version != sheep.model_version or not sheep.running:
                 logging.info('Job `%s` requires model `%s:%s` on `%s`', job_id, model.name, model.version, sheep_id)
                 # we need to wait for the in-progress jobs which are already in the socket
@@ -261,7 +261,7 @@ class Shepherd:
         """
         A job has failed - remove the local copy of its data and mark it as failed in the remote storage.
         """
-        status = self._job_status.pop(job_id).copy()
+        status = self._job_status.pop(job_id)
         status.status = JobStatus.FAILED
         status.error_details = error
         status.finished_at = datetime.utcnow()
@@ -271,7 +271,7 @@ class Shepherd:
 
         try:
             shutil.rmtree(path.join(sheep.sheep_data_root, job_id), ignore_errors=True)
-            await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status))
+            await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status.copy()))
         except Exception:
             logging.exception('Error when reporting job `%s` as failed', job_id)
 
@@ -297,10 +297,10 @@ class Shepherd:
 
                 # save the done/error file
                 if isinstance(message, DoneMessage):
-                    status = self._job_status.pop(job_id).copy()
+                    status = self._job_status.pop(job_id)
                     status.status = JobStatus.DONE
                     status.finished_at = datetime.utcnow()
-                    await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status))
+                    await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status.copy()))
                     logging.info('Job `%s` from sheep `%s` done', job_id, sheep_id)
                 elif isinstance(message, ErrorMessage):
                     error = ErrorModel({
@@ -309,6 +309,7 @@ class Shepherd:
                         "exception_traceback": message.exception_traceback
                     })
                     await self._report_job_failed(job_id, error, sheep)
+                    self._job_status.pop(job_id)
                     logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep_id, message.short_error)
 
                 # notify about the finished job
@@ -336,6 +337,16 @@ class Shepherd:
         """Slaughter all sheep."""
         for sheep_id in self._sheep.keys():
             self._slaughter_sheep(sheep_id)
+
+    def get_job_status(self, job_id: str) -> Optional[JobStatusModel]:
+        """
+        Get status information for a job. Only the local state is checked, without querying the remote storage.
+
+        :param job_id: id of the queried job
+        :return: status information or None if the job is not in the local state
+        """
+
+        return self._job_status.get(job_id)
 
     async def is_job_done(self, job_id: str) -> bool:
         """

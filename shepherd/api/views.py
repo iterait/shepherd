@@ -80,8 +80,11 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
         """
         job_id = request.match_info['job_id']
 
-        status = await storage.get_job_status(job_id)
+        status = shepherd.get_job_status(job_id)
+        if status is not None:
+            return status
 
+        status = await storage.get_job_status(job_id)
         if status is None:
             raise UnknownJobError()
 
