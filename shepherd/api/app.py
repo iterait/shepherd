@@ -5,7 +5,8 @@ from aiohttp.web_exceptions import HTTPError
 
 from functools import partial
 
-from ..errors.api import ClientActionError, AppError, NameConflictError, StorageInaccessibleError
+from ..errors.api import ClientActionError, AppError, NameConflictError, StorageInaccessibleError, UnknownJobError, \
+    UnknownSheepError
 from .responses import ErrorResponse
 from .swagger import swagger
 
@@ -39,11 +40,21 @@ def http_error_handler(error: HTTPError):
     return (ErrorResponse({"message": error.text})), error.status_code
 
 
-def create_app(debug=None):
+def create_app(debug=None) -> web.Application:
+    """
+    Create the AioHTTP app.
+
+    :param debug: If set, determines whether the app should run in debug mode.
+                  If not set, the `DEBUG` environment variable is used (with False as default).
+    :return: a new application object
+    """
+
     app = web.Application(debug=debug if debug is not None else os.getenv('DEBUG', False))
 
     swagger.error_middleware.add_handler(NameConflictError, partial(error_handler, 409))
     swagger.error_middleware.add_handler(ClientActionError, partial(error_handler, 400))
+    swagger.error_middleware.add_handler(UnknownJobError, partial(error_handler, 404))
+    swagger.error_middleware.add_handler(UnknownSheepError, partial(error_handler, 404))
     swagger.error_middleware.add_handler(StorageInaccessibleError, partial(error_handler, 503))
     swagger.error_middleware.add_handler(HTTPError, http_error_handler)
     swagger.error_middleware.add_handler(AppError, partial(error_handler, 500))

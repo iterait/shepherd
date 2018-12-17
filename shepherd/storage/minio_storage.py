@@ -1,6 +1,7 @@
 import aiobotocore
 import asyncio
 import datetime
+import json
 import os
 from aiohttp.client_exceptions import ClientError as AioHTTPClientError
 from botocore.exceptions import ClientError as BotocoreClientError
@@ -14,8 +15,9 @@ from typing import Optional, BinaryIO, AsyncIterable
 
 from ..config import StorageConfig
 from ..errors.api import StorageError, StorageInaccessibleError, NameConflictError
-from ..constants import DONE_FILE, ERROR_FILE, INPUT_DIR, OUTPUT_DIR
+from ..constants import JOB_STATUS_FILE, INPUT_DIR, OUTPUT_DIR
 from .storage import Storage
+from ..api.models import JobStatusModel
 
 
 _MINIO_FOLDER_DELIMITER = '/'
@@ -229,31 +231,6 @@ class MinioStorage(Storage):
         except BotocoreClientError as ce:
             raise StorageError('Failed to push minio bucket `{}`'.format(job_id)) from ce
 
-    async def get_timestamp(self, job_id: str, file_path: str) -> datetime.datetime:
-        """
-        Implementation of :py:meth:`shepherd.storage.Storage.get_timestamp`.
-        """
-        try:
-            response = await self._client.head_object(Bucket=job_id, Key=file_path)
-            last_modified: datetime.datetime = response["LastModified"]
-            return datetime.datetime.fromtimestamp(last_modified.timestamp())
-        except AioHTTPClientError as he:
-            raise StorageInaccessibleError() from he
-        except BotocoreClientError as ce:
-            raise StorageError(f"Failed to get timestamp for file `{file_path}` from job `{job_id}`") from ce
-
-    async def report_job_failed(self, job_id: str, message: str) -> None:
-        """
-        Implementation of :py:meth:`shepherd.storage.Storage.report_job_failed`.
-        """
-        error = message.encode()
-        try:
-            await self._put_object(job_id, ERROR_FILE, BytesIO(error), len(error))
-        except AioHTTPClientError as he:
-            raise StorageInaccessibleError() from he
-        except BotocoreClientError as ce:
-            raise StorageError(f"Failed to report job `{job_id}` as failed") from ce
-
     async def put_file(self, job_id: str, file_path: str, stream: BinaryIO, length: int) -> None:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.put_file`.
@@ -300,24 +277,35 @@ class MinioStorage(Storage):
         except BotocoreClientError as ce:
             raise StorageError(f"Failed to get file `{file_path}` from job `{job_id}`") from ce
 
-    async def report_job_done(self, job_id: str) -> None:
+    async def set_job_status(self, job_id: str, status: JobStatusModel) -> None:
         """
-        Implementation of :py:meth:`shepherd.storage.Storage.report_job_done`.
+        Implementation of :py:meth:`shepherd.storage.Storage.set_job_status`
         """
+        data = BytesIO(json.dumps(status.to_primitive()).encode())
+
+        length = len(data.read())
+        data.seek(0)
+
         try:
-            await self._put_object(job_id, DONE_FILE, BytesIO(b''), 0)
+            await self._put_object(job_id, JOB_STATUS_FILE, data, length)
         except AioHTTPClientError as he:
             raise StorageInaccessibleError() from he
         except BotocoreClientError as ce:
-            raise StorageError(f"Failed to report job `{job_id}` as done") from ce
+            raise StorageError(f"Failed to update status of job `{job_id}`") from ce
 
-    async def is_job_done(self, job_id: str) -> bool:
+    async def get_job_status(self, job_id: str) -> Optional[JobStatusModel]:
         """
-        Implementation of :py:meth:`shepherd.storage.Storage.is_job_done`.
+        Implementation of :py:meth:`shepherd.storage.Storage.get_job_status`.
         """
         try:
-            return await self._object_exists(job_id, DONE_FILE) or await self._object_exists(job_id, ERROR_FILE)
+            if not await self.job_data_exists(job_id) or not await self._object_exists(job_id, JOB_STATUS_FILE):
+                return None
+
+            response = await self._client.get_object(Bucket=job_id, Key=JOB_STATUS_FILE)
         except AioHTTPClientError as he:
             raise StorageInaccessibleError() from he
         except BotocoreClientError as ce:
             raise StorageError(f"Failed to get status of job `{job_id}`") from ce
+
+        async with response["Body"] as stream:
+            return JobStatusModel(json.loads(await stream.read()))

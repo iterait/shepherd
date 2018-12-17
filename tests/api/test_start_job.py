@@ -15,7 +15,7 @@ async def unknown_job_coroutine(job_id):
     raise UnknownJobError()
 
 
-async def test_start_job_with_payload(minio_scoped: Minio, aiohttp_client, app, mock_shepherd: Union[Mock, Shepherd]):
+async def test_start_job_with_payload(minio: Minio, aiohttp_client, app, mock_shepherd: Union[Mock, Shepherd]):
     mock_shepherd.is_job_done.side_effect = unknown_job_coroutine
     client = await aiohttp_client(app)
 
@@ -30,19 +30,19 @@ async def test_start_job_with_payload(minio_scoped: Minio, aiohttp_client, app, 
     }))
 
     assert response.status == 200
-    assert minio_scoped.bucket_exists("uuid-1")
+    assert minio.bucket_exists("uuid-1")
 
-    payload = minio_scoped.get_object("uuid-1", DEFAULT_PAYLOAD_PATH)
+    payload = minio.get_object("uuid-1", DEFAULT_PAYLOAD_PATH)
     assert payload.data == b"Payload content"
 
     mock_shepherd.enqueue_job.assert_called()
 
 
-async def test_start_job_with_payload_conflict(minio_scoped: Minio, aiohttp_client, app, mock_shepherd: Union[Mock, Shepherd]):
+async def test_start_job_with_payload_conflict(minio: Minio, aiohttp_client, app, mock_shepherd: Union[Mock, Shepherd]):
     mock_shepherd.is_job_done.side_effect = unknown_job_coroutine
     client = await aiohttp_client(app)
 
-    minio_scoped.make_bucket("uuid-1")
+    minio.make_bucket("uuid-1")
 
     response = await client.post("/start-job", headers={"Content-Type": "application/json"}, data=json.dumps({
         "job_id": "uuid-1",
@@ -74,13 +74,13 @@ async def test_start_job_no_payload(aiohttp_client, app):
     assert response.status == 400  # Neither the request nor minio contains a payload -> error
 
 
-async def test_start_job_with_payload_in_minio(minio_scoped: Minio, aiohttp_client, app, mock_shepherd: Union[Mock, Shepherd]):
+async def test_start_job_with_payload_in_minio(minio: Minio, aiohttp_client, app, mock_shepherd: Union[Mock, Shepherd]):
     client = await aiohttp_client(app)
     mock_shepherd.is_job_done.side_effect = unknown_job_coroutine
 
     payload = b"Payload content"
-    minio_scoped.make_bucket("uuid-3")
-    minio_scoped.put_object("uuid-3", "payload.json", BytesIO(payload), len(payload))
+    minio.make_bucket("uuid-3")
+    minio.put_object("uuid-3", "payload.json", BytesIO(payload), len(payload))
 
     response = await client.post("/start-job", headers={"Content-Type": "application/json"}, data=json.dumps({
         "job_id": "uuid-3",

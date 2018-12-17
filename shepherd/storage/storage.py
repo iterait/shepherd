@@ -2,6 +2,8 @@ import abc
 import datetime
 from typing import Optional, BinaryIO
 
+from ..api.models import JobStatusModel
+
 
 class Storage(metaclass=abc.ABCMeta):
     """
@@ -55,16 +57,6 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    async def get_timestamp(self, job_id: str, file_path: str) -> datetime.datetime:
-        """
-        Get the timestamp of the last modification of given file.
-
-        :param job_id: identifier of the job to which the file belongs
-        :param file_path: path to the queried file
-        :return: timestamp of last modification
-        """
-
-    @abc.abstractmethod
     async def put_file(self, job_id: str, file_path: str, stream: BinaryIO, length: int) -> None:
         """
         Store given file.
@@ -89,29 +81,18 @@ class Storage(metaclass=abc.ABCMeta):
         :raises StorageError: there was an error when communicating with the remote storage
         """
 
-    @abc.abstractmethod
-    async def report_job_failed(self, job_id: str, message: str) -> None:
+    async def set_job_status(self, job_id: str, status: JobStatusModel) -> None:
         """
-        Mark the job as failed in the remote storage.
+        Update the status file for a job.
 
-        :param job_id: identifier of the failed job
-        :param message: a description of the error
+        :param job_id: identifier of the updated job
+        :param status: new status information
         :raises StorageInaccessibleError: the remote storage is not accessible
         :raises StorageError: there was an error when communicating with the remote storage
         """
 
     @abc.abstractmethod
-    async def report_job_done(self, job_id: str) -> None:
-        """
-        Mark the job as finished in the remote storage.
-
-        :param job_id: identifier of the finished job
-        :raises StorageInaccessibleError: the remote storage is not accessible
-        :raises StorageError: there was an error when communicating with the remote storage
-        """
-
-    @abc.abstractmethod
-    async def is_job_done(self, job_id: str) -> bool:
+    async def get_job_status(self, job_id: str) -> Optional[JobStatusModel]:
         """
         Query the remote storage to find out if the job is done (either finished or failed).
         This should not throw an error if the job does not exist (yet).

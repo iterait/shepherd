@@ -131,4 +131,4 @@ async def test_minio_accessibility_negative(storage_config_inaccessible, minio):
 
 
 async def test_nonexistent_job_done(storage: MinioStorage, minio):
-    assert not await storage.is_job_done("whatever-i-dont-exist")
+    assert (await storage.get_job_status("whatever-i-dont-exist")) is None
