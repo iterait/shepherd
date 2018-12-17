@@ -1,8 +1,7 @@
 from typing import Dict
-from datetime import datetime
 
 from schematics import Model
-from schematics.types import StringType, BooleanType, DictType, ModelType, DateTimeType
+from schematics.types import StringType, BooleanType, DictType, ModelType
 
 from .models import SheepModel, JobStatusModel
 
@@ -26,6 +25,5 @@ class StartJobResponse(Model):
 JobStatusResponse = JobStatusModel
 
 
-class JobReadyResponse(Model):
-    ready: bool = BooleanType(required=True)
-    finished_at: datetime = DateTimeType(required=False)
+class JobNotReadyResponse(Model):
+    ready: bool = BooleanType(required=True, default=False)
