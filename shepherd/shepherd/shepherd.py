@@ -56,7 +56,7 @@ class Shepherd:
         self._listener = None
         self._health_checker = None
         self._job_status: Dict[str, JobStatusModel] = {}
-        self._job_status_update_queue = TaskQueue(worker_count=1)
+        self._job_status_update_queue = None
 
         for sheep_id, config in sheep_config.items():
             socket = zmq.asyncio.Context.instance().socket(zmq.DEALER)
@@ -89,6 +89,7 @@ class Shepherd:
 
         self._listener = asyncio.create_task(self._listen())
         self._health_checker = asyncio.create_task(self._shepherd_health_check())
+        self._job_status_update_queue = TaskQueue(worker_count=1)
 
     def _get_sheep(self, sheep_id: str) -> BaseSheep:
         """
