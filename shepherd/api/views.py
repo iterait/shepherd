@@ -58,13 +58,6 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
             await storage.put_file(start_job_request.job_id, DEFAULT_PAYLOAD_PATH,
                                    payload, len(start_job_request.payload))
 
-        try:
-            await shepherd.is_job_done(start_job_request.job_id)
-            # if the call didn't throw, the job is either done or being computed, no need to enqueue it
-            return StartJobResponse()
-        except UnknownJobError:
-            pass
-
         await shepherd.enqueue_job(start_job_request.job_id, start_job_request.model, start_job_request.sheep_id)
 
         return StartJobResponse()
