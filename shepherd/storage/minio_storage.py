@@ -78,7 +78,7 @@ class MinioStorage(Storage):
         except BaseException:
             return False
 
-    async def job_data_exists(self, job_id: str) -> bool:
+    async def job_dir_exists(self, job_id: str) -> bool:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.job_data_exists`.
         """
@@ -298,7 +298,7 @@ class MinioStorage(Storage):
         Implementation of :py:meth:`shepherd.storage.Storage.get_job_status`.
         """
         try:
-            if not await self.job_data_exists(job_id) or not await self._object_exists(job_id, JOB_STATUS_FILE):
+            if not await self.job_dir_exists(job_id) or not await self._object_exists(job_id, JOB_STATUS_FILE):
                 return None
 
             response = await self._client.get_object(Bucket=job_id, Key=JOB_STATUS_FILE)

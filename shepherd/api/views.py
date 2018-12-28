@@ -16,14 +16,14 @@ from ..errors.api import ClientActionError, UnknownJobError
 from .swagger import swagger
 
 
-async def check_job_exists(storage: Storage, job_id: str) -> None:
+async def check_job_dir_exists(storage: Storage, job_id: str) -> None:
     """
-    Check if a job exists and raise an error if it doesn't.
+    Check if a job dir/bucket exists and raise an error if it doesn't.
 
     :param storage: a storage adapter to be checked
     :param job_id: an identifier of the job
     """
-    if not await storage.job_data_exists(job_id):
+    if not await storage.job_dir_exists(job_id):
         raise ClientActionError('Data for job `{}` does not exist'.format(job_id))
 
 
@@ -49,7 +49,7 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
         :raises NameConflictError: a job with given id was already submitted
         """
         if not start_job_request.payload:
-            await check_job_exists(storage, start_job_request.job_id)
+            await check_job_dir_exists(storage, start_job_request.job_id)
         else:
             await storage.init_job(start_job_request.job_id)
 
@@ -94,7 +94,7 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
         """
         job_id = request.match_info['job_id']
 
-        await check_job_exists(storage, job_id)
+        await check_job_dir_exists(storage, job_id)
         async with shepherd.job_done_condition:
             while not await shepherd.is_job_done(job_id):
                 await shepherd.job_done_condition.wait()
@@ -118,7 +118,7 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
         job_id = request.match_info['job_id']
         result_file = request.match_info.get('result_file', DEFAULT_OUTPUT_FILE)
 
-        await check_job_exists(storage, job_id)
+        await check_job_dir_exists(storage, job_id)
         status = await storage.get_job_status(job_id)
 
         if status is not None and status.status == JobStatus.FAILED:

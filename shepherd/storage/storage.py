@@ -25,9 +25,9 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    async def job_data_exists(self, job_id: str) -> bool:
+    async def job_dir_exists(self, job_id: str) -> bool:
         """
-        Check if the remote storage contains data for given job.
+        Check if the remote storage contains directory/bucket for the given job.
 
         :param job_id: identifier of the job to be checked
         :raises StorageInaccessibleError: the remote storage is not accessible

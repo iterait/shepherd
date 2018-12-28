@@ -359,7 +359,7 @@ class Shepherd:
         :raise UnknownJobError: if the job is not ready nor it is known to this shepherd
         :return: job ready flag
         """
-        if not await self._storage.job_data_exists(job_id):
+        if not await self._storage.job_dir_exists(job_id):
             raise UnknownJobError()
 
         status = await self._storage.get_job_status(job_id)
