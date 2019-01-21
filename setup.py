@@ -14,8 +14,7 @@ setup(name='shepherd',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6'
+        'Programming Language :: Python :: 3.7'
       ],
       keywords='worker',
       url='https://github.com/iterait/shepherd',
