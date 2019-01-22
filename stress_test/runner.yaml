@@ -1,0 +1,2 @@
+runner:
+  class: stress_test.tiny_runner.TinyRunner

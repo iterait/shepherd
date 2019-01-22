@@ -17,6 +17,11 @@ Provides access to computation resources on a single machine.
 
 The test suite can be run with `python setup.py test`.
 
+### Running Stress Tests
+
+The stress test suite can be run with `molotov stress_test/loadtest.py -p 2 -w 10 -d 60 -xv`
+where `-p` is number of processes, `-w` number of workers and `-d` number of seconds to run the test.
+
 ### Launching the Shepherd
 
 First, you need to have a Docker registry and a Minio server running. The 

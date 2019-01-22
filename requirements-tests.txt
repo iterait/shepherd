@@ -1,0 +1,4 @@
+pytest
+pytest-mock
+pytest-forked
+pytest-aiohttp
