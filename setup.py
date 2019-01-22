@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='shepherd',
-      version='0.4.0',
+      version='0.4.1',
       description='Shepherd',
       long_description='Asynchronous worker',
       classifiers=[
