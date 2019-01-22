@@ -19,8 +19,14 @@ The test suite can be run with `python setup.py test`.
 
 ### Running Stress Tests
 
-The stress test suite can be run with `molotov stress_test/loadtest.py -p 2 -w 10 -d 60 -xv`
-where `-p` is number of processes, `-w` number of workers and `-d` number of seconds to run the test.
+To launch stress test, run:
+```
+docker-compose -f examples/docker/docker-compose-sandbox.yml up -d
+shepherd -c stress_test/shepherd-bare.yml
+molotov stress_test/loadtest.py -p 2 -w 10 -d 60 -xv
+```
+You can modify stress test arguments: `-p` (number of processes), `-w` (number of workers) and 
+`-d` (number of seconds to run the test).
 
 ### Launching the Shepherd
 

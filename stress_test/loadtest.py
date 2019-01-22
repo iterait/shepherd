@@ -63,12 +63,12 @@ async def job_lifecycle_wait(session):
 
 @scenario(weight=55)
 async def job_scenario(session):
-    await asyncio.wait_for(job_lifecycle(session), timeout=220)
+    await asyncio.wait_for(job_lifecycle(session), timeout=120)
 
 
 @scenario(weight=30)
 async def job_scenario_wait(session):
-    await asyncio.wait_for(job_lifecycle_wait(session), timeout=220)
+    await asyncio.wait_for(job_lifecycle_wait(session), timeout=120)
 
 
 @scenario(weight=10)

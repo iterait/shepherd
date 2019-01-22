@@ -1,2 +1,2 @@
 runner:
-  class: stress_test.tiny_runner.TinyRunner
+  class: stress_test.stress_runner.StressRunner
