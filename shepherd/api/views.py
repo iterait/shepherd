@@ -77,9 +77,9 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
         if status is not None:
             return status
 
+        await check_job_dir_exists(storage, job_id)
+
         status = await storage.get_job_status(job_id)
-        if status is None:
-            raise UnknownJobError()
 
         return status
 
