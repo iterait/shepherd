@@ -28,6 +28,11 @@ molotov stress_test/loadtest.py -p 2 -w 10 -d 60 -xv
 You can modify stress test arguments: `-p` (number of processes), `-w` (number of workers) and 
 `-d` (number of seconds to run the test).
 
+You can also run stress test with time measurements:
+```
+molotov --use-extension stress_test/measure_time.py --max-runs 10 stress_test/loadtest.py
+```
+
 ### Launching the Shepherd
 
 First, you need to have a Docker registry and a Minio server running. The 
