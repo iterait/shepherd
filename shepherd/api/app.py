@@ -49,7 +49,7 @@ def create_app(debug=None) -> web.Application:
     :return: a new application object
     """
 
-    app = web.Application(debug=debug if debug is not None else os.getenv('DEBUG', False))
+    app = web.Application(debug=debug if debug is not None else os.getenv('DEBUG', False), client_max_size=10*1024**3)
 
     swagger.error_middleware.add_handler(NameConflictError, partial(error_handler, 409))
     swagger.error_middleware.add_handler(ClientActionError, partial(error_handler, 400))

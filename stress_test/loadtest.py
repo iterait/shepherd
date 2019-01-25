@@ -10,7 +10,7 @@ from molotov import scenario
 from shepherd.constants import DEFAULT_PAYLOAD_PATH
 
 _SHEPHERD_URL = 'http://0.0.0.0:5000'
-_BYTES = str(open("/dev/urandom", "rb").read(200000))
+_BYTES = str(open("/dev/urandom", "rb").read(10*1024**2))
 _SLEEP = 5
 
 
@@ -137,6 +137,23 @@ async def job_lifecycle_wait(session):
         assert response['result'] == '42'
 
 
+async def send_nonexistent_job(session):
+    job_id = 'non-existent'
+
+    async with session.get(f'{_SHEPHERD_URL}/jobs/{job_id}/status') as resp:
+        assert resp.status == 400
+
+    async with session.get(f'{_SHEPHERD_URL}/jobs/{job_id}/result') as resp:
+        response = await resp.text()
+        response = json.loads(response)
+        assert response['message'] == f'Data for job `{job_id}` does not exist'
+
+
+async def get_shepherd_status(session):
+    async with session.get(f'{_SHEPHERD_URL}/status') as resp:
+        assert resp.status == 200
+
+
 @scenario(weight=20)
 async def job_with_payload(session):
     await asyncio.wait_for(job_lifecycle(session), timeout=120)
@@ -159,22 +176,11 @@ async def job_with_wait(session):
 
 @scenario(weight=5)
 async def nonexistent_job(session):
-    job_id = 'non-existent'
-
-    async with session.get(f'{_SHEPHERD_URL}/jobs/{job_id}/status') as resp:
-        assert resp.status == 400
-
-    async with session.get(f'{_SHEPHERD_URL}/jobs/{job_id}/result') as resp:
-        response = await resp.text()
-        response = json.loads(response)
-        assert response['message'] == f'Data for job `{job_id}` does not exist'
-
+    await asyncio.wait_for(send_nonexistent_job(session), timeout=120)
     sleep(_SLEEP)
 
 
-@scenario(weight=5)
+@scenario(weight=10)
 async def shepherd_status(session):
-    async with session.get(f'{_SHEPHERD_URL}/status') as resp:
-        assert resp.status == 200
-
+    await asyncio.wait_for(get_shepherd_status(session), timeout=5)
     sleep(_SLEEP)
