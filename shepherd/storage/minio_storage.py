@@ -1,22 +1,19 @@
-import aiobotocore
-import asyncio
-import datetime
 import json
 import os
-from aiohttp.client_exceptions import ClientError as AioHTTPClientError
-from botocore.exceptions import ClientError as BotocoreClientError
-
-from os import path
-
+import asyncio
 import logging
+from os import path
 from io import BytesIO
-
 from typing import Optional, BinaryIO, AsyncIterable
 
+import aiobotocore
+from botocore.exceptions import ClientError as BotocoreClientError
+from aiohttp.client_exceptions import ClientError as AioHTTPClientError
+
+from .storage import Storage
 from ..config import StorageConfig
 from ..errors.api import StorageError, StorageInaccessibleError, NameConflictError
 from ..constants import JOB_STATUS_FILE, INPUT_DIR, OUTPUT_DIR
-from .storage import Storage
 from ..api.models import JobStatusModel
 
 
