@@ -9,5 +9,5 @@ schematics
 aiohttp
 aiohttp-cors
 aiobotocore
-git+https://github.com/iterait/emloop.git
-git+https://github.com/iterait/apistrap.git
+emloop
+apistrap
