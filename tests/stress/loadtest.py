@@ -31,7 +31,7 @@ def create_payload(job_id: str):
         'payload': json.dumps(dict(
             input='42'
         )),
-        'model': {'name': 'stress_test', 'version': ''}
+        'model': {'name': 'tests', 'version': 'stress'}
     }
 
 
@@ -41,14 +41,14 @@ def create_huge_payload(job_id: str):
         'payload': json.dumps(dict(
             input=_BYTES
         )),
-        'model': {'name': 'stress_test', 'version': ''}
+        'model': {'name': 'tests', 'version': 'stress'}
     }
 
 
 def create_payload_minio(job_id: str):
     return {
         'job_id': job_id,
-        'model': {'name': 'stress_test', 'version': ''}
+        'model': {'name': 'tests', 'version': 'stress'}
     }
 
 

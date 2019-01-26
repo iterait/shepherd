@@ -2,7 +2,7 @@ import time
 
 from molotov import events, global_teardown
 
-from stress_test.loadtest import _SLEEP
+from .loadtest import _SLEEP
 
 _TIMES = {}
 _ID = 0

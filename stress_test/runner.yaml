@@ -1,2 +1,0 @@
-runner:
-  class: stress_test.stress_runner.StressRunner
