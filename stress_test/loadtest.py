@@ -110,8 +110,8 @@ async def job_lifecycle_huge_payload(session):
     while True:
         async with session.get(f'{_SHEPHERD_URL}/jobs/{job_id}/result') as resp:
             if resp.status == 200:
-                response = await resp.text()
-                response = json.loads(response)
+                bts = await resp.read()  # for some reason, .text() blocks for an absurd amount of time
+                response = json.loads(bts.decode())
                 assert response['result'] == _BYTES
                 break
             else:
