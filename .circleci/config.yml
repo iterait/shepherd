@@ -77,9 +77,9 @@ workflows:
     jobs:
       - test_archlinux
       - generate_documentation:
-#          filters:
-#            branches:
-#              only: dev
+          filters:
+            branches:
+              only: dev
           requires:
             - test_archlinux
 
