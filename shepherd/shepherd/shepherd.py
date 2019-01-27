@@ -9,9 +9,7 @@ from typing import Mapping, Generator, Tuple, Dict, Any, Optional
 import zmq
 import zmq.asyncio
 
-
 from ..constants import OUTPUT_DIR
-from ..docker import list_images_in_registry
 from ..storage.minio_storage import Storage
 from ..config import RegistryConfig
 from ..sheep import *
@@ -47,7 +45,6 @@ class Shepherd:
 
         self.job_done_condition = asyncio.Condition()
 
-        self._registry_config = registry_config
         self._storage = storage
         self._poller = zmq.asyncio.Poller()
         self._sheep: Dict[str, BaseSheep] = {}
@@ -75,7 +72,6 @@ class Shepherd:
             self._poller.register(socket, zmq.POLLIN)
 
         self._storage_inaccessible_reported = False
-        self._registry_inaccessible_reported = False
 
     async def start(self) -> None:
         """
@@ -161,14 +157,6 @@ class Shepherd:
                 self._storage_inaccessible_reported = True
             else:
                 self._storage_inaccessible_reported = False
-
-            if self._registry_config is not None:
-                try:
-                    list_images_in_registry(self._registry_config)
-                    self._registry_inaccessible_reported = False
-                except:
-                    logging.error("The Docker registry is not accessible")
-                    self._registry_inaccessible_reported = True
 
     async def _health_check(self, sheep_id: str) -> None:
         """
