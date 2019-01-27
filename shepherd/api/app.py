@@ -1,19 +1,19 @@
-import logging
 import os
+import logging
+from functools import partial
 from aiohttp import web
 from aiohttp.web_exceptions import HTTPError
 
-from functools import partial
-
+from .swagger import swagger
+from .responses import ErrorResponse
 from ..errors.api import ClientActionError, AppError, NameConflictError, StorageInaccessibleError, UnknownJobError, \
     UnknownSheepError
-from .responses import ErrorResponse
-from .swagger import swagger
 
 
 def internal_error_handler(error: Exception):
     """
     Handles internal server errors
+
     :param error: an exception object
     :return: a Flask response
     """
@@ -24,6 +24,7 @@ def internal_error_handler(error: Exception):
 def error_handler(http_code, error: AppError):
     """
     Handles errors derived from AppError
+
     :param http_code: the HTTP status code to be returned when the error happens
     :param error: an exception object
     :return: a Flask response
@@ -34,6 +35,7 @@ def error_handler(http_code, error: AppError):
 def http_error_handler(error: HTTPError):
     """
     Handles HTTP errors
+
     :param error: an exception object
     :return: a Flask response
     """
