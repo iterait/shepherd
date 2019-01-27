@@ -10,8 +10,8 @@ references:
         apt-get update -qy
         apt-get install -y git python3-dev python3-pip curl
         pip3 install -r requirements.txt
+        pip3 install -r requirements-docs.txt
         pip3 install -e .
-        echo "$(tail -n +2 shepherd/manage.py)" > shepherd/manage.py  # remove gevent monkey patch (it breaks sphinx)
 
   install: &install
     run:
@@ -76,12 +76,12 @@ workflows:
   test:
     jobs:
       - test_archlinux
-#      - generate_documentation:
+      - generate_documentation:
 #          filters:
 #            branches:
 #              only: dev
-#          requires:
-#            - test_archlinux
+          requires:
+            - test_archlinux
 
   nightly-build:
     triggers:
