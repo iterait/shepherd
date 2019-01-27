@@ -1,4 +1,0 @@
-Shepherd API
-============
-
-TBD

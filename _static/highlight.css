@@ -1,0 +1,84 @@
+dl.class, dl.function, dl.exception{
+  margin-bottom: 30px;
+  background-color: #ffffff;
+  border: 1px solid #aaaaaa;
+  padding: 9px;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+
+}
+dl.class dt, dl.function dt, dl.exception dt{
+  margin-bottom: 25px;
+
+}
+
+dl.class dd dt{
+margin-bottom:5px;
+border:none;
+padding:0px;
+box-shadow: none;
+-webkit-box-shadow: none;
+}
+
+.literal-block-wrapper{
+width:100%;
+}
+
+.admonition{
+margin-left:14px;margin-right:14px;}
+
+dl.class dd dl dd, dl.function dd dl dd, dl.exception dd dl dd{
+padding-left: 20px;
+}
+
+.descclassname {
+display:none;
+}
+
+dl.class dt{
+visibility:hidden;
+}
+
+
+dl.class dd dt, dl.class dt .descname, dl.class dt em:first-child{
+visibility:visible;
+}
+
+.side_nav{
+margin-bottom:4px;
+padding:4px;
+padding-left:10px;
+}
+
+.footer{
+margin-top:30px}
+
+.searchbox{
+display:block;
+margin-top:12px;
+padding-bottom:0px;
+margin-bottom:0px;
+}
+
+.figure{
+border: 1px solid #aaaaaa;
+  padding: 7px;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.caption{
+text-align:center;
+margin-top:5px;
+margin-bottom:5px;}
+
+.navbar-worker {
+    background-color: #3366cc;
+    border-color: #333399;
+}
+
+.navbar-worker .navbar-nav li a:hover {
+    background-color: #333399;
+}
