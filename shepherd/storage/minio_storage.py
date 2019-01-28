@@ -1,6 +1,5 @@
 import aiobotocore
 import asyncio
-import datetime
 import json
 import os
 from aiohttp.client_exceptions import ClientError as AioHTTPClientError
@@ -14,7 +13,7 @@ from io import BytesIO
 from typing import Optional, BinaryIO, AsyncIterable
 
 from ..config import StorageConfig
-from ..errors.api import StorageError, StorageInaccessibleError, NameConflictError
+from ..errors.api import StorageError, StorageInaccessibleError, NameConflictError, UnknownJobError
 from ..constants import JOB_STATUS_FILE, INPUT_DIR, OUTPUT_DIR
 from .storage import Storage
 from ..api.models import JobStatusModel
@@ -293,13 +292,13 @@ class MinioStorage(Storage):
         except BotocoreClientError as ce:
             raise StorageError(f"Failed to update status of job `{job_id}`") from ce
 
-    async def get_job_status(self, job_id: str) -> Optional[JobStatusModel]:
+    async def get_job_status(self, job_id: str) -> JobStatusModel:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.get_job_status`.
         """
         try:
             if not await self.job_dir_exists(job_id) or not await self._object_exists(job_id, JOB_STATUS_FILE):
-                return None
+                raise UnknownJobError('Data for job `{}` does not exist'.format(job_id))
 
             response = await self._client.get_object(Bucket=job_id, Key=JOB_STATUS_FILE)
         except AioHTTPClientError as he:
