@@ -9,7 +9,7 @@ from shepherd.config import StorageConfig
 from shepherd.constants import INPUT_DIR, OUTPUT_DIR
 from shepherd.storage import MinioStorage
 from shepherd.utils import *
-from shepherd.errors.api import StorageError, StorageInaccessibleError
+from shepherd.errors.api import StorageError, StorageInaccessibleError, UnknownJobError
 
 
 @pytest.fixture()
@@ -131,4 +131,5 @@ async def test_minio_accessibility_negative(storage_config_inaccessible, minio):
 
 
 async def test_nonexistent_job_done(storage: MinioStorage, minio):
-    assert (await storage.get_job_status("whatever-i-dont-exist")) is None
+    with pytest.raises(UnknownJobError):
+        await storage.get_job_status("whatever-i-dont-exist")
