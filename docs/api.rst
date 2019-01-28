@@ -13,8 +13,9 @@ Shepherd API
       const ui = SwaggerUIBundle({
         url: "https://github.com/iterait/shepherd/releases/download/v0.4.1/swagger.yml",
         dom_id: '#swagger-ui',
+        supportedSubmitMethods: [], // disable "Try it" buttons
         requestInterceptor: function() {
-            this.url = "https://cors-anywhere.herokuapp.com" + '/' + this.url // will change the URL used.
+            this.url = "https://cors-anywhere.herokuapp.com" + '/' + this.url // bypass GitHub CORS
             return this;
         },
         presets: [
