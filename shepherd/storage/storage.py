@@ -1,5 +1,4 @@
 import abc
-import datetime
 from typing import Optional, BinaryIO
 
 from ..api.models import JobStatusModel
@@ -92,7 +91,7 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    async def get_job_status(self, job_id: str) -> Optional[JobStatusModel]:
+    async def get_job_status(self, job_id: str) -> JobStatusModel:
         """
         Query the remote storage to find out if the job is done (either finished or failed).
         This should not throw an error if the job does not exist (yet).
@@ -100,4 +99,5 @@ class Storage(metaclass=abc.ABCMeta):
         :param job_id: identifier of the queried job
         :raises StorageInaccessibleError: the remote storage is not accessible
         :raises StorageError: there was an error when communicating with the remote storage
+        :raises UnknownJobError: status for an unknown job was requested
         """

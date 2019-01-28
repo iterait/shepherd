@@ -26,6 +26,21 @@ def job_done(minio: Minio, bucket):
 
 
 @pytest.fixture()
+def job_not_ready(minio: Minio, bucket):
+    job_id = bucket
+    status = json.dumps({
+        "status": JobStatus.PROCESSING,
+        "model": {
+            "name": "dfsdf",
+            "version": "adfk"
+        },
+        "finished_at": None
+    }).encode()
+    minio.put_object(job_id, JOB_STATUS_FILE, BytesIO(status), len(status))
+    yield job_id
+
+
+@pytest.fixture()
 def job_failed(minio: Minio, bucket):
     job_id = bucket
     status = json.dumps({
@@ -53,11 +68,10 @@ async def test_get_result_success(job_done, aiohttp_client, app):
     assert "content" in data
 
 
-async def test_get_result_not_ready(bucket, aiohttp_client, app):
-    job_id = bucket
+async def test_get_result_not_ready(job_not_ready, aiohttp_client, app):
     client = await aiohttp_client(app)
 
-    response = await client.get("/jobs/{}/result/payload.json".format(job_id))
+    response = await client.get("/jobs/{}/result/payload.json".format(job_not_ready))
     assert response.status == 202
 
 
