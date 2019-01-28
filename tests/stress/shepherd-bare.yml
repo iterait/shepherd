@@ -1,0 +1,15 @@
+data_root: /tmp/shepherd-data
+registry:
+  url: http://0.0.0.0:6000
+storage:
+  url: http://0.0.0.0:7000
+  access_key: AKIAIOSFODNN7EXAMPLE
+  secret_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+sheep:
+  bare_sheep:
+    port: 9001
+    type: bare
+    working_directory: .
+    stdout_file: /tmp/bare-shepherd-runner-stdout.txt
+    stderr_file: /tmp/bare-shepherd-runner-stderr.txt
