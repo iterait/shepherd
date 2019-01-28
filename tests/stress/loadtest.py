@@ -31,7 +31,7 @@ def create_payload(job_id: str):
         'payload': json.dumps(dict(
             input='42'
         )),
-        'model': {'name': 'stress_test', 'version': ''}
+        'model': {'name': 'tests', 'version': 'stress'}
     }
 
 
@@ -41,14 +41,14 @@ def create_huge_payload(job_id: str):
         'payload': json.dumps(dict(
             input=_BYTES
         )),
-        'model': {'name': 'stress_test', 'version': ''}
+        'model': {'name': 'tests', 'version': 'stress'}
     }
 
 
 def create_payload_minio(job_id: str):
     return {
         'job_id': job_id,
-        'model': {'name': 'stress_test', 'version': ''}
+        'model': {'name': 'tests', 'version': 'stress'}
     }
 
 
@@ -110,8 +110,8 @@ async def job_lifecycle_huge_payload(session):
     while True:
         async with session.get(f'{_SHEPHERD_URL}/jobs/{job_id}/result') as resp:
             if resp.status == 200:
-                response = await resp.text()
-                response = json.loads(response)
+                bts = await resp.read()  # for some reason, .text() blocks for an absurd amount of time
+                response = json.loads(bts.decode())
                 assert response['result'] == _BYTES
                 break
             else:

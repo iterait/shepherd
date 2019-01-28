@@ -5,7 +5,7 @@ from time import sleep
 from shepherd.runner import JSONRunner
 from shepherd.constants import DEFAULT_PAYLOAD_FILE, DEFAULT_OUTPUT_FILE
 
-from stress_test.loadtest import _SLEEP
+from .loadtest import _SLEEP
 
 
 class StressRunner(JSONRunner):
