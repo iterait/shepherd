@@ -12,7 +12,7 @@ from ..shepherd import Shepherd
 from .requests import StartJobRequest
 from .responses import StartJobResponse, StatusResponse, JobStatusResponse, ErrorResponse, \
     JobErrorResponse, JobNotReadyResponse
-from ..errors.api import ClientActionError, UnknownJobError
+from ..errors.api import UnknownJobError
 from .swagger import swagger
 
 
@@ -24,7 +24,7 @@ async def check_job_dir_exists(storage: Storage, job_id: str) -> None:
     :param job_id: an identifier of the job
     """
     if not await storage.job_dir_exists(job_id):
-        raise ClientActionError('Data for job `{}` does not exist'.format(job_id))
+        raise UnknownJobError('Data for job `{}` does not exist'.format(job_id))
 
 
 def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTableDef:
@@ -78,8 +78,6 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
             return status
 
         status = await storage.get_job_status(job_id)
-        if status is None:
-            raise UnknownJobError()
 
         return status
 
