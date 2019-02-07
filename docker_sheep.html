@@ -136,7 +136,7 @@ incoming jobs at a socket bind to port <strong>9999</strong>.</p>
 <p>Example Dockerfile follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">iterait</span><span class="o">/</span><span class="n">emloop</span>
 
-<span class="n">RUN</span> <span class="n">pacman</span> <span class="o">-</span><span class="n">Syu</span> <span class="o">--</span><span class="n">noconfirm</span> <span class="o">--</span><span class="n">needed</span> <span class="n">python</span><span class="o">-</span><span class="n">pyzmq</span> <span class="n">openssh</span> <span class="n">python</span><span class="o">-</span><span class="n">numpy</span> <span class="o">&amp;&amp;</span> <span class="n">paccache</span> <span class="o">-</span><span class="n">rfk0</span>
+<span class="n">RUN</span> <span class="n">pacman</span> <span class="o">-</span><span class="n">Syu</span> <span class="o">--</span><span class="n">noconfirm</span> <span class="o">--</span><span class="n">needed</span> <span class="n">python</span><span class="o">-</span><span class="n">pyzmq</span> <span class="n">openssh</span> <span class="n">python</span><span class="o">-</span><span class="n">numpy</span>
 
 <span class="n">ADD</span> <span class="n">ssh</span> <span class="o">/</span><span class="n">root</span><span class="o">/.</span><span class="n">ssh</span>
 <span class="n">RUN</span> <span class="n">chmod</span> <span class="mi">600</span> <span class="o">-</span><span class="n">R</span> <span class="o">/</span><span class="n">root</span><span class="o">/.</span><span class="n">ssh</span>
@@ -175,7 +175,7 @@ incoming jobs at a socket bind to port <strong>9999</strong>.</p>
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.<br/>
     </p>
   </div>
 </footer>
