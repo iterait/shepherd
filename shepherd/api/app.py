@@ -3,6 +3,7 @@ import logging
 from functools import partial
 from aiohttp import web
 from aiohttp.web_exceptions import HTTPError
+from apistrap.errors import InvalidFieldsError
 
 from .swagger import swagger
 from .responses import ErrorResponse
@@ -57,6 +58,7 @@ def create_app(debug=None) -> web.Application:
     swagger.error_middleware.add_handler(ClientActionError, partial(error_handler, 400))
     swagger.error_middleware.add_handler(UnknownJobError, partial(error_handler, 404))
     swagger.error_middleware.add_handler(UnknownSheepError, partial(error_handler, 404))
+    swagger.error_middleware.add_handler(InvalidFieldsError, partial(error_handler, 400))
     swagger.error_middleware.add_handler(StorageInaccessibleError, partial(error_handler, 503))
     swagger.error_middleware.add_handler(HTTPError, http_error_handler)
     swagger.error_middleware.add_handler(AppError, partial(error_handler, 500))
