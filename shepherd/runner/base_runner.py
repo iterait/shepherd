@@ -10,7 +10,6 @@ import zmq
 import zmq.asyncio
 
 import emloop as el
-from emloop.cli.common import create_dataset, create_model
 from emloop.cli.util import validate_config, find_config
 from emloop.utils import load_config
 from shepherd.comm import *
@@ -88,7 +87,7 @@ class BaseRunner:
         if self._dataset is None:
             self._load_config()
             logging.info('Creating dataset')
-            self._dataset = create_dataset(self._config, None)
+            self._dataset = el.create_dataset(self._config, None)
 
     def _load_model(self) -> None:
         """Maybe load model."""
@@ -98,7 +97,7 @@ class BaseRunner:
             restore_from = self._config_path
             if not path.isdir(restore_from):
                 restore_from = path.dirname(restore_from)
-            self._model = create_model(self._config, None, self._dataset, restore_from)
+            self._model = el.create_model(self._config, None, self._dataset, restore_from)
 
     @abstractmethod
     def _process_job(self, input_path: str, output_path: str) -> None:
