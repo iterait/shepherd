@@ -15,7 +15,7 @@ def job(minio: Minio, bucket):
     yield job_id
 
 
-async def test_get_result_success(job, aiohttp_client, app):
+async def test_get_input_success(job, aiohttp_client, app):
     job_id = job
     client = await aiohttp_client(app)
     response = await client.get("/jobs/{}/input/payload.json".format(job_id))
@@ -25,7 +25,7 @@ async def test_get_result_success(job, aiohttp_client, app):
     assert "content" in data
 
 
-async def test_get_result_not_found(job, aiohttp_client, app):
+async def test_get_input_not_found(job, aiohttp_client, app):
     job_id = job
     client = await aiohttp_client(app)
 

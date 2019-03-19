@@ -6,7 +6,7 @@ from io import BytesIO
 import mimetypes
 
 from ..storage import Storage
-from ..constants import DEFAULT_OUTPUT_FILE, OUTPUT_DIR, DEFAULT_PAYLOAD_PATH, DEFAULT_PAYLOAD_FILE
+from ..constants import DEFAULT_OUTPUT_FILE, OUTPUT_DIR, DEFAULT_PAYLOAD_PATH, DEFAULT_PAYLOAD_FILE, INPUT_DIR
 from ..api.models import JobStatus
 from ..shepherd import Shepherd
 from .requests import StartJobRequest
@@ -150,7 +150,7 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
 
         await check_job_dir_exists(storage, job_id)
 
-        input_path = OUTPUT_DIR + "/" + result_file
+        input_path = INPUT_DIR + "/" + result_file
         input = await storage.get_file(job_id, input_path)
         if input is None:
             return ErrorResponse(dict(message="Requested file does not exist"))
