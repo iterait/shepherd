@@ -6,7 +6,7 @@ from io import BytesIO
 import mimetypes
 
 from ..storage import Storage
-from ..constants import DEFAULT_OUTPUT_FILE, OUTPUT_DIR, DEFAULT_PAYLOAD_PATH
+from ..constants import DEFAULT_OUTPUT_FILE, OUTPUT_DIR, DEFAULT_PAYLOAD_PATH, DEFAULT_PAYLOAD_FILE
 from ..api.models import JobStatus
 from ..shepherd import Shepherd
 from .requests import StartJobRequest
@@ -132,6 +132,31 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
 
         mime = mimetypes.guess_type(result_file)[0] or "application/octet-stream"
         return FileResponse(output, mimetype=mime)
+
+    @api.get("/jobs/{job_id}/input/{input_file}")
+    @api.get("/jobs/{job_id}/input")
+    @swagger.autodoc()
+    @swagger.responds_with(ErrorResponse, code=404)
+    @swagger.responds_with(FileResponse, code=200)
+    async def get_job_input(request: Request):
+        """
+        Get the input of the specified job.
+
+        :param job_id: An identifier of the job
+        :param result_file: Name of the requested file
+        """
+        job_id = request.match_info['job_id']
+        result_file = request.match_info.get('input_file', DEFAULT_PAYLOAD_FILE)
+
+        await check_job_dir_exists(storage, job_id)
+
+        input_path = OUTPUT_DIR + "/" + result_file
+        input = await storage.get_file(job_id, input_path)
+        if input is None:
+            return ErrorResponse(dict(message="Requested file does not exist"))
+
+        mime = mimetypes.guess_type(result_file)[0] or "application/octet-stream"
+        return FileResponse(input, mimetype=mime)
 
     @api.get('/status')
     @swagger.autodoc()
