@@ -35,7 +35,7 @@ class StorageConfig(Model):
 
     @property
     def secure(self) -> bool:
-        return self.url.startswith("https://")  # If no scheme is given
+        return self.url.startswith("https://")  # both `http://` and no-scheme are considered unsecured
 
 
 class RegistryConfig(Model):
