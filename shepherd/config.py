@@ -25,7 +25,7 @@ def strip_url_scheme(url):
 
 
 class StorageConfig(Model):
-    url: str = URLType(fqdn=False, required=True)
+    url: str = StringType(required=True)
     access_key: str = StringType(required=True)
     secret_key: str = StringType(required=True)
 
@@ -35,7 +35,7 @@ class StorageConfig(Model):
 
     @property
     def secure(self) -> bool:
-        return not self.url.startswith("http://")  # If no scheme is given
+        return self.url.startswith("https://")  # both `http://` and no-scheme are considered unsecured
 
 
 class RegistryConfig(Model):
