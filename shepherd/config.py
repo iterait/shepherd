@@ -1,7 +1,7 @@
 import logging
 import re
 import os
-import yaml
+import ruamel.yaml
 from typing import Optional, Dict, Any
 
 from schematics import Model
@@ -39,7 +39,7 @@ class StorageConfig(Model):
 
 
 class RegistryConfig(Model):
-    url: str = URLType(fqdn=False, required=True)
+    url: str = StringType(required=True)
     username: Optional[str] = StringType(required=False)
     password: Optional[str] = StringType(required=False)
 
@@ -68,8 +68,8 @@ def load_shepherd_config(config_stream) -> ShepherdConfig:
     # regex pattern for compiling ENV variables
     regex_no_brackets = re.compile(r'([^$]*)\$([A-Z_][A-Z_0-9]*)')
     regex_brackets = re.compile(r'([^$]*)\${([A-Z_][A-Z_0-9]*)}')
-    yaml.add_implicit_resolver('!env', regex_no_brackets)
-    yaml.add_implicit_resolver('!env', regex_brackets)
+    ruamel.yaml.add_implicit_resolver('!env', regex_no_brackets)
+    ruamel.yaml.add_implicit_resolver('!env', regex_brackets)
 
     # define constructor for recognizing environment variables
     def env_constructor(loader, node):
@@ -86,10 +86,10 @@ def load_shepherd_config(config_stream) -> ShepherdConfig:
         return value
 
     # add constructor to yaml loader
-    yaml.add_constructor('!env', env_constructor)
+    ruamel.yaml.add_constructor('!env', env_constructor)
 
     # construct config object
-    config_object = yaml.load(config_stream)
+    config_object = ruamel.yaml.load(config_stream)
 
     config = ShepherdConfig(config_object)
     config.validate()
