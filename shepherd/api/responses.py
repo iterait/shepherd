@@ -1,10 +1,9 @@
 from typing import Dict
-from datetime import datetime
 
 from schematics import Model
-from schematics.types import StringType, BooleanType, DictType, ModelType, DateTimeType
+from schematics.types import StringType, BooleanType, DictType, ModelType
 
-from shepherd.api.models import SheepModel
+from .models import SheepModel, JobStatusModel
 
 
 class ErrorResponse(Model):
@@ -23,9 +22,8 @@ class StartJobResponse(Model):
     success: bool = BooleanType(default=True, required=True)
 
 
-class JobStatusResponse(Model):
-    ready: bool = BooleanType(required=True)
+JobStatusResponse = JobStatusModel
 
 
-class JobReadyResponse(JobStatusResponse):
-    finished_at: datetime = DateTimeType(required=False)
+class JobNotReadyResponse(Model):
+    ready: bool = BooleanType(required=True, default=False)

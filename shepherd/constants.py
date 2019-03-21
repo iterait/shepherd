@@ -1,11 +1,6 @@
-DONE_FILE = "done"
+JOB_STATUS_FILE = "job_status.json"
 """
-Name of a file in a job bucket that implies a job is done
-"""
-
-ERROR_FILE = "error"
-"""
-Name of a file in a job bucket that implies a job has failed
+Name of a file in a job bucket that contains the status information
 """
 
 DEFAULT_PAYLOAD_FILE = "input"

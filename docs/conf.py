@@ -1,4 +1,5 @@
 import sys
+import os
 import pkg_resources
 
 sys.path.insert(0, '_base')
@@ -46,3 +47,8 @@ html_theme_options.update({
     'navbar_class': "navbar navbar-worker",
 })
 
+html_static_path += [os.path.join(os.path.dirname(__file__), '_static')]
+
+def setup(app):
+    app.add_stylesheet("highlight.css")
+    app.add_stylesheet("swagger-ui.css")

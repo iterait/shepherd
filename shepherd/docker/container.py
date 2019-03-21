@@ -18,7 +18,7 @@ class DockerContainer:
                  ports: Optional[Dict[int, int]]=None,
                  command: Optional[List[str]]=None):
         """
-        Initialize :py:class`DockerContainer`.
+        Initialize :py:class:`DockerContainer`.
 
         :param image: container :py:class:`DockerImage`
         :param autoremove: remove the container after it is stopped

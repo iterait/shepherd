@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='shepherd',
-      version='0.4.1',
+      version='0.5.0',
       description='Shepherd',
       long_description='Asynchronous worker',
       classifiers=[
@@ -14,8 +14,7 @@ setup(name='shepherd',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6'
+        'Programming Language :: Python :: 3.7'
       ],
       keywords='worker',
       url='https://github.com/iterait/shepherd',
@@ -26,13 +25,13 @@ setup(name='shepherd',
       include_package_data=True,
       zip_safe=False,
       setup_requires=['pytest-runner'],
-      tests_require=['pytest', 'pytest-mock', 'pytest-flask'],
-      install_requires=['click', 'flask', 'flask_cors', 'simplejson', 'pyzmq', 'gevent', 'PyYaml', 'requests', 'minio',
-                        'schematics', 'emloop', 'apistrap'],
+      tests_require=['pytest', 'pytest-mock', 'pytest-aiohttp'],
+      install_requires=['click', 'aiohttp', 'simplejson', 'pyzmq', 'gevent', 'PyYaml', 'requests', 'minio',
+                        'schematics', 'emloop', 'apistrap', 'aiohttp-cors', 'aiobotocore'],
       entry_points={
           'console_scripts': [
               'shepherd=shepherd.manage:run',
-              'shepherd-runner=shepherd.runner.runner_entry_point:run'
+              'shepherd-runner=shepherd.runner.runner_entry_point:main'
           ]
       }
 )

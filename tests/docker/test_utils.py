@@ -1,5 +1,5 @@
 import subprocess
-import gevent
+import time
 
 import pytest
 
@@ -28,7 +28,7 @@ def test_kill_blocking_container(image_valid):
 
     proc = subprocess.Popen(['docker', 'run', '--rm', '-p' '9999:9999', image_valid[0], 'sleep', '10'])
     for _ in range(20):
-        gevent.sleep(0.2)
+        time.sleep(0.2)
         if len(run_docker_command(['ps']).split('\n')) > 2:
             break
     else:
@@ -36,7 +36,7 @@ def test_kill_blocking_container(image_valid):
     assert proc.poll() is None
     kill_blocking_container(9999)
     for _ in range(20):
-        gevent.sleep(0.2)
+        time.sleep(0.2)
         if proc.poll() is not None:
             break
     else:

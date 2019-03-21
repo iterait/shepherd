@@ -1,6 +1,6 @@
 FROM iterait/emloop
 
-RUN pacman -Syu --noconfirm --needed python-pyzmq openssh python-numpy && paccache -rfk0
+RUN pacman -Syu --noconfirm --needed python-pyzmq openssh python-numpy
 
 ADD ssh /root/.ssh
 RUN chmod 600 -R /root/.ssh

@@ -1,5 +1,5 @@
-from apistrap import Swagger
+from apistrap.aiohttp import AioHTTPApistrap
 
-swagger = Swagger()
+swagger = AioHTTPApistrap()
 swagger.title = "Shepherd"
-
+swagger.use_default_error_handlers = False

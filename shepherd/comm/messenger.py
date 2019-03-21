@@ -1,6 +1,7 @@
 from typing import Union, Sequence
 
-import zmq.green as zmq
+import zmq
+import zmq.asyncio
 from zmq.error import ZMQBaseError
 
 from ..errors.comm import MessageError, UnexpectedMessageTypeError
@@ -13,7 +14,7 @@ class Messenger:
     """
 
     @staticmethod
-    def send(socket: zmq.Socket, message: Message, response_to: Optional[Message]=None) -> None:
+    async def send(socket: zmq.asyncio.Socket, message: Message, response_to: Optional[Message]=None) -> None:
         """
         Encode given message and send it to the given socket.
 
@@ -31,18 +32,20 @@ class Messenger:
         if response_to is not None and response_to.identity != '':
             serialized_message = [response_to.identity] + serialized_message
         try:
-            socket.send_multipart(serialized_message)
+            await socket.send_multipart(serialized_message)
         except ZMQBaseError as zmq_error:
             raise MessageError('Failed to send message') from zmq_error
 
     @staticmethod
-    def recv(socket: zmq.Socket, expected_message_types: Optional[Sequence[type]]=None) \
-            -> Union[InputMessage, DoneMessage, ErrorMessage]:
+    async def recv(socket: zmq.asyncio.Socket, expected_message_types: Optional[Sequence[type]]=None,
+                   noblock: bool=False) -> Union[InputMessage, DoneMessage, ErrorMessage]:
         """
+
         Receive, decode and return a message from the given socket.
 
         :param socket: socket to receive the message from
         :param expected_message_types: a sequence of expected message types (optional)
+        :param noblock: do not block on ``recv`` call and throw if there is no message
         :raise MessengerError: if receiving fails
         :raise UnknownMessageTypeError: if the received message is of unknown type
         :raise UnexpectedMessageTypeError: if the received message type is not expected
@@ -51,9 +54,9 @@ class Messenger:
         try:
             identity = ''
             if socket.type == zmq.ROUTER:
-                identity, message = socket.recv_multipart()
+                identity, message = await socket.recv_multipart(flags=zmq.NOBLOCK if noblock else 0)
             else:
-                message, = socket.recv_multipart()
+                message, = await socket.recv_multipart(flags=zmq.NOBLOCK if noblock else 0)
             message = decode_message(message)
             message.identity = identity
         except ZMQBaseError as zmq_error:

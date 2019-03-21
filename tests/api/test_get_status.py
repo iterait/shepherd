@@ -1,21 +1,26 @@
 import json
+import asyncio
+import pytest
 from io import BytesIO
-from datetime import datetime, timedelta
 
-from shepherd.constants import DONE_FILE
-
-
-def test_get_status(client):
-    response = client.get('/status')
-    assert response.status_code == 200
-    assert response.json['containers'] == {'bare_sheep': {'running': False,
-                                                          'request': None,
-                                                          'model': {'name': 'model_1',
-                                                                    'version': 'latest'}}}
+from shepherd.constants import JOB_STATUS_FILE
+from shepherd.api.models import JobStatus
 
 
-def test_ready(client, minio):
-    response = client.post('/start-job', content_type='application/json', data=json.dumps({
+async def test_get_status(aiohttp_client, app):
+    client = await aiohttp_client(app)
+    response = await client.get('/status')
+    assert response.status == 200
+    data = await response.json()
+    assert data['containers'] == {'bare_sheep': {'running': False,
+                                                 'request': None,
+                                                 'model': {'name': 'model_1',
+                                                           'version': 'latest'}}}
+
+
+async def test_ready(aiohttp_client, minio, app):
+    client = await aiohttp_client(app)
+    response = await client.post('/start-job', headers={'Content-Type': 'application/json'}, data=json.dumps({
         'job_id': 'uuid-ready',
         'sheep_id': 'bare_sheep',
         'model': {
@@ -24,21 +29,28 @@ def test_ready(client, minio):
         },
         'payload': 'Payload content'
     }))
-    assert response.status_code == 200
-    minio.put_object('uuid-ready', DONE_FILE, BytesIO(), 0)
-    timestamp = datetime.now()
+    assert response.status == 200
 
-    response = client.get('/jobs/uuid-ready/wait_ready')
-    assert response.status_code == 200
-    assert response.json == {'ready': True}
+    status = json.dumps({
+        "status": JobStatus.DONE,
+        "finished_at": '2000-06-10T12:15:30.005000',
+        "model": {
+            "name": "abcd",
+            "version": "abcd"
+        }
+    }).encode()
 
-    response = client.get('/jobs/uuid-ready/ready')
-    assert response.status_code == 200
-    assert response.json['ready'] is True
-    timestamp_diff = timestamp - datetime.strptime(response.json['finished_at'], '%Y-%m-%dT%H:%M:%S.%f')
-    assert timestamp_diff < timedelta(seconds=1)
+    minio.put_object('uuid-ready', JOB_STATUS_FILE, BytesIO(status), len(status))
 
-    response = client.post('/start-job', content_type='application/json', data=json.dumps({
+    response = await client.get('/jobs/uuid-ready/wait_ready')
+    assert response.status == 200
+    data = await response.json()
+    assert data["status"] == JobStatus.DONE
+
+
+async def test_not_ready(aiohttp_client, app):
+    client = await aiohttp_client(app)
+    response = await client.post('/start-job', headers={'Content-Type': 'application/json'}, data=json.dumps({
         'job_id': 'uuid-not-ready',
         'sheep_id': 'bare_sheep',
         'model': {
@@ -47,21 +59,16 @@ def test_ready(client, minio):
         },
         'payload': 'Payload content'
     }))
-    assert response.status_code == 200
+    assert response.status == 200
 
-    response = client.get('/jobs/uuid-not-ready/wait_ready')
-    assert response.status_code == 200
-    assert response.json == {'ready': False}
-
-    response = client.get('/jobs/uuid-not-ready/ready')
-    assert response.status_code == 200
-    assert response.json == {'ready': False,
-                             'finished_at': None}
+    with pytest.raises(asyncio.TimeoutError):
+        response = await asyncio.wait_for(client.get('/jobs/uuid-not-ready/wait_ready'), timeout=1)
+        assert response.status == 200
+        data = await response.json()
+        assert data['status'] == JobStatus.PROCESSING
 
 
-def test_ready_error(client):
-    response = client.get('/jobs/non-existent/wait_ready')
-    assert response.status_code == 400
-
-    response = client.get('/jobs/non-existent/ready')
-    assert response.status_code == 400
+async def test_ready_error(aiohttp_client, app):
+    client = await aiohttp_client(app)
+    response = await client.get('/jobs/non-existent/wait_ready')
+    assert response.status == 400
