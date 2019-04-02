@@ -77,7 +77,11 @@ workflows:
   version: 2
   test:
     jobs:
-      - test_archlinux
+      - test_archlinux:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
       - generate_documentation:
           filters:
             branches:
