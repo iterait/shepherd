@@ -13,7 +13,7 @@ from .requests import StartJobRequest
 from .responses import StartJobResponse, StatusResponse, JobStatusResponse, ErrorResponse, \
     JobErrorResponse, JobNotReadyResponse
 from ..errors.api import UnknownJobError
-from .swagger import swagger
+from .openapi import oapi
 
 
 async def check_job_dir_exists(storage: Storage, job_id: str) -> None:
@@ -39,9 +39,8 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
     api = web.RouteTableDef()
 
     @api.post('/start-job')
-    @swagger.autodoc()
-    @swagger.accepts(StartJobRequest)
-    @swagger.responds_with(StartJobResponse)
+    @oapi.accepts(StartJobRequest)
+    @oapi.responds_with(StartJobResponse)
     async def start_job(request: Request, start_job_request: StartJobRequest):
         """
         Start a new job.
@@ -63,8 +62,7 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
         return StartJobResponse()
 
     @api.get("/jobs/{job_id}/status")
-    @swagger.autodoc()
-    @swagger.responds_with(JobStatusResponse)
+    @oapi.responds_with(JobStatusResponse)
     async def get_job_status(request: Request):
         """
         Get status information for a job.
@@ -82,8 +80,7 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
         return status
 
     @api.get("/jobs/{job_id}/wait_ready")
-    @swagger.autodoc()
-    @swagger.responds_with(JobStatusResponse)
+    @oapi.responds_with(JobStatusResponse)
     async def wait_ready(request: Request):
         """
         Wait until the specified job is ready.
@@ -101,11 +98,10 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
 
     @api.get("/jobs/{job_id}/result/{result_file}")
     @api.get("/jobs/{job_id}/result")
-    @swagger.autodoc()
-    @swagger.responds_with(JobNotReadyResponse, code=202)
-    @swagger.responds_with(ErrorResponse, code=404)
-    @swagger.responds_with(JobErrorResponse, code=500)
-    @swagger.responds_with(FileResponse, code=200)
+    @oapi.responds_with(JobNotReadyResponse, code=202)
+    @oapi.responds_with(ErrorResponse, code=404)
+    @oapi.responds_with(JobErrorResponse, code=500)
+    @oapi.responds_with(FileResponse, code=200)
     async def get_job_result(request: Request):
         """
         Get the result of the specified job.
@@ -135,9 +131,8 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
 
     @api.get("/jobs/{job_id}/input/{input_file}")
     @api.get("/jobs/{job_id}/input")
-    @swagger.autodoc()
-    @swagger.responds_with(ErrorResponse, code=404)
-    @swagger.responds_with(FileResponse, code=200)
+    @oapi.responds_with(ErrorResponse, code=404)
+    @oapi.responds_with(FileResponse, code=200)
     async def get_job_input(request: Request):
         """
         Get the input of the specified job.
@@ -159,8 +154,7 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
         return FileResponse(input, mimetype=mime)
 
     @api.get('/status')
-    @swagger.autodoc()
-    @swagger.responds_with(StatusResponse)
+    @oapi.responds_with(StatusResponse)
     async def get_status(request: Request):
         """Get status of all the sheep available."""
         response = StatusResponse()
