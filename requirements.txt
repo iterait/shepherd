@@ -10,4 +10,4 @@ aiohttp>=3.5
 aiohttp-cors>=0.7
 aiobotocore>=0.10
 emloop>=0.2
-apistrap==0.3
+apistrap>=0.3
