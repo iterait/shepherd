@@ -3,7 +3,7 @@ import pytest
 import asyncio
 
 from shepherd.api import create_app
-from shepherd.api.swagger import oapi
+from shepherd.api.openapi import oapi
 from shepherd.api.models import SheepModel
 from shepherd.api.views import create_shepherd_routes
 from shepherd.shepherd import Shepherd
