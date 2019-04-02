@@ -1,13 +1,16 @@
+import apistrap
+
+
 __all__ = ['AppError', 'ClientActionError', 'UnknownSheepError', 'UnknownJobError', 'StorageError',
            'StorageInaccessibleError', 'NameConflictError']
 
 
-class AppError(Exception, BaseException):
-    """Base application exception, will result in 500 response."""
+AppError = apistrap.errors.ApiServerError
+"""Base application exception, will result in 500 response."""
 
 
-class ClientActionError(AppError):
-    """Base client-side error exception, will result in 400 response."""
+ClientActionError = apistrap.errors.ApiClientError
+"""Base client-side error exception, will result in 400 response."""
 
 
 class UnknownSheepError(ClientActionError):
