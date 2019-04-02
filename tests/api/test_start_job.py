@@ -75,8 +75,6 @@ async def test_start_job_no_payload(aiohttp_client, app):
     assert response.status == 400  # Neither the request nor minio contains a payload -> error
 
 
-@pytest.mark.skip
-# waiting for apistrap fix
 async def test_start_job_not_json(aiohttp_client, app):
     client = await aiohttp_client(app)
 
