@@ -4,6 +4,7 @@ import shutil
 import traceback
 import os.path as path
 from datetime import datetime
+from itertools import cycle
 from typing import Mapping, Generator, Tuple, Dict, Any, Optional
 
 import zmq
@@ -72,6 +73,7 @@ class Shepherd:
             self._poller.register(socket, zmq.POLLIN)
 
         self._storage_inaccessible_reported = False
+        self._sheep_ring = cycle(self._sheep.keys())
 
     async def start(self) -> None:
         """
@@ -132,7 +134,7 @@ class Shepherd:
         """
         logging.info('En-queueing job `%s` for sheep `%s`', job_id, sheep_id)
         if sheep_id is None:
-            sheep_id = next(iter(self._sheep.keys()))
+            sheep_id = next(self._sheep_ring)
             logging.info('Job `%s` is auto-assigned to sheep `%s`', job_id, sheep_id)
 
         status = JobStatusModel({"model": job_meta, "status": JobStatus.QUEUED, "enqueued_at": datetime.utcnow()})
