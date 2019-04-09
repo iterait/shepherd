@@ -1,30 +1,25 @@
-__all__ = ['AppError', 'ClientActionError', 'UnknownSheepError', 'UnknownJobError', 'StorageError',
+from apistrap.errors import ApiClientError, ApiServerError
+
+
+__all__ = ['ApiServerError', 'ApiClientError', 'UnknownSheepError', 'UnknownJobError', 'StorageError',
            'StorageInaccessibleError', 'NameConflictError']
 
 
-class AppError(Exception, BaseException):
-    """Base application exception, will result in 500 response."""
-
-
-class ClientActionError(AppError):
-    """Base client-side error exception, will result in 400 response."""
-
-
-class UnknownSheepError(ClientActionError):
+class UnknownSheepError(ApiClientError):
     """Exception raised when application attempts to use a sheep with an unknown id."""
 
 
-class UnknownJobError(ClientActionError):
+class UnknownJobError(ApiClientError):
     """Exception raised when a client asks about a job that is not assigned to this shepherd."""
 
 
-class StorageError(AppError):
+class StorageError(ApiServerError):
     """Exception raised when application encounters some issue with the minio storage."""
 
 
-class StorageInaccessibleError(AppError):
+class StorageInaccessibleError(ApiServerError):
     """Exception raised when the remote storage is not accessible at the moment"""
 
 
-class NameConflictError(ClientActionError):
+class NameConflictError(ApiClientError):
     """Exception raised when a client chooses a job ID that was already used"""
