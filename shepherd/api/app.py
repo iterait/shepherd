@@ -3,10 +3,11 @@ import logging
 from functools import partial
 from aiohttp import web
 from aiohttp.web_exceptions import HTTPError
+from apistrap.errors import InvalidFieldsError
 
 from .openapi import oapi
 from .responses import ErrorResponse
-from ..errors.api import ClientActionError, AppError, NameConflictError, StorageInaccessibleError, UnknownJobError, \
+from ..errors.api import ApiClientError, ApiServerError, NameConflictError, StorageInaccessibleError, UnknownJobError, \
     UnknownSheepError
 
 
@@ -21,9 +22,9 @@ def internal_error_handler(error: Exception):
     return (ErrorResponse({"message": 'Internal server error ({})'.format(str(error))})), 500
 
 
-def error_handler(http_code, error: AppError):
+def error_handler(http_code, error: ApiServerError):
     """
-    Handles errors derived from AppError
+    Handles errors derived from apistrap ApiServerError
 
     :param http_code: the HTTP status code to be returned when the error happens
     :param error: an exception object
@@ -54,12 +55,13 @@ def create_app(debug=None) -> web.Application:
     app = web.Application(debug=debug if debug is not None else os.getenv('DEBUG', False), client_max_size=10*1024**3)
 
     oapi.error_middleware.add_handler(NameConflictError, partial(error_handler, 409))
-    oapi.error_middleware.add_handler(ClientActionError, partial(error_handler, 400))
+    oapi.error_middleware.add_handler(ApiClientError, partial(error_handler, 400))
     oapi.error_middleware.add_handler(UnknownJobError, partial(error_handler, 404))
     oapi.error_middleware.add_handler(UnknownSheepError, partial(error_handler, 404))
+    oapi.error_middleware.add_handler(InvalidFieldsError, partial(error_handler, 400))
     oapi.error_middleware.add_handler(StorageInaccessibleError, partial(error_handler, 503))
     oapi.error_middleware.add_handler(HTTPError, http_error_handler)
-    oapi.error_middleware.add_handler(AppError, partial(error_handler, 500))
+    oapi.error_middleware.add_handler(ApiServerError, partial(error_handler, 500))
     oapi.error_middleware.add_handler(Exception, internal_error_handler)
 
     oapi.init_app(app)
