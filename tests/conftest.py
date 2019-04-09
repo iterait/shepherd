@@ -4,7 +4,6 @@ import os
 import random
 import string
 from typing import Tuple
-import time
 
 from minio import Minio
 
@@ -43,7 +42,6 @@ def minio_connection(storage_config: StorageConfig, tmpdir_factory):
     env['MINIO_ACCESS_KEY'] = storage_config.access_key
     env['MINIO_SECRET_KEY'] = storage_config.secret_key
     proc = subprocess.Popen(['minio', 'server', '--address', storage_config.schemeless_url, data_dir], env=env)
-    time.sleep(3)  # give some time to minio to start correctly
     yield Minio(
         storage_config.schemeless_url,
         access_key=storage_config.access_key,
