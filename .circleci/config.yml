@@ -22,7 +22,8 @@ references:
         mv /tmp/docker/* /usr/bin
         pacman --noconfirm --needed -Syu minio
         mkdir examples/docker/emloop_example/ssh
-        pip3 install -e .
+        pip install -e .
+        pip install pytest
 
   add_rw_key: &add_rw_key
     add_ssh_keys:
@@ -36,7 +37,7 @@ references:
         useradd -m -s /bin/bash test
         passwd -d test
         chown -R test /root
-        sudo -u test python setup.py test
+        sudo -u test pytest -v
 
   doc: &doc
     run:
