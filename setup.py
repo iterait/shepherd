@@ -44,7 +44,7 @@ setup(name='shepherd',
         'aiohttp-cors>=0.7',
         'aiobotocore>=0.10',
         'emloop>=0.2',
-        'apistrap>=0.3',
+        'apistrap>=0.4',
       ],
       extras_require={
           'docs': ['sphinx==1.8.5', 'autoapi==1.3.1', 'sphinx-argparse',
