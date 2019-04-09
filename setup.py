@@ -1,5 +1,14 @@
 from setuptools import setup, find_packages
 
+tests_require = [
+    'pytest',
+    'pytest-mock',
+    'pytest-forked',
+    'pytest-aiohttp',
+    'minio>=4.0',
+    'molotov',
+]
+
 setup(name='shepherd',
       version='0.5.1',
       description='Shepherd',
@@ -25,14 +34,7 @@ setup(name='shepherd',
       include_package_data=True,
       zip_safe=False,
       setup_requires=['pytest-runner'],
-      tests_require=[
-        'pytest',
-        'pytest-mock',
-        'pytest-forked',
-        'pytest-aiohttp',
-        'minio>=4.0',
-        'molotov',
-      ],
+      tests_require=tests_require,
       install_requires=[
         'click>=7.0',
         'simplejson>=3.16',
@@ -49,6 +51,7 @@ setup(name='shepherd',
       extras_require={
           'docs': ['sphinx==1.8.5', 'autoapi==1.3.1', 'sphinx-argparse',
                    'sphinx-autodoc-typehints', 'sphinx-bootstrap-theme'],
+          'tests': tests_require,
       },
       entry_points={
           'console_scripts': [

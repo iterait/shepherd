@@ -23,7 +23,7 @@ references:
         pacman --noconfirm --needed -Syu minio
         mkdir examples/docker/emloop_example/ssh
         pip install -e .
-        pip install pytest pytest-mock pytest-forked pytest-aiohttp minio molotov
+        pip install -e '.[tests]'
 
   add_rw_key: &add_rw_key
     add_ssh_keys:
