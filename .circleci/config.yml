@@ -10,7 +10,6 @@ references:
         apt-get update -qy
         apt-get install -y git python3-dev python3-pip curl
         pip3 install -e .
-        pip3 install -e '.[tests]'
 
   install: &install
     run:
@@ -24,7 +23,6 @@ references:
         pacman --noconfirm --needed -Syu minio
         mkdir examples/docker/emloop_example/ssh
         pip3 install -e .
-        pip3 install -e '.[tests]'
 
   add_rw_key: &add_rw_key
     add_ssh_keys:
@@ -38,7 +36,7 @@ references:
         useradd -m -s /bin/bash test
         passwd -d test
         chown -R test /root
-        sudo -u test pytest -v
+        sudo -u test python setup.py test
 
   doc: &doc
     run:
