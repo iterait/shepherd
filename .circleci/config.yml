@@ -30,6 +30,7 @@ references:
       fingerprints:
         - "bd:18:69:44:c4:97:94:f2:03:ba:db:dd:29:2e:cf:f2"
 
+  # non-root user is added so that file-related permission denied can happen and be properly tested
   test: &test
     run:
       name: Run tests.
