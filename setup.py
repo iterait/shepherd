@@ -10,7 +10,7 @@ tests_require = [
 ]
 
 setup(name='shepherd',
-      version='0.5.1',
+      version='0.5.2',
       description='Shepherd',
       long_description='Asynchronous worker',
       classifiers=[
