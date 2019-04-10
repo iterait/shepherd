@@ -3,7 +3,7 @@ import pytest
 import asyncio
 
 from shepherd.api import create_app
-from shepherd.api.swagger import swagger
+from shepherd.api.openapi import oapi
 from shepherd.api.models import SheepModel
 from shepherd.api.views import create_shepherd_routes
 from shepherd.shepherd import Shepherd
@@ -39,6 +39,6 @@ def mock_shepherd():
 def app(storage_config, mock_shepherd, minio):
     app = create_app(debug=True)
     app.add_routes(create_shepherd_routes(mock_shepherd, MinioStorage(storage_config)))
-    swagger.init_app(app)
+    oapi.init_app(app)
 
     yield app

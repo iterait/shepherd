@@ -2,6 +2,7 @@ import json
 from io import BytesIO
 from typing import Union
 
+import pytest
 from minio import Minio
 from unittest.mock import Mock
 
@@ -72,6 +73,26 @@ async def test_start_job_no_payload(aiohttp_client, app):
     }))
 
     assert response.status == 400  # Neither the request nor minio contains a payload -> error
+
+
+async def test_start_job_not_json(aiohttp_client, app):
+    client = await aiohttp_client(app)
+
+    response = await client.post("/start-job", headers={"Content-Type": "application/json"}, data='not-json')
+
+    assert response.status == 400
+
+
+async def test_start_job_missing_model(aiohttp_client, app):
+    client = await aiohttp_client(app)
+
+    response = await client.post("/start-job", headers={"Content-Type": "application/json"}, data=json.dumps({
+        "job_id": "uuid-1",
+        "sheep_id": "sheep_1",
+        "payload": "Payload content"
+    }))
+
+    assert response.status == 400
 
 
 async def test_start_job_with_payload_in_minio(minio: Minio, aiohttp_client, app, mock_shepherd: Union[Mock, Shepherd]):

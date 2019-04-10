@@ -89,7 +89,7 @@ def load_shepherd_config(config_stream) -> ShepherdConfig:
     ruamel.yaml.add_constructor('!env', env_constructor)
 
     # construct config object
-    config_object = ruamel.yaml.load(config_stream)
+    config_object = ruamel.yaml.load(config_stream, Loader=ruamel.yaml.Loader)
 
     config = ShepherdConfig(config_object)
     config.validate()

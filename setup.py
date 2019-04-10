@@ -1,7 +1,15 @@
 from setuptools import setup, find_packages
 
+tests_require = [
+    'pytest',
+    'pytest-mock',
+    'pytest-aiohttp',
+    'minio>=4.0',
+    'molotov',
+]
+
 setup(name='shepherd',
-      version='0.5.1',
+      version='0.5.2',
       description='Shepherd',
       long_description='Asynchronous worker',
       classifiers=[
@@ -25,9 +33,25 @@ setup(name='shepherd',
       include_package_data=True,
       zip_safe=False,
       setup_requires=['pytest-runner'],
-      tests_require=['pytest', 'pytest-mock', 'pytest-aiohttp'],
-      install_requires=['click', 'aiohttp', 'simplejson', 'pyzmq', 'gevent', 'PyYaml', 'requests', 'minio',
-                        'schematics', 'emloop', 'apistrap', 'aiohttp-cors', 'aiobotocore'],
+      tests_require=tests_require,
+      install_requires=[
+        'click>=7.0',
+        'simplejson>=3.16',
+        'pyzmq>=18.0',
+        'ruamel.yaml>=0.15',
+        'requests>=2.21',
+        'schematics>=2.1',
+        'aiohttp>=3.5',
+        'aiohttp-cors>=0.7',
+        'aiobotocore>=0.10',
+        'emloop>=0.2',
+        'apistrap>=0.4',
+      ],
+      extras_require={
+          'docs': ['sphinx==1.8.5', 'autoapi==1.3.1', 'sphinx-argparse',
+                   'sphinx-autodoc-typehints', 'sphinx-bootstrap-theme'],
+          'tests': tests_require,
+      },
       entry_points={
           'console_scripts': [
               'shepherd=shepherd.manage:run',
