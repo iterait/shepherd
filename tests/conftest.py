@@ -1,14 +1,11 @@
-import asyncio
-
-import aiobotocore
-import logging
 import pytest
-from minio import Minio
 import subprocess
 import os
 import random
 import string
 from typing import Tuple
+
+from minio import Minio
 
 from shepherd.config import RegistryConfig, StorageConfig
 
