@@ -3,7 +3,6 @@ from setuptools import setup, find_packages
 tests_require = [
     'pytest',
     'pytest-mock',
-    'pytest-forked',
     'pytest-aiohttp',
     'minio>=4.0',
     'molotov',
