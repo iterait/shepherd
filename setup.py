@@ -48,7 +48,7 @@ setup(name='shepherd',
         'apistrap>=0.4',
       ],
       extras_require={
-          'docs': ['sphinx==1.8.5', 'autoapi==1.3.1', 'sphinx-argparse',
+          'docs': ['sphinx>=2.0', 'autoapi>=1.4', 'sphinx-argparse',
                    'sphinx-autodoc-typehints', 'sphinx-bootstrap-theme'],
           'tests': tests_require,
       },
