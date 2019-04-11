@@ -1,0 +1,31 @@
+========================
+``shepherd.errors.comm``
+========================
+
+.. automodule:: shepherd.errors.comm
+
+
+.. currentmodule:: shepherd.errors.comm
+
+
+Exceptions
+==========
+
+- :py:exc:`MessageError`:
+  Inappropriate argument value (of correct type).
+
+- :py:exc:`UnexpectedMessageTypeError`:
+  Inappropriate argument value (of correct type).
+
+
+.. autoexception:: MessageError
+
+   .. rubric:: Inheritance
+   .. inheritance-diagram:: MessageError
+      :parts: 1
+
+.. autoexception:: UnexpectedMessageTypeError
+
+   .. rubric:: Inheritance
+   .. inheritance-diagram:: UnexpectedMessageTypeError
+      :parts: 1

@@ -1,0 +1,47 @@
+===================
+``shepherd.docker``
+===================
+
+.. automodule:: shepherd.docker
+
+
+.. currentmodule:: shepherd.docker
+
+
+Classes
+=======
+
+- :py:class:`DockerContainer`:
+  Helper class for running and managing docker containers.
+
+- :py:class:`DockerImage`:
+  Helper class for running and managing docker images.
+
+
+
+.. autoclass:: DockerContainer
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: DockerContainer
+      :parts: 1
+
+   |
+
+
+
+.. autoclass:: DockerImage
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: DockerImage
+      :parts: 1
+
+   |
+

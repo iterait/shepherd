@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>shepherd.errors.docker &#8212; shepherd 0.5.2 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/highlight.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/swagger-ui.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="shepherd.errors.sheep" href="shepherd.errors.sheep.html" />
+    <link rel="prev" title="shepherd.errors.comm" href="shepherd.errors.comm.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-worker navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          shepherd</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../tutorial.html">Introduction</a></li>
+                <li><a href="../bare_sheep.html">Bare Sheep</a></li>
+                <li><a href="../docker_sheep.html">Docker Sheep</a></li>
+                <li><a href="../runners.html">Runners</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="index.html">Package Reference</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Pages <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<div class="side_nav">
+    <a href="shepherd.errors.comm.html" title="Previous Chapter: shepherd.errors.comm"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; shepherd.errors.comm</span>
+    </a>
+    </div>
+<div class="side_nav">
+    <a href="shepherd.errors.sheep.html" title="Next Chapter: shepherd.errors.sheep"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">shepherd.errors.sheep &raquo;</span>
+    </a>
+    </div><ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">shepherd.errors.docker</span></code></a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+</ul>
+</li>
+</ul>
+
+<form action="../search.html" method="get" class="searchbox">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form><div class="side_nav">
+	<h4>Related projects</h4>
+</div>
+<ul class="nav nav-list">
+	<li><a href="https://emloop.org">emloop</a></li>
+	<li><a href="https://tensorflow.emloop.org">emloop-tensorflow</a></li>
+	<li><a href="https://hipipe.org">hipipe (c++)</a></li>
+</ul>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="module-shepherd.errors.docker">
+<span id="shepherd-errors-docker"></span><h1><code class="docutils literal notranslate"><span class="pre">shepherd.errors.docker</span></code><a class="headerlink" href="#module-shepherd.errors.docker" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="#shepherd.errors.docker.DockerError" title="shepherd.errors.docker.DockerError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DockerError</span></code></a>:
+Error in execution of a docker command.</p></li>
+</ul>
+<dl class="class">
+<dt id="shepherd.errors.docker.DockerError">
+<em class="property">class </em><code class="descclassname">shepherd.errors.docker.</code><code class="descname">DockerError</code><span class="sig-paren">(</span><em>msg</em>, <em>rc=None</em>, <em>output=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/errors/docker.html#DockerError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.errors.docker.DockerError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="shepherd.errors.sheep.html#shepherd.errors.sheep.SheepError" title="shepherd.errors.sheep.SheepError"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.errors.sheep.SheepError</span></code></a></p>
+<p>Error in execution of a docker command.</p>
+<div class="graphviz"><img src="../_images/inheritance-86c4c206da6a1e29c6d9b84c6247ecfd3d7973b2.png" alt="Inheritance diagram of DockerError" usemap="#inheritance43d376457b" class="inheritance graphviz" /></div>
+<map id="inheritance43d376457b" name="inheritance43d376457b">
+<area shape="rect" id="node1" href="#shepherd.errors.docker.DockerError" target="_top" title="Error in execution of a docker command." alt="" coords="147,5,245,31"/>
+<area shape="rect" id="node2" href="shepherd.errors.sheep.html#shepherd.errors.sheep.SheepError" target="_top" title="SheepError" alt="" coords="5,5,99,31"/>
+</map><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<dl class="method">
+<dt id="shepherd.errors.docker.DockerError.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>msg</em>, <em>rc=None</em>, <em>output=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/errors/docker.html#DockerError.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.errors.docker.DockerError.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize new <a class="reference internal" href="#shepherd.errors.docker.DockerError" title="shepherd.errors.docker.DockerError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DockerError</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – error message</p></li>
+<li><p><strong>rc</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]) – command return code</p></li>
+<li><p><strong>output</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – command output</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Iterait a.s..<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+    </p>
+  </div>
+</footer>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-108491604-2"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-108491604-2');
+</script>
+
+
+
+  </body>
+</html>

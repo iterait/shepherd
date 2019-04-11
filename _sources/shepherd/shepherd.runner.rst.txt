@@ -1,0 +1,76 @@
+===================
+``shepherd.runner``
+===================
+
+.. automodule:: shepherd.runner
+
+
+
+Submodules
+==========
+
+.. toctree::
+   :titlesonly:
+
+   shepherd.runner.runner_entry_point
+
+.. currentmodule:: shepherd.runner
+
+
+Functions
+=========
+
+- :py:func:`to_json_serializable`:
+  Make an object containing numpy arrays/scalars JSON serializable.
+
+- :py:func:`run`:
+  Get the specified data stream from the given dataset, apply the given model on its batches and return the results.
+
+- :py:func:`n_available_gpus`:
+  Return the number of NVIDIA GPU devices available to this process.
+
+
+.. autofunction:: to_json_serializable
+
+.. autofunction:: run
+
+.. autofunction:: n_available_gpus
+
+
+Classes
+=======
+
+- :py:class:`BaseRunner`:
+  Base **emloop** runner class suitable for inheritance when implementing a runner with custom behavior.
+
+- :py:class:`JSONRunner`:
+  Fully functional emloop runner which loads a JSON from ``input_path``/``input.json``, passes the loaded object
+
+
+
+.. autoclass:: BaseRunner
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: BaseRunner
+      :parts: 1
+
+   |
+
+
+
+.. autoclass:: JSONRunner
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: JSONRunner
+      :parts: 1
+
+   |
+

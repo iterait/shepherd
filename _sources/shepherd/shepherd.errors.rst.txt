@@ -1,0 +1,20 @@
+===================
+``shepherd.errors``
+===================
+
+.. automodule:: shepherd.errors
+
+
+
+Submodules
+==========
+
+.. toctree::
+   :titlesonly:
+
+   shepherd.errors.api
+   shepherd.errors.comm
+   shepherd.errors.docker
+   shepherd.errors.sheep
+
+.. currentmodule:: shepherd.errors

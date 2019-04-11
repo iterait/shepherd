@@ -1,0 +1,64 @@
+==================
+``shepherd.sheep``
+==================
+
+.. automodule:: shepherd.sheep
+
+
+.. currentmodule:: shepherd.sheep
+
+
+Classes
+=======
+
+- :py:class:`BaseSheep`:
+  A base class for container adapters - classes that allow launching different kinds of containers.
+
+- :py:class:`DockerSheep`:
+  Sheep running its jobs in docker containers.
+
+- :py:class:`BareSheep`:
+  An adapter that running models on bare metal with ``shepherd-runner``.
+
+
+
+.. autoclass:: BaseSheep
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: BaseSheep
+      :parts: 1
+
+   |
+
+
+
+.. autoclass:: DockerSheep
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: DockerSheep
+      :parts: 1
+
+   |
+
+
+
+.. autoclass:: BareSheep
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: BareSheep
+      :parts: 1
+
+   |
+

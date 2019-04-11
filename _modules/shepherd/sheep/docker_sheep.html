@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>shepherd.sheep.docker_sheep &#8212; shepherd 0.5.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/highlight.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/swagger-ui.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-worker navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          shepherd</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../tutorial.html">Introduction</a></li>
+                <li><a href="../../../bare_sheep.html">Bare Sheep</a></li>
+                <li><a href="../../../docker_sheep.html">Docker Sheep</a></li>
+                <li><a href="../../../runners.html">Runners</a></li>
+                <li><a href="../../../api.html">API</a></li>
+                <li><a href="../../../shepherd/index.html">Package Reference</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Pages <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<form action="../../../search.html" method="get" class="searchbox">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form><div class="side_nav">
+	<h4>Related projects</h4>
+</div>
+<ul class="nav nav-list">
+	<li><a href="https://emloop.org">emloop</a></li>
+	<li><a href="https://tensorflow.emloop.org">emloop-tensorflow</a></li>
+	<li><a href="https://hipipe.org">hipipe (c++)</a></li>
+</ul>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <h1>Source code for shepherd.sheep.docker_sheep</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">schematics.types</span> <span class="k">import</span> <span class="n">BooleanType</span>
+
+<span class="kn">from</span> <span class="nn">.base_sheep</span> <span class="k">import</span> <span class="n">BaseSheep</span>
+<span class="kn">from</span> <span class="nn">..docker</span> <span class="k">import</span> <span class="n">DockerContainer</span><span class="p">,</span> <span class="n">DockerImage</span>
+<span class="kn">from</span> <span class="nn">..config</span> <span class="k">import</span> <span class="n">RegistryConfig</span>
+<span class="kn">from</span> <span class="nn">..errors.docker</span> <span class="k">import</span> <span class="n">DockerError</span>
+<span class="kn">from</span> <span class="nn">..errors.sheep</span> <span class="k">import</span> <span class="n">SheepConfigurationError</span>
+
+
+<span class="k">def</span> <span class="nf">extract_gpu_number</span><span class="p">(</span><span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract GPU number from a Linux device name</span>
+<span class="sd">    &gt;&gt;&gt; extract_gpu_number(&quot;/dev/nvidia1&quot;)</span>
+<span class="sd">    &#39;1&#39;</span>
+<span class="sd">    &gt;&gt;&gt; extract_gpu_number(&quot;/dev/sda2&quot;) is None</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; extract_gpu_number(&quot;/dev/nvidiactl&quot;) is None</span>
+<span class="sd">    True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/dev/nvidia([0-9]+)$&#39;</span><span class="p">,</span> <span class="n">device_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="DockerSheep"><a class="viewcode-back" href="../../../shepherd/shepherd.sheep.html#shepherd.sheep.DockerSheep">[docs]</a><span class="k">class</span> <span class="nc">DockerSheep</span><span class="p">(</span><span class="n">BaseSheep</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sheep running its jobs in docker containers.</span>
+<span class="sd">    To enable GPU computation, specify the gpu devices in the configuration and sheep will attempt to</span>
+<span class="sd">    use ``nvidia docker 2``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_CONTAINER_POINT</span> <span class="o">=</span> <span class="mi">9999</span>
+    <span class="sd">&quot;&quot;&quot;Container port to bind the socket to.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DockerSheep.Config"><a class="viewcode-back" href="../../../shepherd/shepherd.sheep.html#shepherd.sheep.DockerSheep.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">BaseSheep</span><span class="o">.</span><span class="n">Config</span><span class="p">):</span>
+        <span class="n">autoremove_containers</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">BooleanType</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DockerSheep.__init__"><a class="viewcode-back" href="../../../shepherd/shepherd.sheep.html#shepherd.sheep.DockerSheep.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">registry_config</span><span class="p">:</span> <span class="n">RegistryConfig</span><span class="p">,</span>
+                 <span class="n">command</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create new :py:class:`DockerSheep`.</span>
+
+<span class="sd">        :param config: docker sheep configuration</span>
+<span class="sd">        :param registry_config: docker registry configuration</span>
+<span class="sd">        :param command: optional docker container run command</span>
+<span class="sd">        :param kwargs: :py:class:`BaseSheep`&#39;s kwargs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_registry_config</span> <span class="o">=</span> <span class="n">registry_config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_container</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DockerContainer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_image</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DockerImage</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">command</span></div>
+
+<div class="viewcode-block" id="DockerSheep._load_model"><a class="viewcode-back" href="../../../shepherd/shepherd.sheep.html#shepherd.sheep.DockerSheep._load_model">[docs]</a>    <span class="k">def</span> <span class="nf">_load_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pull docker image of the given name and version from the previously configured docker registry.</span>
+
+<span class="sd">        :param model_name: docker image name</span>
+<span class="sd">        :param model_version: docker image version</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_load_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_version</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_image</span> <span class="o">=</span> <span class="n">DockerImage</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registry_config</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_image</span><span class="o">.</span><span class="n">pull</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">DockerError</span> <span class="k">as</span> <span class="n">de</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SheepConfigurationError</span><span class="p">(</span><span class="s1">&#39;Specified model name `</span><span class="si">{}</span><span class="s1">` (version `</span><span class="si">{}</span><span class="s1">`) cannot be loaded.&#39;</span>
+                                          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_version</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">de</span></div>
+
+<div class="viewcode-block" id="DockerSheep.start"><a class="viewcode-back" href="../../../shepherd/shepherd.sheep.html#shepherd.sheep.DockerSheep.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run a docker command starting the docker runner.</span>
+
+<span class="sd">        :param model_name: docker image name</span>
+<span class="sd">        :param model_version: docker image version</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_version</span><span class="p">)</span>
+
+        <span class="c1"># prepare nvidia docker 2 env/runtime arguments (-e/--runtime)</span>
+        <span class="n">visible_gpu_numbers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="n">extract_gpu_number</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">devices</span><span class="p">)))</span>
+        <span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;NVIDIA_VISIBLE_DEVICES&quot;</span><span class="p">:</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">visible_gpu_numbers</span><span class="p">)}</span>
+        <span class="n">runtime</span> <span class="o">=</span> <span class="s2">&quot;nvidia&quot;</span> <span class="k">if</span> <span class="n">visible_gpu_numbers</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="c1"># create and start :py:class:`DockerContainer`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_container</span> <span class="o">=</span> <span class="n">DockerContainer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">autoremove_containers</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span> <span class="n">runtime</span><span class="o">=</span><span class="n">runtime</span><span class="p">,</span>
+                                          <span class="n">bind_mounts</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sheep_data_root</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sheep_data_root</span><span class="p">},</span>
+                                          <span class="n">ports</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">port</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_CONTAINER_POINT</span><span class="p">},</span> <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_container</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">DockerError</span> <span class="k">as</span> <span class="n">de</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_container</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">raise</span> <span class="n">SheepConfigurationError</span><span class="p">(</span><span class="s1">&#39;Specified model name `</span><span class="si">{}</span><span class="s1">` (version `</span><span class="si">{}</span><span class="s1">`) cannot be started.&#39;</span>
+                                          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_version</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">de</span></div>
+
+<div class="viewcode-block" id="DockerSheep.slaughter"><a class="viewcode-back" href="../../../shepherd/shepherd.sheep.html#shepherd.sheep.DockerSheep.slaughter">[docs]</a>    <span class="k">def</span> <span class="nf">slaughter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Kill the underlying docker container.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">slaughter</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_container</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_container</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_container</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check if the underlying docker container is running.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_container</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_container</span><span class="o">.</span><span class="n">running</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Iterait a.s..<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+    </p>
+  </div>
+</footer>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-108491604-2"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-108491604-2');
+</script>
+
+
+
+  </body>
+</html>

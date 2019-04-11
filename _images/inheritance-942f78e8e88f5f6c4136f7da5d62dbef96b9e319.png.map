@@ -1,0 +1,4 @@
+<map id="inheritance4088cad43d" name="inheritance4088cad43d">
+<area shape="rect" id="node1" title="Base **emloop** runner class suitable for inheritance when implementing a runner with custom behavior." alt="" coords="5,5,104,31"/>
+<area shape="rect" id="node2" title="Fully functional emloop runner which loads a JSON from ``input_path``/``input.json``, passes the loaded object" alt="" coords="152,5,251,31"/>
+</map>

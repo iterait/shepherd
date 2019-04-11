@@ -2,8 +2,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Introduction &#8212; shepherd 0.5.2 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -120,10 +119,10 @@
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p>Before diving into <strong>shepherd</strong>, please make you have installed and configured</p>
 <ul class="simple">
-<li><strong>emloop</strong> framework</li>
-<li><strong>docker</strong> (and nvidia docker 2 if you plan on accelerating your computations with GPUs)</li>
-<li><strong>docker registry</strong> and <strong>docker-compose</strong></li>
-<li><strong>minio</strong> cloud storage</li>
+<li><p><strong>emloop</strong> framework</p></li>
+<li><p><strong>docker</strong> (and nvidia docker 2 if you plan on accelerating your computations with GPUs)</p></li>
+<li><p><strong>docker registry</strong> and <strong>docker-compose</strong></p></li>
+<li><p><strong>minio</strong> cloud storage</p></li>
 </ul>
 <p>Note that with docker installed, most of the other dependencies can be run within it.</p>
 <p>We provide a docker-compose command to setup local minio storage and docker registry</p>
@@ -155,10 +154,10 @@ shepherd -c examples/configs/shepherd-bare.yml  <span class="c1"># start up shep
 An example of a job may be an inference of neural network which may take a while so better do it asynchronously, right?</p>
 <p>In essence, a job computation consists of following steps</p>
 <ol class="arabic simple">
-<li>Prepare job inputs in minio bucket <code class="docutils literal notranslate"><span class="pre">&lt;job_id&gt;/inputs/</span></code></li>
-<li>Call <strong>shepherd</strong> <code class="docutils literal notranslate"><span class="pre">/start-job</span></code> end-point</li>
-<li>Wait for the job to be computed</li>
-<li>Find your results in minio bucket <code class="docutils literal notranslate"><span class="pre">&lt;job_id&gt;/outputs/</span></code></li>
+<li><p>Prepare job inputs in minio bucket <code class="docutils literal notranslate"><span class="pre">&lt;job_id&gt;/inputs/</span></code></p></li>
+<li><p>Call <strong>shepherd</strong> <code class="docutils literal notranslate"><span class="pre">/start-job</span></code> end-point</p></li>
+<li><p>Wait for the job to be computed</p></li>
+<li><p>Find your results in minio bucket <code class="docutils literal notranslate"><span class="pre">&lt;job_id&gt;/outputs/</span></code></p></li>
 </ol>
 <p><strong>Shepherd</strong> naturally tells you if your job is ready or not. Just ask him at <code class="docutils literal notranslate"><span class="pre">/jobs/&lt;job_id&gt;/ready</span></code> end-point.</p>
 <p>The initial <code class="docutils literal notranslate"><span class="pre">/start-job</span></code> end-point type is POST and a JSON similar to the following one is expected:</p>
@@ -237,7 +236,7 @@ You can find more on how to configure them in their respective sections.</p>
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>
 </footer>

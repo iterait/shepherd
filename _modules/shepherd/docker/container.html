@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>shepherd.docker.container &#8212; shepherd 0.5.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/highlight.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/swagger-ui.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-worker navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          shepherd</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../tutorial.html">Introduction</a></li>
+                <li><a href="../../../bare_sheep.html">Bare Sheep</a></li>
+                <li><a href="../../../docker_sheep.html">Docker Sheep</a></li>
+                <li><a href="../../../runners.html">Runners</a></li>
+                <li><a href="../../../api.html">API</a></li>
+                <li><a href="../../../shepherd/index.html">Package Reference</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Pages <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<form action="../../../search.html" method="get" class="searchbox">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form><div class="side_nav">
+	<h4>Related projects</h4>
+</div>
+<ul class="nav nav-list">
+	<li><a href="https://emloop.org">emloop</a></li>
+	<li><a href="https://tensorflow.emloop.org">emloop-tensorflow</a></li>
+	<li><a href="https://hipipe.org">hipipe (c++)</a></li>
+</ul>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <h1>Source code for shepherd.docker.container</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">.image</span> <span class="k">import</span> <span class="n">DockerImage</span>
+<span class="kn">from</span> <span class="nn">..errors.docker</span> <span class="k">import</span> <span class="n">DockerError</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">run_docker_command</span><span class="p">,</span> <span class="n">kill_blocking_container</span>
+
+
+<div class="viewcode-block" id="DockerContainer"><a class="viewcode-back" href="../../../shepherd/shepherd.docker.html#shepherd.docker.DockerContainer">[docs]</a><span class="k">class</span> <span class="nc">DockerContainer</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Helper class for running and managing docker containers.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DockerContainer.__init__"><a class="viewcode-back" href="../../../shepherd/shepherd.docker.html#shepherd.docker.DockerContainer.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">image</span><span class="p">:</span> <span class="n">DockerImage</span><span class="p">,</span>
+                 <span class="n">autoremove</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">runtime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bind_mounts</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">ports</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">command</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize :py:class:`DockerContainer`.</span>
+
+<span class="sd">        :param image: container :py:class:`DockerImage`</span>
+<span class="sd">        :param autoremove: remove the container after it is stopped</span>
+<span class="sd">        :param runtime: docker runtime flag (e.g. ``nvidia``)</span>
+<span class="sd">        :param env: additional environment variables</span>
+<span class="sd">        :param bind_mounts: optional host-&gt;container bind mounts mapping</span>
+<span class="sd">        :param ports: optional host-&gt;container port mapping</span>
+<span class="sd">        :param command: optional docker container run command</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_image</span> <span class="o">=</span> <span class="n">image</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_autoremove</span> <span class="o">=</span> <span class="n">autoremove</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_container_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runtime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">runtime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="n">env</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mounts</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="n">bind_mounts</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ports</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="n">ports</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">command</span></div>
+
+<div class="viewcode-block" id="DockerContainer._build_run_command"><a class="viewcode-back" href="../../../shepherd/shepherd.docker.html#shepherd.docker.DockerContainer._build_run_command">[docs]</a>    <span class="k">def</span> <span class="nf">_build_run_command</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build docker container run command.</span>
+
+<span class="sd">        :return: built command</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Run given image in detached mode</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;-d&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Add configured port mappings</span>
+        <span class="k">for</span> <span class="n">host_port</span><span class="p">,</span> <span class="n">container_port</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ports</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">command</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="s1">&#39;0.0.0.0:</span><span class="si">{host}</span><span class="s1">:</span><span class="si">{container}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host_port</span><span class="p">,</span> <span class="n">container</span><span class="o">=</span><span class="n">container_port</span><span class="p">)]</span>
+
+        <span class="c1"># Set environment variables</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="p">:</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-e&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+        <span class="c1"># If specified, remove the container when it exits</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autoremove</span><span class="p">:</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--rm&quot;</span><span class="p">)</span>
+
+        <span class="c1"># If specified, set the runtime (e.g. `nvidia`)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runtime</span><span class="p">:</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--runtime=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_runtime</span><span class="p">))</span>
+
+        <span class="c1"># Bind mount</span>
+        <span class="k">for</span> <span class="n">host_path</span><span class="p">,</span> <span class="n">container_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mounts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--mount&quot;</span><span class="p">)</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;=&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">])</span>
+                                     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">((</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;bind&#39;</span><span class="p">),</span>
+                                                        <span class="p">(</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="n">host_path</span><span class="p">),</span>
+                                                        <span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="n">container_path</span><span class="p">))]))</span>
+
+        <span class="c1"># Positional args - the image of the container</span>
+        <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_image</span><span class="o">.</span><span class="n">full_name</span><span class="p">)</span>
+
+        <span class="c1"># If specified, append the run command</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">command</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command</span>
+
+        <span class="k">return</span> <span class="n">command</span></div>
+
+<div class="viewcode-block" id="DockerContainer.start"><a class="viewcode-back" href="../../../shepherd/shepherd.docker.html#shepherd.docker.DockerContainer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Run the container.&quot;&quot;&quot;</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_run_command</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">host_port</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ports</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">kill_blocking_container</span><span class="p">(</span><span class="n">host_port</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting docker container with `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">command</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_container_id</span> <span class="o">=</span> <span class="n">run_docker_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Started docker container `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_container_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DockerContainer.kill"><a class="viewcode-back" href="../../../shepherd/shepherd.docker.html#shepherd.docker.DockerContainer.kill">[docs]</a>    <span class="k">def</span> <span class="nf">kill</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Kill the underlying docker container.</span>
+
+<span class="sd">        :raise DockerError: if the container was not started yet (i.e., its ``container_id`` is not known)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_container_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DockerError</span><span class="p">(</span><span class="s1">&#39;The container was not started yet&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Killing container `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_container_id</span><span class="p">)</span>
+        <span class="n">run_docker_command</span><span class="p">([</span><span class="s1">&#39;kill&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_container_id</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_container_id</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the underlying docker container is still up and running.</span>
+<span class="sd">        Returns ``False`` if the container was not even started.</span>
+
+<span class="sd">        :return: docker container running flag</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_container_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">run_docker_command</span><span class="p">([</span><span class="s1">&#39;ps&#39;</span><span class="p">,</span> <span class="s1">&#39;--filter&#39;</span><span class="p">,</span> <span class="s1">&#39;id=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_container_id</span><span class="p">)])</span>
+        <span class="c1"># If the command output contains more than one line, the container was found (the first line is a header)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Iterait a.s..<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+    </p>
+  </div>
+</footer>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-108491604-2"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-108491604-2');
+</script>
+
+
+
+  </body>
+</html>

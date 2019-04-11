@@ -1,0 +1,5 @@
+<map id="inheritancefd417ed936" name="inheritancefd417ed936">
+<area shape="rect" id="node1" title="Base zmq socket message." alt="" coords="357,29,436,55"/>
+<area shape="rect" id="node2" title="Enclosure for fields and validation. Same pattern deployed by Django" alt="" coords="237,29,309,55"/>
+<area shape="rect" id="node3" title="Compatibility layer for previous deprecated Schematics Model API." alt="" coords="5,29,189,55"/>
+</map>

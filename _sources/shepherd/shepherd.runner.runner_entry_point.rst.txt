@@ -1,0 +1,18 @@
+======================================
+``shepherd.runner.runner_entry_point``
+======================================
+
+.. automodule:: shepherd.runner.runner_entry_point
+
+
+.. currentmodule:: shepherd.runner.runner_entry_point
+
+
+Functions
+=========
+
+- :py:func:`main`:
+  Create a runner and list on the configured port for job ``InputMessage`` s.
+
+
+.. autofunction:: main

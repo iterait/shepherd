@@ -1,0 +1,76 @@
+=======================
+``shepherd.errors.api``
+=======================
+
+.. automodule:: shepherd.errors.api
+
+
+.. currentmodule:: shepherd.errors.api
+
+
+Exceptions
+==========
+
+- :py:exc:`ApiServerError`:
+  An exception raised when the server encounters an error
+
+- :py:exc:`ApiClientError`:
+  An exception raised when the user of the API makes an invalid request
+
+- :py:exc:`UnknownSheepError`:
+  Exception raised when application attempts to use a sheep with an unknown id.
+
+- :py:exc:`UnknownJobError`:
+  Exception raised when a client asks about a job that is not assigned to this shepherd.
+
+- :py:exc:`StorageError`:
+  Exception raised when application encounters some issue with the minio storage.
+
+- :py:exc:`StorageInaccessibleError`:
+  Exception raised when the remote storage is not accessible at the moment
+
+- :py:exc:`NameConflictError`:
+  Exception raised when a client chooses a job ID that was already used
+
+
+.. autoexception:: ApiServerError
+
+   .. rubric:: Inheritance
+   .. inheritance-diagram:: ApiServerError
+      :parts: 1
+
+.. autoexception:: ApiClientError
+
+   .. rubric:: Inheritance
+   .. inheritance-diagram:: ApiClientError
+      :parts: 1
+
+.. autoexception:: UnknownSheepError
+
+   .. rubric:: Inheritance
+   .. inheritance-diagram:: UnknownSheepError
+      :parts: 1
+
+.. autoexception:: UnknownJobError
+
+   .. rubric:: Inheritance
+   .. inheritance-diagram:: UnknownJobError
+      :parts: 1
+
+.. autoexception:: StorageError
+
+   .. rubric:: Inheritance
+   .. inheritance-diagram:: StorageError
+      :parts: 1
+
+.. autoexception:: StorageInaccessibleError
+
+   .. rubric:: Inheritance
+   .. inheritance-diagram:: StorageInaccessibleError
+      :parts: 1
+
+.. autoexception:: NameConflictError
+
+   .. rubric:: Inheritance
+   .. inheritance-diagram:: NameConflictError
+      :parts: 1

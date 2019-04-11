@@ -1,0 +1,47 @@
+=========================
+``shepherd.errors.sheep``
+=========================
+
+.. automodule:: shepherd.errors.sheep
+
+
+.. currentmodule:: shepherd.errors.sheep
+
+
+Classes
+=======
+
+- :py:class:`SheepError`:
+  Common base class for all exceptions
+
+- :py:class:`SheepConfigurationError`:
+  Common base class for all exceptions
+
+
+
+.. autoclass:: SheepError
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: SheepError
+      :parts: 1
+
+   |
+
+
+
+.. autoclass:: SheepConfigurationError
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: SheepConfigurationError
+      :parts: 1
+
+   |
+

@@ -2,8 +2,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Bare Sheep &#8212; shepherd 0.5.2 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -116,7 +115,7 @@
       
   <div class="section" id="bare-sheep">
 <h1>Bare Sheep<a class="headerlink" href="#bare-sheep" title="Permalink to this headline">¶</a></h1>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.sheep.BareSheep</span></code> uses a sub-process to run its <em>runner</em>.
+<p><a class="reference internal" href="shepherd/shepherd.sheep.html#shepherd.sheep.BareSheep" title="shepherd.sheep.BareSheep"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.sheep.BareSheep</span></code></a> uses a sub-process to run its <em>runner</em>.
 In particular, it runs <code class="docutils literal notranslate"><span class="pre">shepherd-runner</span></code> command which is linked to <code class="xref py py-func docutils literal notranslate"><span class="pre">shepherd.runner.runner_entry_point.run()</span></code>.</p>
 <p>As mentioned earlier, a sheep communicates with its runner via a socket.
 The messages are minimal though, in principle, only <code class="docutils literal notranslate"><span class="pre">job_id</span></code> s are passed through the socket while the data are
@@ -134,8 +133,8 @@ prepared in a folder.</p>
 </div>
 <p>Aside from configuration common for all sheep (socket <code class="docutils literal notranslate"><span class="pre">port</span></code> and sheep <code class="docutils literal notranslate"><span class="pre">type</span></code>), bare sheep allows to configure:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">working_directory</span></code> directory from which <code class="docutils literal notranslate"><span class="pre">shepherd-runner</span></code> command is called</li>
-<li><code class="docutils literal notranslate"><span class="pre">stdout_file</span></code> and <code class="docutils literal notranslate"><span class="pre">stderr_file</span></code> to store the <strong>runner</strong> outputs</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">working_directory</span></code> directory from which <code class="docutils literal notranslate"><span class="pre">shepherd-runner</span></code> command is called</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stdout_file</span></code> and <code class="docutils literal notranslate"><span class="pre">stderr_file</span></code> to store the <strong>runner</strong> outputs</p></li>
 </ul>
 </div>
 <div class="section" id="model-name-and-version">
@@ -166,7 +165,7 @@ In other cases, <a class="reference external" href="docker_sheep.html">docker sh
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>
 </footer>

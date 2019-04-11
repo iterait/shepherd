@@ -1,0 +1,98 @@
+=================
+``shepherd.comm``
+=================
+
+.. automodule:: shepherd.comm
+
+
+.. currentmodule:: shepherd.comm
+
+
+Classes
+=======
+
+- :py:class:`Message`:
+  Base zmq socket message.
+
+- :py:class:`InputMessage`:
+  Message informing the runner about a job being ready to be processed.
+
+- :py:class:`DoneMessage`:
+  Message informing :py:class:`shepherd.shepherd.Shepherd` about a finished job.
+
+- :py:class:`ErrorMessage`:
+  Message informing :py:class:`shepherd.shepherd.Shepherd` about an encountered error.
+
+- :py:class:`Messenger`:
+  Static helper class for sending and receiving messages through zmq sockets.
+
+
+
+.. autoclass:: Message
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: Message
+      :parts: 1
+
+   |
+
+
+
+.. autoclass:: InputMessage
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: InputMessage
+      :parts: 1
+
+   |
+
+
+
+.. autoclass:: DoneMessage
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: DoneMessage
+      :parts: 1
+
+   |
+
+
+
+.. autoclass:: ErrorMessage
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: ErrorMessage
+      :parts: 1
+
+   |
+
+
+
+.. autoclass:: Messenger
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: Messenger
+      :parts: 1
+
+   |
+

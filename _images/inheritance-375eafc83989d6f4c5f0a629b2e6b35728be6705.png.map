@@ -1,0 +1,4 @@
+<map id="inheritanceb00460d4ad" name="inheritanceb00460d4ad">
+<area shape="rect" id="node1" title="An exception raised when the server encounters an error" alt="" coords="5,5,121,31"/>
+<area shape="rect" id="node2" href="#shepherd.errors.api.StorageError" target="_top" title="Exception raised when application encounters some issue with the minio storage." alt="" coords="169,5,272,31"/>
+</map>

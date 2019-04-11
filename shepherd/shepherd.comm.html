@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>shepherd.comm &#8212; shepherd 0.5.2 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/highlight.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/swagger-ui.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="shepherd.docker" href="shepherd.docker.html" />
+    <link rel="prev" title="shepherd" href="shepherd.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-worker navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          shepherd</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../tutorial.html">Introduction</a></li>
+                <li><a href="../bare_sheep.html">Bare Sheep</a></li>
+                <li><a href="../docker_sheep.html">Docker Sheep</a></li>
+                <li><a href="../runners.html">Runners</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="index.html">Package Reference</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Pages <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<div class="side_nav">
+    <a href="shepherd.html" title="Previous Chapter: shepherd"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; shepherd</span>
+    </a>
+    </div>
+<div class="side_nav">
+    <a href="shepherd.docker.html" title="Next Chapter: shepherd.docker"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">shepherd.docker &raquo;</span>
+    </a>
+    </div><ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">shepherd.comm</span></code></a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+</ul>
+</li>
+</ul>
+
+<form action="../search.html" method="get" class="searchbox">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form><div class="side_nav">
+	<h4>Related projects</h4>
+</div>
+<ul class="nav nav-list">
+	<li><a href="https://emloop.org">emloop</a></li>
+	<li><a href="https://tensorflow.emloop.org">emloop-tensorflow</a></li>
+	<li><a href="https://hipipe.org">hipipe (c++)</a></li>
+</ul>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="module-shepherd.comm">
+<span id="shepherd-comm"></span><h1><code class="docutils literal notranslate"><span class="pre">shepherd.comm</span></code><a class="headerlink" href="#module-shepherd.comm" title="Permalink to this headline">¶</a></h1>
+<p>Package with sockets/greenlets communication helpers.</p>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="#shepherd.comm.Message" title="shepherd.comm.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>:
+Base zmq socket message.</p></li>
+<li><p><a class="reference internal" href="#shepherd.comm.InputMessage" title="shepherd.comm.InputMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">InputMessage</span></code></a>:
+Message informing the runner about a job being ready to be processed.</p></li>
+<li><p><a class="reference internal" href="#shepherd.comm.DoneMessage" title="shepherd.comm.DoneMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoneMessage</span></code></a>:
+Message informing <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.shepherd.Shepherd</span></code> about a finished job.</p></li>
+<li><p><a class="reference internal" href="#shepherd.comm.ErrorMessage" title="shepherd.comm.ErrorMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorMessage</span></code></a>:
+Message informing <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.shepherd.Shepherd</span></code> about an encountered error.</p></li>
+<li><p><a class="reference internal" href="#shepherd.comm.Messenger" title="shepherd.comm.Messenger"><code class="xref py py-class docutils literal notranslate"><span class="pre">Messenger</span></code></a>:
+Static helper class for sending and receiving messages through zmq sockets.</p></li>
+</ul>
+<dl class="class">
+<dt id="shepherd.comm.Message">
+<em class="property">class </em><code class="descclassname">shepherd.comm.</code><code class="descname">Message</code><span class="sig-paren">(</span><em>raw_data=None</em>, <em>trusted_data=None</em>, <em>deserialize_mapping=None</em>, <em>init=True</em>, <em>partial=True</em>, <em>strict=True</em>, <em>validate=False</em>, <em>app_data=None</em>, <em>lazy=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messages.html#Message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.Message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">schematics.deprecated.Model</span></code></p>
+<p>Base zmq socket message.</p>
+<div class="graphviz"><img src="../_images/inheritance-253537a0a418f07a22470f85215b343f7c1d9ec4.png" alt="Inheritance diagram of Message" class="inheritance graphviz" /></div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<dl class="attribute">
+<dt id="shepherd.comm.Message.identity">
+<code class="descname">identity</code><em class="property"> = &lt;StringType() instance on Message as 'identity'&gt;</em><a class="headerlink" href="#shepherd.comm.Message.identity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional identity (for zmq ROUTER sockets).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="shepherd.comm.Message.job_id">
+<code class="descname">job_id</code><em class="property"> = &lt;StringType() instance on Message as 'job_id'&gt;</em><a class="headerlink" href="#shepherd.comm.Message.job_id" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>shepherd</strong> job id.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="shepherd.comm.InputMessage">
+<em class="property">class </em><code class="descclassname">shepherd.comm.</code><code class="descname">InputMessage</code><span class="sig-paren">(</span><em>raw_data=None</em>, <em>trusted_data=None</em>, <em>deserialize_mapping=None</em>, <em>init=True</em>, <em>partial=True</em>, <em>strict=True</em>, <em>validate=False</em>, <em>app_data=None</em>, <em>lazy=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messages.html#InputMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.InputMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.comm.messages.Message</span></code></p>
+<p>Message informing the runner about a job being ready to be processed.</p>
+<div class="graphviz"><img src="../_images/inheritance-d533c1cae892c9e9eb6a4128eda201ef96b0ba2e.png" alt="Inheritance diagram of InputMessage" class="inheritance graphviz" /></div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<dl class="attribute">
+<dt id="shepherd.comm.InputMessage.io_data_root">
+<code class="descname">io_data_root</code><em class="property"> = &lt;StringType() instance on InputMessage as 'io_data_root'&gt;</em><a class="headerlink" href="#shepherd.comm.InputMessage.io_data_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Job data root (with <code class="docutils literal notranslate"><span class="pre">inputs</span></code> and <code class="docutils literal notranslate"><span class="pre">outputs</span></code> folders).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="shepherd.comm.DoneMessage">
+<em class="property">class </em><code class="descclassname">shepherd.comm.</code><code class="descname">DoneMessage</code><span class="sig-paren">(</span><em>raw_data=None</em>, <em>trusted_data=None</em>, <em>deserialize_mapping=None</em>, <em>init=True</em>, <em>partial=True</em>, <em>strict=True</em>, <em>validate=False</em>, <em>app_data=None</em>, <em>lazy=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messages.html#DoneMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.DoneMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.comm.messages.Message</span></code></p>
+<p>Message informing <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.shepherd.Shepherd</span></code> about a finished job.</p>
+<div class="graphviz"><img src="../_images/inheritance-e99819286326bcf65c93b7fb02506a034d588ed2.png" alt="Inheritance diagram of DoneMessage" class="inheritance graphviz" /></div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="shepherd.comm.ErrorMessage">
+<em class="property">class </em><code class="descclassname">shepherd.comm.</code><code class="descname">ErrorMessage</code><span class="sig-paren">(</span><em>raw_data=None</em>, <em>trusted_data=None</em>, <em>deserialize_mapping=None</em>, <em>init=True</em>, <em>partial=True</em>, <em>strict=True</em>, <em>validate=False</em>, <em>app_data=None</em>, <em>lazy=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messages.html#ErrorMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.ErrorMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.comm.messages.Message</span></code></p>
+<p>Message informing <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.shepherd.Shepherd</span></code> about an encountered error.</p>
+<div class="graphviz"><img src="../_images/inheritance-efddec35adb30e365cc3af8f1e24ae63b225b065.png" alt="Inheritance diagram of ErrorMessage" class="inheritance graphviz" /></div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<dl class="attribute">
+<dt id="shepherd.comm.ErrorMessage.exception_traceback">
+<code class="descname">exception_traceback</code><em class="property"> = &lt;StringType() instance on ErrorMessage as 'exception_traceback'&gt;</em><a class="headerlink" href="#shepherd.comm.ErrorMessage.exception_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception traceback (where applicable).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="shepherd.comm.ErrorMessage.exception_type">
+<code class="descname">exception_type</code><em class="property"> = &lt;StringType() instance on ErrorMessage as 'exception_type'&gt;</em><a class="headerlink" href="#shepherd.comm.ErrorMessage.exception_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of the error (e.g. ValueError).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="shepherd.comm.ErrorMessage.message">
+<code class="descname">message</code><em class="property"> = &lt;StringType() instance on ErrorMessage as 'message'&gt;</em><a class="headerlink" href="#shepherd.comm.ErrorMessage.message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Human-readable short error message.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="shepherd.comm.Messenger">
+<em class="property">class </em><code class="descclassname">shepherd.comm.</code><code class="descname">Messenger</code><a class="reference internal" href="../_modules/shepherd/comm/messenger.html#Messenger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.Messenger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Static helper class for sending and receiving messages through zmq sockets.</p>
+<div class="graphviz"><img src="../_images/inheritance-41eba691f44e33ae7e390b3c27448b81d4a714ef.png" alt="Inheritance diagram of Messenger" class="inheritance graphviz" /></div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<dl class="staticmethod">
+<dt id="shepherd.comm.Messenger.recv">
+<em class="property">static </em><code class="descname">recv</code><span class="sig-paren">(</span><em>socket</em>, <em>expected_message_types=None</em>, <em>noblock=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messenger.html#Messenger.recv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.Messenger.recv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receive, decode and return a message from the given socket.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code>) – socket to receive the message from</p></li>
+<li><p><strong>expected_message_types</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>]]) – a sequence of expected message types (optional)</p></li>
+<li><p><strong>noblock</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – do not block on <code class="docutils literal notranslate"><span class="pre">recv</span></code> call and throw if there is no message</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>MessengerError</strong> – if receiving fails</p></li>
+<li><p><strong>UnknownMessageTypeError</strong> – if the received message is of unknown type</p></li>
+<li><p><a class="reference internal" href="shepherd.errors.comm.html#shepherd.errors.comm.UnexpectedMessageTypeError" title="shepherd.errors.comm.UnexpectedMessageTypeError"><strong>UnexpectedMessageTypeError</strong></a> – if the received message type is not expected</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">InputMessage</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DoneMessage</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorMessage</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="shepherd.comm.Messenger.send">
+<em class="property">static </em><code class="descname">send</code><span class="sig-paren">(</span><em>socket</em>, <em>message</em>, <em>response_to=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messenger.html#Messenger.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.Messenger.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encode given message and send it to the given socket.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code>) – socket to send the message to</p></li>
+<li><p><strong>message</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code>) – message to be send</p></li>
+<li><p><strong>response_to</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code>]) – optional message to respond to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>MessengerError</strong> – if it fails</p></li>
+<li><p><strong>UnknownMessageTypeError</strong> – if the message to be send is of unknown type</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Iterait a.s..<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+    </p>
+  </div>
+</footer>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-108491604-2"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-108491604-2');
+</script>
+
+
+
+  </body>
+</html>

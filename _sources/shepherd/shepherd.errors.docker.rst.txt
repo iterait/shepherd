@@ -1,0 +1,30 @@
+==========================
+``shepherd.errors.docker``
+==========================
+
+.. automodule:: shepherd.errors.docker
+
+
+.. currentmodule:: shepherd.errors.docker
+
+
+Classes
+=======
+
+- :py:class:`DockerError`:
+  Error in execution of a docker command.
+
+
+
+.. autoclass:: DockerError
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: DockerError
+      :parts: 1
+
+   |
+

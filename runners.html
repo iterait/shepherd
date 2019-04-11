@@ -2,8 +2,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Runners &#8212; shepherd 0.5.2 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -120,7 +119,7 @@
   <div class="section" id="runners">
 <h1>Runners<a class="headerlink" href="#runners" title="Permalink to this headline">¶</a></h1>
 <p>Runners are rather small classes which only purpose is to process <em>jobs</em>, one by one.
-<strong>Shepherd</strong> provides a <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.runner.BaseRunner</span></code> to inherit your <em>runners</em> from.</p>
+<strong>Shepherd</strong> provides a <a class="reference internal" href="shepherd/shepherd.runner.html#shepherd.runner.BaseRunner" title="shepherd.runner.BaseRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.runner.BaseRunner</span></code></a> to inherit your <em>runners</em> from.</p>
 <p>All the runners may be invoked with <code class="docutils literal notranslate"><span class="pre">shepherd-runner</span></code> command.</p>
 <div class="section" id="shepherd-runner">
 <h2>shepherd-runner<a class="headerlink" href="#shepherd-runner" title="Permalink to this headline">¶</a></h2>
@@ -129,45 +128,34 @@
 </div>
 <div class="section" id="Positional Arguments">
 <h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>config_path</kbd></td>
-<td>emloop configuration file path</td></tr>
-</tbody>
-</table>
+<dl class="option-list">
+<dt><kbd>config_path</kbd></dt>
+<dd><p>emloop configuration file path</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="Named Arguments">
 <h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>-p, --port</kbd></td>
-<td><p class="first">Socket port to bind to</p>
-<p class="last">Default: 9999</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>-s, --stream</kbd></td>
-<td><p class="first">Dataset stream name</p>
-<p class="last">Default: “predict”</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>-r, --runner</kbd></td>
-<td><p class="first">Fully qualified runner class</p>
-<p class="last">Default: “shepherd.runner.JSONRunner”</p>
-</td></tr>
-</tbody>
-</table>
+<dl class="option-list">
+<dt><kbd>-p, --port</kbd></dt>
+<dd><p>Socket port to bind to</p>
+<p>Default: 9999</p>
+</dd>
+<dt><kbd>-s, --stream</kbd></dt>
+<dd><p>Dataset stream name</p>
+<p>Default: “predict”</p>
+</dd>
+<dt><kbd>-r, --runner</kbd></dt>
+<dd><p>Fully qualified runner class</p>
+<p>Default: “shepherd.runner.JSONRunner”</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="custom-runners">
 <h3>Custom Runners<a class="headerlink" href="#custom-runners" title="Permalink to this headline">¶</a></h3>
-<p>In most cases, you can just inherit from <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.runner.BaseRunner</span></code> and override
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">shepherd.runner.BaseRunner._process_job()</span></code>.</p>
-<p>This is exactly what is done by the <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.runner.JSONRunner</span></code> class.</p>
+<p>In most cases, you can just inherit from <a class="reference internal" href="shepherd/shepherd.runner.html#shepherd.runner.BaseRunner" title="shepherd.runner.BaseRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.runner.BaseRunner</span></code></a> and override
+<a class="reference internal" href="shepherd/shepherd.runner.html#shepherd.runner.BaseRunner._process_job" title="shepherd.runner.BaseRunner._process_job"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shepherd.runner.BaseRunner._process_job()</span></code></a>.</p>
+<p>This is exactly what is done by the <a class="reference internal" href="shepherd/shepherd.runner.html#shepherd.runner.JSONRunner" title="shepherd.runner.JSONRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.runner.JSONRunner</span></code></a> class.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_process_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>   <span class="c1"># simplified</span>
     <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="s1">&#39;input&#39;</span><span class="p">)))</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
@@ -210,7 +198,7 @@ batches to <code class="docutils literal notranslate"><span class="pre">outputs/
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>
 </footer>

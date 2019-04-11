@@ -1,0 +1,21 @@
+============
+``shepherd``
+============
+
+.. automodule:: shepherd
+
+
+
+Submodules
+==========
+
+.. toctree::
+   :titlesonly:
+
+   shepherd.comm
+   shepherd.docker
+   shepherd.errors
+   shepherd.runner
+   shepherd.sheep
+
+.. currentmodule:: shepherd
