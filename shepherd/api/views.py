@@ -41,7 +41,7 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
     @api.post('/start-job')
     @oapi.accepts(StartJobRequest)
     @oapi.responds_with(StartJobResponse)
-    async def start_job(request: Request, start_job_request: StartJobRequest):
+    async def start_job(start_job_request: StartJobRequest):
         """
         Start a new job.
 
@@ -63,14 +63,12 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
 
     @api.get("/jobs/{job_id}/status")
     @oapi.responds_with(JobStatusResponse)
-    async def get_job_status(request: Request):
+    async def get_job_status(job_id: str):
         """
         Get status information for a job.
 
         :param job_id: An identifier of the queried job
         """
-        job_id = request.match_info['job_id']
-
         status = shepherd.get_job_status(job_id)
         if status is not None:
             return status
@@ -81,13 +79,12 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
 
     @api.get("/jobs/{job_id}/wait_ready")
     @oapi.responds_with(JobStatusResponse)
-    async def wait_ready(request: Request):
+    async def wait_ready(job_id: str):
         """
         Wait until the specified job is ready.
 
         :param job_id: An identifier of the queried job
         """
-        job_id = request.match_info['job_id']
 
         await check_job_dir_exists(storage, job_id)
         async with shepherd.job_done_condition:
@@ -102,15 +99,13 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
     @oapi.responds_with(ErrorResponse, code=404)
     @oapi.responds_with(JobErrorResponse, code=500)
     @oapi.responds_with(FileResponse, code=200)
-    async def get_job_result(request: Request):
+    async def get_job_result(job_id: str, result_file: str = DEFAULT_OUTPUT_FILE):
         """
         Get the result of the specified job.
 
         :param job_id: An identifier of the job
         :param result_file: Name of the requested file
         """
-        job_id = request.match_info['job_id']
-        result_file = request.match_info.get('result_file', DEFAULT_OUTPUT_FILE)
 
         await check_job_dir_exists(storage, job_id)
         status = await storage.get_job_status(job_id)
@@ -133,30 +128,28 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
     @api.get("/jobs/{job_id}/input")
     @oapi.responds_with(ErrorResponse, code=404)
     @oapi.responds_with(FileResponse, code=200)
-    async def get_job_input(request: Request):
+    async def get_job_input(job_id: str, input_file: str = DEFAULT_PAYLOAD_FILE):
         """
         Get the input of the specified job.
 
         :param job_id: An identifier of the job
-        :param result_file: Name of the requested file
+        :param input_file: Name of the requested file
         """
-        job_id = request.match_info['job_id']
-        result_file = request.match_info.get('input_file', DEFAULT_PAYLOAD_FILE)
 
         await check_job_dir_exists(storage, job_id)
 
-        input_path = INPUT_DIR + "/" + result_file
+        input_path = INPUT_DIR + "/" + input_file
         input = await storage.get_file(job_id, input_path)
         if input is None:
             return ErrorResponse(dict(message="Requested file does not exist"))
 
-        mime = mimetypes.guess_type(result_file)[0] or "application/octet-stream"
+        mime = mimetypes.guess_type(input_file)[0] or "application/octet-stream"
         return FileResponse(input, mimetype=mime)
 
     @api.get('/status')
     @oapi.responds_with(StatusResponse)
-    async def get_status(request: Request):
-        """Get status of all the sheep available."""
+    async def get_status():
+        """Get status of all the available sheep."""
         response = StatusResponse()
         response.containers = dict(shepherd.get_status())
         return response

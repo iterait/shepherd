@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import Optional
 from datetime import datetime
 
+from apistrap.examples import ExamplesMixin, ModelExample
 from schematics import Model
 from schematics.types import StringType, BooleanType, ModelType, UUIDType, DateTimeType
 
@@ -43,7 +44,7 @@ class JobStatus:
     DONE = "done"
 
 
-class JobStatusModel(Model):
+class JobStatusModel(Model, ExamplesMixin):
     """
     Status information for a job.
     """
@@ -64,3 +65,44 @@ class JobStatusModel(Model):
         :return: a deep copy of this object
         """
         return JobStatusModel(deepcopy(self.to_primitive()))
+
+    @classmethod
+    def get_examples(cls):
+        return [
+            ModelExample("finished", cls({
+                "status": "done",
+                "model": {
+                    "name": "OCR model",
+                    "version": "1.0.42"
+                },
+                "enqueued_at": datetime(2019, 1, 1, 12, 0),
+                "processing_started_at": datetime(2019, 1, 1, 12, 10),
+                "finished_at": datetime(2019, 1, 1, 12, 15)
+            }), "A job that finished successfully"),
+            ModelExample("pending", cls({
+                "status": "queued",
+                "model": {
+                    "name": "OCR model",
+                    "version": "1.0.42"
+                },
+                "enqueued_at": datetime(2019, 1, 1, 12, 0)
+            }), "A job that waits to be processed"),
+            ModelExample("failed", cls({
+                "status": "failed",
+                "model": {
+                    "name": "OCR model",
+                    "version": "1.0.42"
+                },
+                "error_details": {
+                    "message": "An error occurred",
+                    "exception_type": "ValueError",
+                    "exception_traceback": """
+                    file.py: 23
+                    file_2.py: 47
+                    """
+                },
+                "enqueued_at": datetime(2019, 1, 1, 12, 0),
+                "processing_started_at": datetime(2019, 1, 1, 12, 10),
+                "finished_at": datetime(2019, 1, 1, 12, 15)
+            }), "A job that failed to be processed", "Exception details are only included if shepherd was launched in debug mode"),
+        ]
