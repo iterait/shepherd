@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>shepherd &#8212; shepherd 0.5.2 documentation</title>
+    <title>shepherd.utils &#8212; shepherd 0.5.2 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -16,8 +16,7 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="shepherd.comm" href="shepherd.comm.html" />
-    <link rel="prev" title="API Reference" href="index.html" />
+    <link rel="prev" title="shepherd.sheep" href="shepherd.sheep.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -80,15 +79,11 @@
       <div class="col-md-3">
         <div id="sidebar" class="bs-sidenav" role="complementary">
 <div class="side_nav">
-    <a href="index.html" title="Previous Chapter: API Reference"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; API Reference</span>
-    </a>
-    </div>
-<div class="side_nav">
-    <a href="shepherd.comm.html" title="Next Chapter: shepherd.comm"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">shepherd.comm &raquo;</span>
+    <a href="shepherd.sheep.html" title="Previous Chapter: shepherd.sheep"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; shepherd.sheep</span>
     </a>
     </div><ul>
-<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">shepherd</span></code></a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">shepherd.utils</span></code></a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
 </ul>
 </li>
 </ul>
@@ -111,29 +106,54 @@
       </div>
     <div class="body col-md-9 content" role="main">
       
-  <div class="section" id="module-shepherd">
-<span id="shepherd"></span><h1><code class="docutils literal notranslate"><span class="pre">shepherd</span></code><a class="headerlink" href="#module-shepherd" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="shepherd.comm.html"><code class="docutils literal notranslate"><span class="pre">shepherd.comm</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="shepherd.docker.html"><code class="docutils literal notranslate"><span class="pre">shepherd.docker</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="shepherd.errors.html"><code class="docutils literal notranslate"><span class="pre">shepherd.errors</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="shepherd.errors.api.html"><code class="docutils literal notranslate"><span class="pre">shepherd.errors.api</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="shepherd.errors.comm.html"><code class="docutils literal notranslate"><span class="pre">shepherd.errors.comm</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="shepherd.errors.docker.html"><code class="docutils literal notranslate"><span class="pre">shepherd.errors.docker</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="shepherd.errors.sheep.html"><code class="docutils literal notranslate"><span class="pre">shepherd.errors.sheep</span></code></a></li>
+  <div class="section" id="module-shepherd.utils">
+<span id="shepherd-utils"></span><h1><code class="docutils literal notranslate"><span class="pre">shepherd.utils</span></code><a class="headerlink" href="#module-shepherd.utils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="#shepherd.utils.create_clean_dir" title="shepherd.utils.create_clean_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_clean_dir()</span></code></a>:
+Create new directory (delete its contents if it exists).</p></li>
+<li><p><a class="reference internal" href="#shepherd.utils.minio_object_exists" title="shepherd.utils.minio_object_exists"><code class="xref py py-func docutils literal notranslate"><span class="pre">minio_object_exists()</span></code></a>:
+Check if the specified minio object exists or not.</p></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="shepherd.runner.html"><code class="docutils literal notranslate"><span class="pre">shepherd.runner</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="shepherd.runner.runner_entry_point.html"><code class="docutils literal notranslate"><span class="pre">shepherd.runner.runner_entry_point</span></code></a></li>
+<dl class="function">
+<dt id="shepherd.utils.create_clean_dir">
+<code class="descclassname">shepherd.utils.</code><code class="descname">create_clean_dir</code><span class="sig-paren">(</span><em>dir_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/utils/storage.html#create_clean_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.utils.create_clean_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new directory (delete its contents if it exists).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dir_path</strong> – directory path</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>path of the created directory</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="shepherd.utils.minio_object_exists">
+<code class="descclassname">shepherd.utils.</code><code class="descname">minio_object_exists</code><span class="sig-paren">(</span><em>minio</em>, <em>bucket_name</em>, <em>object_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/utils/storage.html#minio_object_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.utils.minio_object_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the specified minio object exists or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>minio</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Minio</span></code>) – minio handle</p></li>
+<li><p><strong>bucket_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – bucket name</p></li>
+<li><p><strong>object_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – object name</p></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="shepherd.sheep.html"><code class="docutils literal notranslate"><span class="pre">shepherd.sheep</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="shepherd.utils.html"><code class="docutils literal notranslate"><span class="pre">shepherd.utils</span></code></a></li>
-</ul>
-</div>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true if the specified minio object exists, false otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 </div>
 

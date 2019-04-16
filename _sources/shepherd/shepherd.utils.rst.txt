@@ -1,0 +1,23 @@
+==================
+``shepherd.utils``
+==================
+
+.. automodule:: shepherd.utils
+
+
+.. currentmodule:: shepherd.utils
+
+
+Functions
+=========
+
+- :py:func:`create_clean_dir`:
+  Create new directory (delete its contents if it exists).
+
+- :py:func:`minio_object_exists`:
+  Check if the specified minio object exists or not.
+
+
+.. autofunction:: create_clean_dir
+
+.. autofunction:: minio_object_exists
