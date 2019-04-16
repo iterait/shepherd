@@ -4,7 +4,6 @@ tests_require = [
     'pytest',
     'pytest-mock',
     'pytest-aiohttp',
-    'minio>=4.0',
     'molotov',
 ]
 
@@ -46,6 +45,7 @@ setup(name='shepherd',
         'aiobotocore>=0.10',
         'emloop>=0.2',
         'apistrap>=0.4',
+        'minio>=4.0',
       ],
       extras_require={
           'docs': ['sphinx>=2.0', 'autoapi>=1.4', 'sphinx-argparse',
