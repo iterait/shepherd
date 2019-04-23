@@ -101,3 +101,8 @@ class Storage(metaclass=abc.ABCMeta):
         :raises StorageError: there was an error when communicating with the remote storage
         :raises UnknownJobError: status for an unknown job was requested
         """
+
+    async def close(self) -> None:
+        """
+        Perform cleanup tasks (if necessary - e.g. terminate connection pools).
+        """

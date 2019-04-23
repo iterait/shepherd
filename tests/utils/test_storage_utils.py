@@ -14,7 +14,9 @@ from shepherd.errors.api import StorageError, StorageInaccessibleError, UnknownJ
 
 @pytest.fixture()
 async def storage(storage_config: StorageConfig, loop):
-    yield MinioStorage(storage_config)
+    minio_storage = MinioStorage(storage_config)
+    yield minio_storage
+    await minio_storage.close()
 
 
 @pytest.fixture()
