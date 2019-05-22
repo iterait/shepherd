@@ -62,7 +62,7 @@ To launch stress test, run:
 ```
 docker-compose -f examples/docker/docker-compose-sandbox.yml up -d
 shepherd -c tests/stress/shepherd-bare.yml
-molotov stress_test/loadtest.py -p 2 -w 10 -d 60 -xv
+molotov tests/stress/loadtest.py -p 2 -w 10 -d 60 -xv
 ```
 You can modify stress test arguments: `-p` (number of processes), `-w` (number of workers) and 
 `-d` (number of seconds to run the test).

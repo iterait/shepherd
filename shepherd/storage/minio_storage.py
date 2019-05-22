@@ -43,7 +43,9 @@ class MinioStorage(Storage):
         self._session = aiohttp.ClientSession()
         self._config = storage_config
 
-    def _create_headers(self, headers: LooseHeaders = None) -> LooseHeaders:
+    @staticmethod
+    def _create_headers(headers: Optional[LooseHeaders] = None) -> LooseHeaders:
+        """Add User-Agent header if not specified yet."""
         if headers is None:
             headers = {}
 
@@ -51,9 +53,10 @@ class MinioStorage(Storage):
 
         return headers
 
-    def _add_auth_header(self, method: str, url: str, headers: LooseHeaders = None, content_sha256=None) -> LooseHeaders:
+    def _add_auth_header(self, method: str, url: str, headers: Optional[LooseHeaders] = None,
+                         content_sha256: Optional[str] = None) -> LooseHeaders:
         if headers is None:
-            headers = self._create_headers()
+            headers = MinioStorage._create_headers()
         return sign_v4(method.upper(), url, "us-east-1", headers, self._config.access_key, self._config.secret_key,
                        content_sha256=content_sha256)
 
@@ -215,7 +218,7 @@ class MinioStorage(Storage):
 
         url = get_target_url(self._config.url, bucket_name=bucket, object_name=object_name)
 
-        headers = self._create_headers({
+        headers = MinioStorage._create_headers({
             "Content-Length": str(length),
             "Content-Type": "application/octet-stream"
         })
