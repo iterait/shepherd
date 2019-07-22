@@ -105,4 +105,6 @@ class Storage(metaclass=abc.ABCMeta):
     async def close(self) -> None:
         """
         Perform cleanup tasks (if necessary - e.g. terminate connection pools).
+
+        :raises StorageError: an error occurred while the storage was being closed
         """

@@ -44,7 +44,7 @@ class MinioStorage(Storage):
         self._config = storage_config
 
     @staticmethod
-    def _create_headers(headers: Optional[LooseHeaders] = None) -> LooseHeaders:
+    def _ensure_user_agent_header(headers: Optional[LooseHeaders] = None) -> LooseHeaders:
         """Add User-Agent header if not specified yet."""
         if headers is None:
             headers = {}
@@ -53,10 +53,14 @@ class MinioStorage(Storage):
 
         return headers
 
-    def _add_auth_header(self, method: str, url: str, headers: Optional[LooseHeaders] = None,
-                         content_sha256: Optional[str] = None) -> LooseHeaders:
-        if headers is None:
-            headers = MinioStorage._create_headers()
+    def _ensure_auth_headers(self, method: str, url: str, headers: Optional[LooseHeaders] = None,
+                             content_sha256: Optional[str] = None) -> LooseHeaders:
+        """
+        Make sure that given header set contains all headers required for a successful authentication.
+        """
+
+        headers = self._ensure_user_agent_header(headers)
+
         return sign_v4(method.upper(), url, "us-east-1", headers, self._config.access_key, self._config.secret_key,
                        content_sha256=content_sha256)
 
@@ -66,7 +70,7 @@ class MinioStorage(Storage):
         """
 
         url = get_target_url(self._config.url, bucket_name=job_id)
-        headers = self._add_auth_header("PUT", url)
+        headers = self._ensure_auth_headers("PUT", url)
 
         try:
             response = await self._session.put(url, headers=headers)
@@ -85,7 +89,7 @@ class MinioStorage(Storage):
         """
 
         url = get_target_url(self._config.url, "does-not-matter")
-        headers = self._add_auth_header('HEAD', url)
+        headers = self._ensure_auth_headers('HEAD', url)
 
         try:
             await self._session.head(url, headers=headers)
@@ -99,7 +103,7 @@ class MinioStorage(Storage):
         """
 
         url = get_target_url(self._config.url, job_id)
-        headers = self._add_auth_header('HEAD', url)
+        headers = self._ensure_auth_headers('HEAD', url)
 
         try:
             response = await self._session.head(url, headers=headers)
@@ -125,7 +129,7 @@ class MinioStorage(Storage):
                 query["continuation-token"] = continuation_token
 
             url = get_target_url(self._config.url, bucket_name=bucket, query=query)
-            headers = self._add_auth_header("GET", url)
+            headers = self._ensure_auth_headers("GET", url)
 
             try:
                 response = await self._session.get(url, headers=headers)
@@ -152,7 +156,7 @@ class MinioStorage(Storage):
         """
 
         url = get_target_url(self._config.url, bucket_name=bucket, object_name=object_name)
-        headers = self._add_auth_header("GET", url)
+        headers = self._ensure_auth_headers("GET", url)
 
         try:
             async with self._session.get(url, headers=headers) as response:
@@ -218,7 +222,7 @@ class MinioStorage(Storage):
 
         url = get_target_url(self._config.url, bucket_name=bucket, object_name=object_name)
 
-        headers = MinioStorage._create_headers({
+        headers = self._ensure_user_agent_header({
             "Content-Length": str(length),
             "Content-Type": "application/octet-stream"
         })
@@ -230,7 +234,7 @@ class MinioStorage(Storage):
             headers["Content-Md5"] = get_md5_base64digest(data)
             content_sha256 = "UNSIGNED-PAYLOAD"
 
-        headers = self._add_auth_header("PUT", url, headers, content_sha256=content_sha256)
+        headers = self._ensure_auth_headers("PUT", url, headers, content_sha256=content_sha256)
 
         try:
             response = await self._session.put(url, data=data, headers=headers)
@@ -293,12 +297,12 @@ class MinioStorage(Storage):
         """
 
         url = get_target_url(self._config.url, bucket_name=bucket, object_name=object_name)
-        headers = self._add_auth_header("HEAD", url)
+        headers = self._ensure_auth_headers("HEAD", url)
 
         try:
             response = await self._session.head(url, headers=headers)
 
-            return response.status != 404
+            return response.status == 200
         except AioHTTPClientError as ce:
             raise StorageInaccessibleError() from ce
 
@@ -357,4 +361,7 @@ class MinioStorage(Storage):
         Implementation of :py:meth:`shepherd.storage.Storage.close`.
         """
 
-        await self._session.close()
+        try:
+            await self._session.close()
+        except AioHTTPClientError as he:
+            raise StorageError("There was an error while closing the AioHTTP client session") from he
