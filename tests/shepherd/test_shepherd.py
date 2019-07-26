@@ -1,5 +1,6 @@
 import asyncio
 import json
+from contextlib import suppress
 
 import pytest
 
@@ -49,15 +50,23 @@ async def test_job_unknown(minio, shepherd):
         await shepherd.is_job_done("unknown-job")
 
 
+async def wait_for_job(shepherd: Shepherd, job_id: str):
+    async with shepherd.job_done_condition:
+        for _ in range(10):
+            with suppress(asyncio.TimeoutError):
+                await asyncio.wait_for(shepherd.job_done_condition.wait(), 2)
+
+            if await shepherd.is_job_done(job_id):
+                return
+
+
 async def test_job(job, shepherd: Shepherd, minio):
     job_id, job_meta = job
 
     await shepherd.enqueue_job(job_id, job_meta)
     assert not await shepherd.is_job_done(job_id)
 
-    async with shepherd.job_done_condition:
-        while not await shepherd.is_job_done(job_id):
-            await shepherd.job_done_condition.wait()
+    await wait_for_job(shepherd, job_id)
 
     assert shepherd._get_sheep('bare_sheep').running
     assert await shepherd.is_job_done(job_id)
@@ -71,9 +80,9 @@ async def test_job(job, shepherd: Shepherd, minio):
 async def test_failed_job(bad_job, minio, shepherd: Shepherd):
     job_id, job_meta = bad_job
     await shepherd.enqueue_job(job_id, job_meta)  # runner should fail to process the job (and send an ErrorMessage)
-    async with shepherd.job_done_condition:
-        while not await shepherd.is_job_done(job_id):
-            await shepherd.job_done_condition.wait()
+
+    await wait_for_job(shepherd, job_id)
+
     assert shepherd._get_sheep('bare_sheep').running
     assert await shepherd.is_job_done(job_id)
     assert minio_object_exists(minio, job_id, JOB_STATUS_FILE)

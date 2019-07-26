@@ -8,7 +8,7 @@ Provides access to computation resources on a single machine.
 
 ### Prerequisites
 
-1. Install dependencies with `pip install -r requirements.txt`
+1. Install dependencies with `pip install .`
 2. Make sure you have Docker installed and that your user has permissions to use 
    it
 3. If you intend to run computations on a GPU, install also `nvidia-docker2`
@@ -52,17 +52,18 @@ To process a request for debugging purposes, you need to:
 
 ### Running Tests
 
+First, install the test requirements `pip install '.[tests]'`.
 The test suite can be run with `python setup.py test`.
 
 ### Running Stress Tests
 
-First, install the stress-test requirements enlisted in `requirements-stress.txt`.
+First, install the test requirements `pip install '.[tests]'`.
 
 To launch stress test, run:
 ```
 docker-compose -f examples/docker/docker-compose-sandbox.yml up -d
 shepherd -c tests/stress/shepherd-bare.yml
-molotov stress_test/loadtest.py -p 2 -w 10 -d 60 -xv
+molotov tests/stress/loadtest.py -p 2 -w 10 -d 60 -xv
 ```
 You can modify stress test arguments: `-p` (number of processes), `-w` (number of workers) and 
 `-d` (number of seconds to run the test).

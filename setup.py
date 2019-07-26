@@ -42,10 +42,10 @@ setup(name='shepherd',
         'schematics>=2.1',
         'aiohttp>=3.5',
         'aiohttp-cors>=0.7',
-        'aiobotocore>=0.10',
         'emloop>=0.2',
         'apistrap>=0.5',
         'minio>=4.0',
+        'urllib3==1.24.1'
       ],
       extras_require={
           'docs': ['sphinx>=2.0', 'autoapi>=1.4', 'sphinx-argparse',
