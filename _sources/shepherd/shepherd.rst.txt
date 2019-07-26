@@ -17,6 +17,8 @@ Submodules
    shepherd.errors
    shepherd.runner
    shepherd.sheep
+   shepherd.shepherd
+   shepherd.storage
    shepherd.utils
 
 .. currentmodule:: shepherd

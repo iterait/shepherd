@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>shepherd.shepherd.shepherd &#8212; shepherd 0.5.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/highlight.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/swagger-ui.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-worker navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          shepherd</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../tutorial.html">Introduction</a></li>
+                <li><a href="../../../bare_sheep.html">Bare Sheep</a></li>
+                <li><a href="../../../docker_sheep.html">Docker Sheep</a></li>
+                <li><a href="../../../runners.html">Runners</a></li>
+                <li><a href="../../../api.html">API</a></li>
+                <li><a href="../../../shepherd/index.html">Package Reference</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Pages <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<form action="../../../search.html" method="get" class="searchbox">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form><div class="side_nav">
+	<h4>Related projects</h4>
+</div>
+<ul class="nav nav-list">
+	<li><a href="https://emloop.org">emloop</a></li>
+	<li><a href="https://tensorflow.emloop.org">emloop-tensorflow</a></li>
+	<li><a href="https://hipipe.org">hipipe (c++)</a></li>
+</ul>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <h1>Source code for shepherd.shepherd.shepherd</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">path</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">cycle</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">zmq</span>
+<span class="kn">import</span> <span class="nn">zmq.asyncio</span>
+
+<span class="kn">from</span> <span class="nn">..constants</span> <span class="k">import</span> <span class="n">OUTPUT_DIR</span>
+<span class="kn">from</span> <span class="nn">..storage.minio_storage</span> <span class="k">import</span> <span class="n">Storage</span>
+<span class="kn">from</span> <span class="nn">..config</span> <span class="k">import</span> <span class="n">RegistryConfig</span>
+<span class="kn">from</span> <span class="nn">..sheep</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">..api.models</span> <span class="k">import</span> <span class="n">SheepModel</span><span class="p">,</span> <span class="n">ModelModel</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">JobStatusModel</span><span class="p">,</span> <span class="n">ErrorModel</span>
+<span class="kn">from</span> <span class="nn">..errors.api</span> <span class="k">import</span> <span class="n">UnknownSheepError</span><span class="p">,</span> <span class="n">UnknownJobError</span>
+<span class="kn">from</span> <span class="nn">..errors.sheep</span> <span class="k">import</span> <span class="n">SheepConfigurationError</span><span class="p">,</span> <span class="n">SheepError</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="k">import</span> <span class="n">create_clean_dir</span>
+<span class="kn">from</span> <span class="nn">..comm</span> <span class="k">import</span> <span class="n">Messenger</span><span class="p">,</span> <span class="n">InputMessage</span><span class="p">,</span> <span class="n">DoneMessage</span><span class="p">,</span> <span class="n">ErrorMessage</span>
+<span class="kn">from</span> <span class="nn">..utils.task_queue</span> <span class="k">import</span> <span class="n">TaskQueue</span>
+
+
+<div class="viewcode-block" id="Shepherd"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd">[docs]</a><span class="k">class</span> <span class="nc">Shepherd</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manages creation and access to a configured set of sheep</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Shepherd.__init__"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">sheep_config</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+                 <span class="n">data_root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>
+                 <span class="n">registry_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RegistryConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the mighty Shepherd.</span>
+
+<span class="sd">        :param registry_config: optional docker registry config</span>
+<span class="sd">        :param sheep_config: sheep config</span>
+<span class="sd">        :param data_root: directory where the task/sheep directories will be managed</span>
+<span class="sd">        :param storage: remote storage adapter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">sheep_config</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;docker&quot;</span> <span class="ow">and</span> <span class="n">registry_config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SheepConfigurationError</span><span class="p">(</span><span class="s2">&quot;To use docker sheep, you need to configure a registry URL&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_done_condition</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Condition</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span> <span class="o">=</span> <span class="n">storage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_poller</span> <span class="o">=</span> <span class="n">zmq</span><span class="o">.</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Poller</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sheep</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseSheep</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sheep_config</span> <span class="o">=</span> <span class="n">sheep_config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sheep_tasks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_listener</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_health_checker</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_job_status</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">JobStatusModel</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_job_status_update_queue</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">sheep_id</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">sheep_config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">socket</span> <span class="o">=</span> <span class="n">zmq</span><span class="o">.</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Context</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">DEALER</span><span class="p">)</span>
+            <span class="n">sheep_type</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+            <span class="n">sheep_data_root</span> <span class="o">=</span> <span class="n">create_clean_dir</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_root</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">))</span>
+            <span class="n">common_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;socket&#39;</span><span class="p">:</span> <span class="n">socket</span><span class="p">,</span> <span class="s1">&#39;sheep_data_root&#39;</span><span class="p">:</span> <span class="n">sheep_data_root</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">sheep_type</span> <span class="o">==</span> <span class="s2">&quot;docker&quot;</span><span class="p">:</span>
+                <span class="n">sheep</span> <span class="o">=</span> <span class="n">DockerSheep</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">registry_config</span><span class="o">=</span><span class="n">registry_config</span><span class="p">,</span> <span class="o">**</span><span class="n">common_kwargs</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">sheep_type</span> <span class="o">==</span> <span class="s2">&quot;bare&quot;</span><span class="p">:</span>
+                <span class="n">sheep</span> <span class="o">=</span> <span class="n">BareSheep</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="o">**</span><span class="n">common_kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SheepConfigurationError</span><span class="p">(</span><span class="s2">&quot;Unknown sheep type: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sheep_type</span><span class="p">))</span>
+
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Created sheep `</span><span class="si">%s</span><span class="s1">` of type `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">,</span> <span class="n">sheep_type</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sheep</span><span class="p">[</span><span class="n">sheep_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">sheep</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_poller</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="n">zmq</span><span class="o">.</span><span class="n">POLLIN</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage_inaccessible_reported</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sheep_ring</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sheep</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Shepherd.start"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.start">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start background tasks for the shepherd.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">sheep_id</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sheep_config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sheep_tasks</span><span class="p">[</span><span class="n">sheep_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dequeue_and_feed_jobs</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">)),</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_health_check</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">))</span>
+            <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_listener</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_listen</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_health_checker</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shepherd_health_check</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_job_status_update_queue</span> <span class="o">=</span> <span class="n">TaskQueue</span><span class="p">(</span><span class="n">worker_count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Shepherd._get_sheep"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._get_sheep">[docs]</a>    <span class="k">def</span> <span class="nf">_get_sheep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseSheep</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the sheep with the given ``sheep_id``.</span>
+
+<span class="sd">        :param sheep_id: sheep id</span>
+<span class="sd">        :return: sheep with the given ``sheep_id``</span>
+<span class="sd">        :raise UnknownSheepError: if the given ``sheep_id`` is not known to this shepherd</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sheep</span><span class="p">[</span><span class="n">sheep_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnknownSheepError</span><span class="p">(</span><span class="s1">&#39;Unknown sheep id `</span><span class="si">{}</span><span class="s1">`&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Shepherd._start_sheep"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._start_sheep">[docs]</a>    <span class="k">def</span> <span class="nf">_start_sheep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        (Re)Start the sheep with the given ``sheep_id`` and configure it to run the specified ``model``:``version``.</span>
+
+<span class="sd">        :param sheep_id: sheep id to be (re)started</span>
+<span class="sd">        :param model: model name to be loaded</span>
+<span class="sd">        :param version: mode version to be loaded</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting sheep `</span><span class="si">%s</span><span class="s1">` with model `</span><span class="si">%s</span><span class="s1">:</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_sheep</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Shepherd._slaughter_sheep"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._slaughter_sheep">[docs]</a>    <span class="k">def</span> <span class="nf">_slaughter_sheep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Slaughter (kill) the specified sheep. In particular, its container and socket are going to be terminated,</span>
+
+<span class="sd">        :param sheep_id:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Slaughtering sheep `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_sheep</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">)</span><span class="o">.</span><span class="n">slaughter</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Shepherd.enqueue_job"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.enqueue_job">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">enqueue_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">job_meta</span><span class="p">:</span> <span class="n">ModelModel</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        En-queue the given job for execution. If specified, use a certain sheep.</span>
+
+<span class="sd">        :param job_id: job id</span>
+<span class="sd">        :param job_meta: job meta data (model name and version)</span>
+<span class="sd">        :param sheep_id: optional sheep id, if not specified use first sheep available</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;En-queueing job `</span><span class="si">%s</span><span class="s1">` for sheep `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sheep_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sheep_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sheep_ring</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Job `</span><span class="si">%s</span><span class="s1">` is auto-assigned to sheep `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">)</span>
+
+        <span class="n">status</span> <span class="o">=</span> <span class="n">JobStatusModel</span><span class="p">({</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">job_meta</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">JobStatus</span><span class="o">.</span><span class="n">QUEUED</span><span class="p">,</span> <span class="s2">&quot;enqueued_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_job_status</span><span class="p">[</span><span class="n">job_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">status</span>
+
+        <span class="n">status_future</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_job_status_update_queue</span><span class="o">.</span><span class="n">enqueue_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">set_job_status</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">status</span><span class="p">))</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sheep</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">)</span><span class="o">.</span><span class="n">jobs_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+
+        <span class="c1"># Wait for the status update to finish before returning (this way we can be sure the job was enqueued)</span>
+        <span class="k">await</span> <span class="n">status_future</span></div>
+
+<div class="viewcode-block" id="Shepherd._shepherd_health_check"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._shepherd_health_check">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_shepherd_health_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Periodically check if the shepherd and all of its dependencies work properly (and logs warnings if they do not).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">is_accessible</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage_inaccessible_reported</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The remote storage is not accessible&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_storage_inaccessible_reported</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_storage_inaccessible_reported</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Shepherd._health_check"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._health_check">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_health_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Periodically check if the specified sheep is running and resolve its in-progress jobs if not.</span>
+
+<span class="sd">        :param sheep_id: id of the sheep to be checked</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">sheep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sheep</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">sheep</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">job_id</span> <span class="ow">in</span> <span class="n">sheep</span><span class="o">.</span><span class="n">in_progress</span><span class="p">:</span>
+                        <span class="c1"># clean-up the working directory</span>
+                        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_sheep</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">)</span><span class="o">.</span><span class="n">sheep_data_root</span><span class="p">,</span> <span class="n">job_id</span><span class="p">))</span>
+
+                        <span class="c1"># save the error</span>
+                        <span class="n">error</span> <span class="o">=</span> <span class="n">ErrorModel</span><span class="p">({</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Sheep container died without notice&#39;</span><span class="p">})</span>
+                        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Sheep `</span><span class="si">%s</span><span class="s1">` encountered error when processing job `</span><span class="si">%s</span><span class="s1">`: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                                      <span class="n">sheep_id</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_report_job_failed</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">sheep</span><span class="p">)</span>
+                    <span class="n">sheep</span><span class="o">.</span><span class="n">in_progress</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+                    <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_done_condition</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">job_done_condition</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">SheepError</span> <span class="k">as</span> <span class="n">se</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Failed to check sheep</span><span class="se">\&#39;</span><span class="s1">s health &#39;</span>  <span class="c1"># pragma: no cover</span>
+                                <span class="s1">&#39;due to the following exception: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">se</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Shepherd._dequeue_and_feed_jobs"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._dequeue_and_feed_jobs">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_dequeue_and_feed_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        De-queue jobs, prepare working directories and send ``InputMessage`` to the specified sheep in an end-less</span>
+<span class="sd">        loop.</span>
+
+<span class="sd">        :param sheep_id: sheep id to be fed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">sheep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sheep</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">)</span>
+            <span class="n">job_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">sheep</span><span class="o">.</span><span class="n">jobs_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Preparing working directory for job `</span><span class="si">%s</span><span class="s1">` on `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">)</span>
+
+            <span class="c1"># prepare working directory</span>
+            <span class="n">working_directory</span> <span class="o">=</span> <span class="n">create_clean_dir</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sheep</span><span class="o">.</span><span class="n">sheep_data_root</span><span class="p">,</span> <span class="n">job_id</span><span class="p">))</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">pull_job_data</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">)</span>
+            <span class="n">create_clean_dir</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">working_directory</span><span class="p">,</span> <span class="n">OUTPUT_DIR</span><span class="p">))</span>
+
+            <span class="c1"># update the job status</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_job_status</span><span class="p">[</span><span class="n">job_id</span><span class="p">]</span>
+            <span class="n">status</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">JobStatus</span><span class="o">.</span><span class="n">PROCESSING</span>
+            <span class="n">status</span><span class="o">.</span><span class="n">processing_started_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_job_status_update_queue</span><span class="o">.</span><span class="n">enqueue_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">set_job_status</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">copy</span><span class="p">()))</span>
+
+            <span class="c1"># (re)start the sheep if needed</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">model</span>
+            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">sheep</span><span class="o">.</span><span class="n">model_name</span> <span class="ow">or</span> <span class="n">model</span><span class="o">.</span><span class="n">version</span> <span class="o">!=</span> <span class="n">sheep</span><span class="o">.</span><span class="n">model_version</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">sheep</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Job `</span><span class="si">%s</span><span class="s1">` requires model `</span><span class="si">%s</span><span class="s1">:</span><span class="si">%s</span><span class="s1">` on `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">)</span>
+                <span class="c1"># we need to wait for the in-progress jobs which are already in the socket</span>
+                <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_done_condition</span><span class="p">:</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_done_condition</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">sheep</span><span class="o">.</span><span class="n">in_progress</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_slaughter_sheep</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_start_sheep</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">SheepConfigurationError</span> <span class="k">as</span> <span class="n">sce</span><span class="p">:</span>
+                    <span class="n">error</span> <span class="o">=</span> <span class="n">ErrorModel</span><span class="p">({</span>
+                        <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Failed to start sheep for this job (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sce</span><span class="p">))</span>
+                    <span class="p">})</span>
+
+                    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Sheep `</span><span class="si">%s</span><span class="s1">` encountered error when processing job `</span><span class="si">%s</span><span class="s1">`: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_report_job_failed</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">sheep</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                    <span class="n">error</span> <span class="o">=</span> <span class="n">ErrorModel</span><span class="p">({</span>
+                        <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;`</span><span class="si">{}</span><span class="s1">` thrown when starting sheep `</span><span class="si">{}</span><span class="s1">` for job `</span><span class="si">{}</span><span class="s1">`&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">),</span> <span class="n">sheep_id</span><span class="p">,</span> <span class="n">job_id</span><span class="p">),</span>
+                        <span class="s1">&#39;exception_type&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ex</span><span class="p">)),</span>
+                        <span class="s1">&#39;exception_traceback&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_tb</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">))</span>
+                    <span class="p">})</span>
+
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_report_job_failed</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">sheep</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error encountered when starting sheep `</span><span class="si">%s</span><span class="s2">` for job `</span><span class="si">%s</span><span class="s2">`&quot;</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+            <span class="c1"># send the InputMessage to the sheep</span>
+            <span class="n">sheep</span><span class="o">.</span><span class="n">in_progress</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Sending InputMessage for job `</span><span class="si">%s</span><span class="s1">` on `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">Messenger</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sheep</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">InputMessage</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span> <span class="n">io_data_root</span><span class="o">=</span><span class="n">sheep</span><span class="o">.</span><span class="n">sheep_data_root</span><span class="p">)))</span>
+
+            <span class="c1"># notify the queue that the task is done</span>
+            <span class="n">sheep</span><span class="o">.</span><span class="n">jobs_queue</span><span class="o">.</span><span class="n">task_done</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Shepherd._report_job_failed"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._report_job_failed">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_report_job_failed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="n">ErrorModel</span><span class="p">,</span> <span class="n">sheep</span><span class="p">:</span> <span class="n">BaseSheep</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A job has failed - remove the local copy of its data and mark it as failed in the remote storage.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_job_status</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+        <span class="n">status</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">JobStatus</span><span class="o">.</span><span class="n">FAILED</span>
+        <span class="n">status</span><span class="o">.</span><span class="n">error_details</span> <span class="o">=</span> <span class="n">error</span>
+        <span class="n">status</span><span class="o">.</span><span class="n">finished_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_done_condition</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">job_done_condition</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sheep</span><span class="o">.</span><span class="n">sheep_data_root</span><span class="p">,</span> <span class="n">job_id</span><span class="p">),</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_job_status_update_queue</span><span class="o">.</span><span class="n">enqueue_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">set_job_status</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">copy</span><span class="p">()))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Error when reporting job `</span><span class="si">%s</span><span class="s1">` as failed&#39;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Shepherd._listen"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._listen">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_listen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Poll the sheep output sockets, process sheep outputs and clean-up working directories in an endless loop.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># poll the output sockets</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_poller</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+            <span class="n">sheep_ids</span> <span class="o">=</span> <span class="p">(</span><span class="n">sheep_id</span> <span class="k">for</span> <span class="n">sheep_id</span><span class="p">,</span> <span class="n">sheep</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sheep</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="n">sheep</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">zmq</span><span class="o">.</span><span class="n">POLLIN</span><span class="p">)</span> <span class="ow">in</span> <span class="n">result</span><span class="p">)</span>
+
+            <span class="c1"># process the sheep with pending outputs</span>
+            <span class="k">for</span> <span class="n">sheep_id</span> <span class="ow">in</span> <span class="n">sheep_ids</span><span class="p">:</span>
+                <span class="n">sheep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sheep</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">)</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Messenger</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">sheep</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="p">[</span><span class="n">DoneMessage</span><span class="p">,</span> <span class="n">ErrorMessage</span><span class="p">],</span> <span class="n">noblock</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">job_id</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">job_id</span>
+
+                <span class="c1"># clean-up the working directory and upload the results</span>
+                <span class="n">working_directory</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_sheep</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">)</span><span class="o">.</span><span class="n">sheep_data_root</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">push_job_data</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">)</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">working_directory</span><span class="p">)</span>
+
+                <span class="c1"># save the done/error file</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">DoneMessage</span><span class="p">):</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_job_status</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+                    <span class="n">status</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">JobStatus</span><span class="o">.</span><span class="n">DONE</span>
+                    <span class="n">status</span><span class="o">.</span><span class="n">finished_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_job_status_update_queue</span><span class="o">.</span><span class="n">enqueue_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">set_job_status</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">copy</span><span class="p">()))</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Job `</span><span class="si">%s</span><span class="s1">` from sheep `</span><span class="si">%s</span><span class="s1">` done&#39;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorMessage</span><span class="p">):</span>
+                    <span class="n">error</span> <span class="o">=</span> <span class="n">ErrorModel</span><span class="p">({</span>
+                        <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+                        <span class="s2">&quot;exception_type&quot;</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">exception_type</span><span class="p">,</span>
+                        <span class="s2">&quot;exception_traceback&quot;</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">exception_traceback</span>
+                    <span class="p">})</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_report_job_failed</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">sheep</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_job_status</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Job `</span><span class="si">%s</span><span class="s1">` from sheep `</span><span class="si">%s</span><span class="s1">` failed (</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">sheep_id</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">short_error</span><span class="p">)</span>
+
+                <span class="c1"># notify about the finished job</span>
+                <span class="n">sheep</span><span class="o">.</span><span class="n">in_progress</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+
+                <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_done_condition</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">job_done_condition</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Shepherd.get_status"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SheepModel</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get status information for all sheep</span>
+
+<span class="sd">        :return: a generator of status information</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">sheep_id</span><span class="p">,</span> <span class="n">sheep</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sheep</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">sheep_id</span><span class="p">,</span> <span class="n">SheepModel</span><span class="p">({</span>
+                <span class="s2">&quot;running&quot;</span><span class="p">:</span> <span class="n">sheep</span><span class="o">.</span><span class="n">running</span><span class="p">,</span>
+                <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">sheep</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span>
+                    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">sheep</span><span class="o">.</span><span class="n">model_version</span>
+                <span class="p">}</span>
+            <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Shepherd._slaughter_all"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._slaughter_all">[docs]</a>    <span class="k">def</span> <span class="nf">_slaughter_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Slaughter all sheep.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">sheep_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sheep</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_slaughter_sheep</span><span class="p">(</span><span class="n">sheep_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Shepherd.get_job_status"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.get_job_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JobStatusModel</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get status information for a job. Only the local state is checked, without querying the remote storage.</span>
+
+<span class="sd">        :param job_id: id of the queried job</span>
+<span class="sd">        :return: status information or None if the job is not in the local state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_job_status</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Shepherd.is_job_done"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.is_job_done">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_job_done</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the specified job is already done.</span>
+<span class="sd">        The behavior of this method is undefined when `enqueue_job` is called in the middle of its execution</span>
+<span class="sd">        (with the same job_id).</span>
+
+<span class="sd">        :param job_id: id of the job to be checked</span>
+<span class="sd">        :raise UnknownJobError: if the job is not ready nor it is known to this shepherd</span>
+<span class="sd">        :return: job ready flag</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">job_dir_exists</span><span class="p">(</span><span class="n">job_id</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">UnknownJobError</span><span class="p">()</span>
+
+        <span class="n">status</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">get_job_status</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">status</span><span class="o">.</span><span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="n">JobStatus</span><span class="o">.</span><span class="n">DONE</span><span class="p">,</span> <span class="n">JobStatus</span><span class="o">.</span><span class="n">FAILED</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Shepherd.close"><a class="viewcode-back" href="../../../shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a clean exit by slaughtering all sheeps, stopping background tasks and waiting for status updates to be</span>
+<span class="sd">        sent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_slaughter_all</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_listener</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_health_checker</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">sheep_tasks</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sheep_tasks</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">sheep_task</span> <span class="ow">in</span> <span class="n">sheep_tasks</span><span class="p">:</span>
+                <span class="n">sheep_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_job_status_update_queue</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Iterait a.s..<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.<br/>
+    </p>
+  </div>
+</footer>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-108491604-2"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-108491604-2');
+</script>
+
+
+
+  </body>
+</html>

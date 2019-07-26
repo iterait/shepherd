@@ -123,7 +123,7 @@ Helper class for running and managing docker images.</p></li>
 </ul>
 <dl class="class">
 <dt id="shepherd.docker.DockerContainer">
-<em class="property">class </em><code class="descclassname">shepherd.docker.</code><code class="descname">DockerContainer</code><span class="sig-paren">(</span><em>image</em>, <em>autoremove=True</em>, <em>runtime=None</em>, <em>env=None</em>, <em>bind_mounts=None</em>, <em>ports=None</em>, <em>command=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">shepherd.docker.</code><code class="sig-name descname">DockerContainer</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">autoremove=True</em>, <em class="sig-param">runtime=None</em>, <em class="sig-param">env=None</em>, <em class="sig-param">bind_mounts=None</em>, <em class="sig-param">ports=None</em>, <em class="sig-param">command=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Helper class for running and managing docker containers.</p>
 <div class="graphviz"><img src="../_images/inheritance-8024c778df1d78de311ae5a5227278ef9e8b28c9.png" alt="Inheritance diagram of DockerContainer" class="inheritance graphviz" /></div>
@@ -132,7 +132,7 @@ Helper class for running and managing docker images.</p></li>
 </div>
 <dl class="method">
 <dt id="shepherd.docker.DockerContainer.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>image</em>, <em>autoremove=True</em>, <em>runtime=None</em>, <em>env=None</em>, <em>bind_mounts=None</em>, <em>ports=None</em>, <em>command=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">autoremove=True</em>, <em class="sig-param">runtime=None</em>, <em class="sig-param">env=None</em>, <em class="sig-param">bind_mounts=None</em>, <em class="sig-param">ports=None</em>, <em class="sig-param">command=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize <a class="reference internal" href="#shepherd.docker.DockerContainer" title="shepherd.docker.DockerContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DockerContainer</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -151,7 +151,7 @@ Helper class for running and managing docker images.</p></li>
 
 <dl class="method">
 <dt id="shepherd.docker.DockerContainer._build_run_command">
-<code class="descname">_build_run_command</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer._build_run_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer._build_run_command" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_build_run_command</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer._build_run_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer._build_run_command" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build docker container run command.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -165,7 +165,7 @@ Helper class for running and managing docker images.</p></li>
 
 <dl class="method">
 <dt id="shepherd.docker.DockerContainer.kill">
-<code class="descname">kill</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer.kill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer.kill" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">kill</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer.kill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer.kill" title="Permalink to this definition">¶</a></dt>
 <dd><p>Kill the underlying docker container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
@@ -177,9 +177,9 @@ Helper class for running and managing docker images.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="shepherd.docker.DockerContainer.running">
-<code class="descname">running</code><a class="headerlink" href="#shepherd.docker.DockerContainer.running" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">running</code><a class="headerlink" href="#shepherd.docker.DockerContainer.running" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the underlying docker container is still up and running.
 Returns <code class="docutils literal notranslate"><span class="pre">False</span></code> if the container was not even started.</p>
 <dl class="field-list simple">
@@ -194,7 +194,7 @@ Returns <code class="docutils literal notranslate"><span class="pre">False</span
 
 <dl class="method">
 <dt id="shepherd.docker.DockerContainer.start">
-<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer.start" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -207,7 +207,7 @@ Returns <code class="docutils literal notranslate"><span class="pre">False</span
 
 <dl class="class">
 <dt id="shepherd.docker.DockerImage">
-<em class="property">class </em><code class="descclassname">shepherd.docker.</code><code class="descname">DockerImage</code><span class="sig-paren">(</span><em>name</em>, <em>tag</em>, <em>registry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerImage" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">shepherd.docker.</code><code class="sig-name descname">DockerImage</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">tag</em>, <em class="sig-param">registry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerImage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Helper class for running and managing docker images.</p>
 <div class="graphviz"><img src="../_images/inheritance-ef32c40f64461c9776e3e79dcfcd783ba4a2f150.png" alt="Inheritance diagram of DockerImage" class="inheritance graphviz" /></div>
@@ -216,7 +216,7 @@ Returns <code class="docutils literal notranslate"><span class="pre">False</span
 </div>
 <dl class="method">
 <dt id="shepherd.docker.DockerImage.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>name</em>, <em>tag</em>, <em>registry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerImage.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">tag</em>, <em class="sig-param">registry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerImage.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize new <a class="reference internal" href="#shepherd.docker.DockerImage" title="shepherd.docker.DockerImage"><code class="xref py py-class docutils literal notranslate"><span class="pre">DockerImage</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -231,7 +231,7 @@ Returns <code class="docutils literal notranslate"><span class="pre">False</span
 
 <dl class="method">
 <dt id="shepherd.docker.DockerImage._login">
-<code class="descname">_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage._login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerImage._login" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage._login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerImage._login" title="Permalink to this definition">¶</a></dt>
 <dd><p>If the registry configuration contains a username, log-in to the registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -240,9 +240,9 @@ Returns <code class="docutils literal notranslate"><span class="pre">False</span
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="shepherd.docker.DockerImage.full_name">
-<code class="descname">full_name</code><a class="headerlink" href="#shepherd.docker.DockerImage.full_name" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">full_name</code><a class="headerlink" href="#shepherd.docker.DockerImage.full_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return docker image full name including registry url. E.g.: <code class="docutils literal notranslate"><span class="pre">docker.iterait.com/my-image:latest</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -253,7 +253,7 @@ Returns <code class="docutils literal notranslate"><span class="pre">False</span
 
 <dl class="method">
 <dt id="shepherd.docker.DockerImage.pull">
-<code class="descname">pull</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage.pull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerImage.pull" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">pull</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage.pull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerImage.pull" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pull the underlying docker image.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -281,7 +281,7 @@ Returns <code class="docutils literal notranslate"><span class="pre">False</span
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.<br/>
     </p>
   </div>
 </footer>

@@ -135,13 +135,13 @@ Return the number of NVIDIA GPU devices available to this process.</p></li>
 </ul>
 <dl class="function">
 <dt id="shepherd.runner.to_json_serializable">
-<code class="descclassname">shepherd.runner.</code><code class="descname">to_json_serializable</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#to_json_serializable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.to_json_serializable" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">shepherd.runner.</code><code class="sig-name descname">to_json_serializable</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#to_json_serializable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.to_json_serializable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make an object containing numpy arrays/scalars JSON serializable.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="shepherd.runner.run">
-<code class="descclassname">shepherd.runner.</code><code class="descname">run</code><span class="sig-paren">(</span><em>model</em>, <em>dataset</em>, <em>stream_name</em>, <em>payload</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">shepherd.runner.</code><code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">dataset</em>, <em class="sig-param">stream_name</em>, <em class="sig-param">payload</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the specified data stream from the given dataset, apply the given model on its batches and return the results.</p>
 <dl class="simple">
 <dt>The components have to be <strong>emloop</strong> compatible with:</dt><dd><ul class="simple">
@@ -174,7 +174,7 @@ Return the number of NVIDIA GPU devices available to this process.</p></li>
 
 <dl class="function">
 <dt id="shepherd.runner.n_available_gpus">
-<code class="descclassname">shepherd.runner.</code><code class="descname">n_available_gpus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#n_available_gpus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.n_available_gpus" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">shepherd.runner.</code><code class="sig-name descname">n_available_gpus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#n_available_gpus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.n_available_gpus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the number of NVIDIA GPU devices available to this process.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -203,7 +203,7 @@ Fully functional emloop runner which loads a JSON from <code class="docutils lit
 </ul>
 <dl class="class">
 <dt id="shepherd.runner.BaseRunner">
-<em class="property">class </em><code class="descclassname">shepherd.runner.</code><code class="descname">BaseRunner</code><span class="sig-paren">(</span><em>config_path</em>, <em>port</em>, <em>stream_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">shepherd.runner.</code><code class="sig-name descname">BaseRunner</code><span class="sig-paren">(</span><em class="sig-param">config_path</em>, <em class="sig-param">port</em>, <em class="sig-param">stream_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base <strong>emloop</strong> runner class suitable for inheritance when implementing a runner with custom behavior.
 <a class="reference internal" href="#shepherd.runner.BaseRunner" title="shepherd.runner.BaseRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRunner</span></code></a> manages the socket, messages and many more. See <a class="reference internal" href="#shepherd.runner.BaseRunner._process_job" title="shepherd.runner.BaseRunner._process_job"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_process_job()</span></code></a> for more info.</p>
@@ -213,13 +213,13 @@ Fully functional emloop runner which loads a JSON from <code class="docutils lit
 </div>
 <dl class="method">
 <dt id="shepherd.runner.BaseRunner.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>config_path</em>, <em>port</em>, <em>stream_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">config_path</em>, <em class="sig-param">port</em>, <em class="sig-param">stream_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create new <code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="shepherd.runner.BaseRunner._load_config">
-<code class="descname">_load_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._load_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._load_config" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_load_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._load_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._load_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maybe load the <strong>emloop</strong> configuration from previously specified file and apply updates
 from <code class="docutils literal notranslate"><span class="pre">eval.&lt;stream_name&gt;</span></code> section.</p>
 <dl class="field-list simple">
@@ -231,7 +231,7 @@ from <code class="docutils literal notranslate"><span class="pre">eval.&lt;strea
 
 <dl class="method">
 <dt id="shepherd.runner.BaseRunner._load_dataset">
-<code class="descname">_load_dataset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._load_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._load_dataset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_load_dataset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._load_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._load_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maybe load dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -242,7 +242,7 @@ from <code class="docutils literal notranslate"><span class="pre">eval.&lt;strea
 
 <dl class="method">
 <dt id="shepherd.runner.BaseRunner._load_model">
-<code class="descname">_load_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._load_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._load_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_load_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._load_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._load_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maybe load model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -253,7 +253,7 @@ from <code class="docutils literal notranslate"><span class="pre">eval.&lt;strea
 
 <dl class="method">
 <dt id="shepherd.runner.BaseRunner._process_job">
-<code class="descname">_process_job</code><span class="sig-paren">(</span><em>input_path</em>, <em>output_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._process_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._process_job" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">_process_job</code><span class="sig-paren">(</span><em class="sig-param">input_path</em>, <em class="sig-param">output_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._process_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._process_job" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process a job with having inputs in the <code class="docutils literal notranslate"><span class="pre">input_path</span></code> and save the outputs to the <code class="docutils literal notranslate"><span class="pre">output_path</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -270,7 +270,7 @@ from <code class="docutils literal notranslate"><span class="pre">eval.&lt;strea
 
 <dl class="method">
 <dt id="shepherd.runner.BaseRunner.process_all">
-<code class="descname">process_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner.process_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner.process_all" title="Permalink to this definition">¶</a></dt>
+<em class="property">async </em><code class="sig-name descname">process_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner.process_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner.process_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Listen on the <code class="docutils literal notranslate"><span class="pre">self._socket</span></code> and process the incoming jobs in an endless loop.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -283,7 +283,7 @@ from <code class="docutils literal notranslate"><span class="pre">eval.&lt;strea
 
 <dl class="class">
 <dt id="shepherd.runner.JSONRunner">
-<em class="property">class </em><code class="descclassname">shepherd.runner.</code><code class="descname">JSONRunner</code><span class="sig-paren">(</span><em>config_path</em>, <em>port</em>, <em>stream_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#JSONRunner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.JSONRunner" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">shepherd.runner.</code><code class="sig-name descname">JSONRunner</code><span class="sig-paren">(</span><em class="sig-param">config_path</em>, <em class="sig-param">port</em>, <em class="sig-param">stream_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#JSONRunner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.JSONRunner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.runner.base_runner.BaseRunner</span></code></p>
 <p>Fully functional emloop runner which loads a JSON from <code class="docutils literal notranslate"><span class="pre">input_path</span></code>/<code class="docutils literal notranslate"><span class="pre">input.json</span></code>, passes the loaded object
 to the desired dataset stream, runs the model and saves the output batch to <code class="docutils literal notranslate"><span class="pre">output_path</span></code>/<code class="docutils literal notranslate"><span class="pre">output.json</span></code>.</p>
@@ -293,7 +293,7 @@ to the desired dataset stream, runs the model and saves the output batch to <cod
 </div>
 <dl class="method">
 <dt id="shepherd.runner.JSONRunner._process_job">
-<code class="descname">_process_job</code><span class="sig-paren">(</span><em>input_path</em>, <em>output_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#JSONRunner._process_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.JSONRunner._process_job" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_process_job</code><span class="sig-paren">(</span><em class="sig-param">input_path</em>, <em class="sig-param">output_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#JSONRunner._process_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.JSONRunner._process_job" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Process a JSON job</dt><dd><ul class="simple">
 <li><p>load <code class="docutils literal notranslate"><span class="pre">input_path</span></code>/<code class="docutils literal notranslate"><span class="pre">input</span></code></p></li>
@@ -335,7 +335,7 @@ to the desired dataset stream, runs the model and saves the output batch to <cod
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.<br/>
     </p>
   </div>
 </footer>

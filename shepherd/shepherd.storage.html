@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>shepherd.storage &#8212; shepherd 0.5.2 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/highlight.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/swagger-ui.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="shepherd.utils" href="shepherd.utils.html" />
+    <link rel="prev" title="shepherd.shepherd" href="shepherd.shepherd.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-worker navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          shepherd</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../tutorial.html">Introduction</a></li>
+                <li><a href="../bare_sheep.html">Bare Sheep</a></li>
+                <li><a href="../docker_sheep.html">Docker Sheep</a></li>
+                <li><a href="../runners.html">Runners</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="index.html">Package Reference</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Pages <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<div class="side_nav">
+    <a href="shepherd.shepherd.html" title="Previous Chapter: shepherd.shepherd"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; shepherd.shepherd</span>
+    </a>
+    </div>
+<div class="side_nav">
+    <a href="shepherd.utils.html" title="Next Chapter: shepherd.utils"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">shepherd.utils &raquo;</span>
+    </a>
+    </div><ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">shepherd.storage</span></code></a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+</ul>
+</li>
+</ul>
+
+<form action="../search.html" method="get" class="searchbox">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form><div class="side_nav">
+	<h4>Related projects</h4>
+</div>
+<ul class="nav nav-list">
+	<li><a href="https://emloop.org">emloop</a></li>
+	<li><a href="https://tensorflow.emloop.org">emloop-tensorflow</a></li>
+	<li><a href="https://hipipe.org">hipipe (c++)</a></li>
+</ul>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="module-shepherd.storage">
+<span id="shepherd-storage"></span><h1><code class="docutils literal notranslate"><span class="pre">shepherd.storage</span></code><a class="headerlink" href="#module-shepherd.storage" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="#shepherd.storage.Storage" title="shepherd.storage.Storage"><code class="xref py py-class docutils literal notranslate"><span class="pre">Storage</span></code></a>:
+An interface for services that provide access to job data in a remote storage.</p></li>
+<li><p><a class="reference internal" href="#shepherd.storage.MinioStorage" title="shepherd.storage.MinioStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">MinioStorage</span></code></a>:
+A remote storage adapter that uses the aiobotocore S3 client to access Minio.</p></li>
+</ul>
+<dl class="class">
+<dt id="shepherd.storage.Storage">
+<em class="property">class </em><code class="sig-prename descclassname">shepherd.storage.</code><code class="sig-name descname">Storage</code><a class="reference internal" href="../_modules/shepherd/storage/storage.html#Storage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.Storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>An interface for services that provide access to job data in a remote storage.</p>
+<div class="graphviz"><img src="../_images/inheritance-c16be88421293d281b7050f2412b30cc6a5f1761.png" alt="Inheritance diagram of Storage" class="inheritance graphviz" /></div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<dl class="method">
+<dt id="shepherd.storage.Storage.close">
+<em class="property">async </em><code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/storage.html#Storage.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.Storage.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform cleanup tasks (if necessary - e.g. terminate connection pools).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageError" title="shepherd.errors.api.StorageError"><strong>StorageError</strong></a> – an error occurred while the storage was being closed</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.Storage.get_file">
+<em class="property">abstract async </em><code class="sig-name descname">get_file</code><span class="sig-paren">(</span><em class="sig-param">job_id</em>, <em class="sig-param">file_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/storage.html#Storage.get_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.Storage.get_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download given file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – identifier of the job to which the file belongs</p></li>
+<li><p><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – path to the queried file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Binaryio</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a stream to read the file contents from</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageInaccessibleError" title="shepherd.errors.api.StorageInaccessibleError"><strong>StorageInaccessibleError</strong></a> – the remote storage is not accessible</p></li>
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageError" title="shepherd.errors.api.StorageError"><strong>StorageError</strong></a> – there was an error when communicating with the remote storage</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.Storage.get_job_status">
+<em class="property">abstract async </em><code class="sig-name descname">get_job_status</code><span class="sig-paren">(</span><em class="sig-param">job_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/storage.html#Storage.get_job_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.Storage.get_job_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the remote storage to find out if the job is done (either finished or failed).
+This should not throw an error if the job does not exist (yet).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – identifier of the queried job</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageInaccessibleError" title="shepherd.errors.api.StorageInaccessibleError"><strong>StorageInaccessibleError</strong></a> – the remote storage is not accessible</p></li>
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageError" title="shepherd.errors.api.StorageError"><strong>StorageError</strong></a> – there was an error when communicating with the remote storage</p></li>
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.UnknownJobError" title="shepherd.errors.api.UnknownJobError"><strong>UnknownJobError</strong></a> – status for an unknown job was requested</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatusModel</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.Storage.init_job">
+<em class="property">abstract async </em><code class="sig-name descname">init_job</code><span class="sig-paren">(</span><em class="sig-param">job_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/storage.html#Storage.init_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.Storage.init_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare storage for a new job.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – identifier of the new job</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.Storage.is_accessible">
+<em class="property">abstract async </em><code class="sig-name descname">is_accessible</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/storage.html#Storage.is_accessible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.Storage.is_accessible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the remote storage can be accessed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.Storage.job_dir_exists">
+<em class="property">abstract async </em><code class="sig-name descname">job_dir_exists</code><span class="sig-paren">(</span><em class="sig-param">job_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/storage.html#Storage.job_dir_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.Storage.job_dir_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the remote storage contains directory/bucket for the given job.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – identifier of the job to be checked</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageInaccessibleError" title="shepherd.errors.api.StorageInaccessibleError"><strong>StorageInaccessibleError</strong></a> – the remote storage is not accessible</p></li>
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageError" title="shepherd.errors.api.StorageError"><strong>StorageError</strong></a> – there was an error when communicating with the remote storage</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.Storage.pull_job_data">
+<em class="property">abstract async </em><code class="sig-name descname">pull_job_data</code><span class="sig-paren">(</span><em class="sig-param">job_id</em>, <em class="sig-param">target_directory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/storage.html#Storage.pull_job_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.Storage.pull_job_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download job files from the remote storage to a local directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – identifier of the job whose files should be downloaded</p></li>
+<li><p><strong>target_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the directory where the files should be downloaded</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageInaccessibleError" title="shepherd.errors.api.StorageInaccessibleError"><strong>StorageInaccessibleError</strong></a> – the remote storage is not accessible</p></li>
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageError" title="shepherd.errors.api.StorageError"><strong>StorageError</strong></a> – there was an error when communicating with the remote storage</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.Storage.push_job_data">
+<em class="property">abstract async </em><code class="sig-name descname">push_job_data</code><span class="sig-paren">(</span><em class="sig-param">job_id</em>, <em class="sig-param">source_directory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/storage.html#Storage.push_job_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.Storage.push_job_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload processed job files from a local directory to the remote storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – identifier of the job whose files should be uploaded</p></li>
+<li><p><strong>source_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the directory from which the files should be uploaded</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageInaccessibleError" title="shepherd.errors.api.StorageInaccessibleError"><strong>StorageInaccessibleError</strong></a> – the remote storage is not accessible</p></li>
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageError" title="shepherd.errors.api.StorageError"><strong>StorageError</strong></a> – there was an error when communicating with the remote storage</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.Storage.put_file">
+<em class="property">abstract async </em><code class="sig-name descname">put_file</code><span class="sig-paren">(</span><em class="sig-param">job_id</em>, <em class="sig-param">file_path</em>, <em class="sig-param">stream</em>, <em class="sig-param">length</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/storage.html#Storage.put_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.Storage.put_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store given file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – identifier of the job to which the file belongs</p></li>
+<li><p><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – path to the stored file</p></li>
+<li><p><strong>stream</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Binaryio</span></code>) – stream to read file contents from</p></li>
+<li><p><strong>length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – length of the content stream</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageInaccessibleError" title="shepherd.errors.api.StorageInaccessibleError"><strong>StorageInaccessibleError</strong></a> – the remote storage is not accessible</p></li>
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageError" title="shepherd.errors.api.StorageError"><strong>StorageError</strong></a> – there was an error when communicating with the remote storage</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.Storage.set_job_status">
+<em class="property">async </em><code class="sig-name descname">set_job_status</code><span class="sig-paren">(</span><em class="sig-param">job_id</em>, <em class="sig-param">status</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/storage.html#Storage.set_job_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.Storage.set_job_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the status file for a job.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – identifier of the updated job</p></li>
+<li><p><strong>status</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatusModel</span></code>) – new status information</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageInaccessibleError" title="shepherd.errors.api.StorageInaccessibleError"><strong>StorageInaccessibleError</strong></a> – the remote storage is not accessible</p></li>
+<li><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.StorageError" title="shepherd.errors.api.StorageError"><strong>StorageError</strong></a> – there was an error when communicating with the remote storage</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="shepherd.storage.MinioStorage">
+<em class="property">class </em><code class="sig-prename descclassname">shepherd.storage.</code><code class="sig-name descname">MinioStorage</code><span class="sig-paren">(</span><em class="sig-param">storage_config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.storage.storage.Storage</span></code></p>
+<p>A remote storage adapter that uses the aiobotocore S3 client to access Minio.</p>
+<div class="graphviz"><img src="../_images/inheritance-9c0cf8187c9ce8c795ca4e98e7eb0648587da2e7.png" alt="Inheritance diagram of MinioStorage" class="inheritance graphviz" /></div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">storage_config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the storage according to the configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>storage_config</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">StorageConfig</span></code>) – storage configuration</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage._download_object">
+<em class="property">async </em><code class="sig-name descname">_download_object</code><span class="sig-paren">(</span><em class="sig-param">bucket</em>, <em class="sig-param">object_name</em>, <em class="sig-param">destination_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage._download_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage._download_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download a remote object into a file identified by a path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bucket</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the bucket where the object is stored</p></li>
+<li><p><strong>object_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the path to the object</p></li>
+<li><p><strong>destination_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – where the object should be stored</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage._ensure_auth_headers">
+<code class="sig-name descname">_ensure_auth_headers</code><span class="sig-paren">(</span><em class="sig-param">method</em>, <em class="sig-param">url</em>, <em class="sig-param">headers=None</em>, <em class="sig-param">content_sha256=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage._ensure_auth_headers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage._ensure_auth_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure that given header set contains all headers required for a successful authentication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">CIMultiDict</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CIMultiDictProxy</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage._ensure_user_agent_header">
+<em class="property">static </em><code class="sig-name descname">_ensure_user_agent_header</code><span class="sig-paren">(</span><em class="sig-param">headers=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage._ensure_user_agent_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage._ensure_user_agent_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add User-Agent header if not specified yet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">CIMultiDict</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CIMultiDictProxy</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage._get_object">
+<em class="property">async </em><code class="sig-name descname">_get_object</code><span class="sig-paren">(</span><em class="sig-param">bucket</em>, <em class="sig-param">object_name</em>, <em class="sig-param">destination</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage._get_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage._get_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch a remote object into a binary file/stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bucket</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the bucket where the object is stored</p></li>
+<li><p><strong>object_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the path to the object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage._list_bucket">
+<code class="sig-name descname">_list_bucket</code><span class="sig-paren">(</span><em class="sig-param">bucket</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage._list_bucket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage._list_bucket" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the names of all files in a bucket.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bucket</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the bucket to list</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Asynciterable</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a generator of file names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage._object_exists">
+<em class="property">async </em><code class="sig-name descname">_object_exists</code><span class="sig-paren">(</span><em class="sig-param">bucket</em>, <em class="sig-param">object_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage._object_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage._object_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an object exists in the remote storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bucket</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the bucket to search for the object</p></li>
+<li><p><strong>object_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – name of the object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the object exists, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage._put_object">
+<em class="property">async </em><code class="sig-name descname">_put_object</code><span class="sig-paren">(</span><em class="sig-param">bucket</em>, <em class="sig-param">object_name</em>, <em class="sig-param">content</em>, <em class="sig-param">length</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage._put_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage._put_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store data from a file/stream object as a remote object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bucket</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the bucket where the object should be stored</p></li>
+<li><p><strong>object_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the name of the new object</p></li>
+<li><p><strong>content</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Binaryio</span></code>) – a stream containing the object data</p></li>
+<li><p><strong>length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – the length of the data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage._upload_object">
+<em class="property">async </em><code class="sig-name descname">_upload_object</code><span class="sig-paren">(</span><em class="sig-param">bucket</em>, <em class="sig-param">object_name</em>, <em class="sig-param">source_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage._upload_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage._upload_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store the contents of a file identified by a path in a remote object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bucket</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the bucket where the object should stored</p></li>
+<li><p><strong>object_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the name of the new object</p></li>
+<li><p><strong>source_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the path of the source file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage.close">
+<em class="property">async </em><code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of <a class="reference internal" href="#shepherd.storage.Storage.close" title="shepherd.storage.Storage.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shepherd.storage.Storage.close()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage.get_file">
+<em class="property">async </em><code class="sig-name descname">get_file</code><span class="sig-paren">(</span><em class="sig-param">job_id</em>, <em class="sig-param">file_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage.get_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage.get_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of <a class="reference internal" href="#shepherd.storage.Storage.get_file" title="shepherd.storage.Storage.get_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shepherd.storage.Storage.get_file()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Binaryio</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage.get_job_status">
+<em class="property">async </em><code class="sig-name descname">get_job_status</code><span class="sig-paren">(</span><em class="sig-param">job_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage.get_job_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage.get_job_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of <a class="reference internal" href="#shepherd.storage.Storage.get_job_status" title="shepherd.storage.Storage.get_job_status"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shepherd.storage.Storage.get_job_status()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatusModel</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage.init_job">
+<em class="property">async </em><code class="sig-name descname">init_job</code><span class="sig-paren">(</span><em class="sig-param">job_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage.init_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage.init_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of <a class="reference internal" href="#shepherd.storage.Storage.init_job" title="shepherd.storage.Storage.init_job"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shepherd.storage.Storage.init_job()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage.is_accessible">
+<em class="property">async </em><code class="sig-name descname">is_accessible</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage.is_accessible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage.is_accessible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of <a class="reference internal" href="#shepherd.storage.Storage.is_accessible" title="shepherd.storage.Storage.is_accessible"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shepherd.storage.Storage.is_accessible()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage.job_dir_exists">
+<em class="property">async </em><code class="sig-name descname">job_dir_exists</code><span class="sig-paren">(</span><em class="sig-param">job_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage.job_dir_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage.job_dir_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of <code class="xref py py-meth docutils literal notranslate"><span class="pre">shepherd.storage.Storage.job_data_exists()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage.pull_job_data">
+<em class="property">async </em><code class="sig-name descname">pull_job_data</code><span class="sig-paren">(</span><em class="sig-param">job_id</em>, <em class="sig-param">target_directory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage.pull_job_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage.pull_job_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of <a class="reference internal" href="#shepherd.storage.Storage.pull_job_data" title="shepherd.storage.Storage.pull_job_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shepherd.storage.Storage.pull_job_data()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage.push_job_data">
+<em class="property">async </em><code class="sig-name descname">push_job_data</code><span class="sig-paren">(</span><em class="sig-param">job_id</em>, <em class="sig-param">source_directory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage.push_job_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage.push_job_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of <a class="reference internal" href="#shepherd.storage.Storage.push_job_data" title="shepherd.storage.Storage.push_job_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shepherd.storage.Storage.push_job_data()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage.put_file">
+<em class="property">async </em><code class="sig-name descname">put_file</code><span class="sig-paren">(</span><em class="sig-param">job_id</em>, <em class="sig-param">file_path</em>, <em class="sig-param">stream</em>, <em class="sig-param">length</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage.put_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage.put_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of <a class="reference internal" href="#shepherd.storage.Storage.put_file" title="shepherd.storage.Storage.put_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shepherd.storage.Storage.put_file()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="shepherd.storage.MinioStorage.set_job_status">
+<em class="property">async </em><code class="sig-name descname">set_job_status</code><span class="sig-paren">(</span><em class="sig-param">job_id</em>, <em class="sig-param">status</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/storage/minio_storage.html#MinioStorage.set_job_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.storage.MinioStorage.set_job_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of <a class="reference internal" href="#shepherd.storage.Storage.set_job_status" title="shepherd.storage.Storage.set_job_status"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shepherd.storage.Storage.set_job_status()</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Iterait a.s..<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.<br/>
+    </p>
+  </div>
+</footer>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-108491604-2"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-108491604-2');
+</script>
+
+
+
+  </body>
+</html>

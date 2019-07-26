@@ -107,6 +107,7 @@
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#J"><strong>J</strong></a>
  | <a href="#K"><strong>K</strong></a>
@@ -137,13 +138,35 @@
 </li>
         <li><a href="shepherd/shepherd.sheep.html#shepherd.sheep.DockerSheep.__init__">(shepherd.sheep.DockerSheep method)</a>
 </li>
+        <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.__init__">(shepherd.shepherd.Shepherd method)</a>
+</li>
+        <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.__init__">(shepherd.storage.MinioStorage method)</a>
+</li>
       </ul></li>
       <li><a href="shepherd/shepherd.docker.html#shepherd.docker.DockerContainer._build_run_command">_build_run_command() (shepherd.docker.DockerContainer method)</a>
 </li>
       <li><a href="shepherd/shepherd.sheep.html#shepherd.sheep.DockerSheep._CONTAINER_POINT">_CONTAINER_POINT (shepherd.sheep.DockerSheep attribute)</a>
 </li>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._dequeue_and_feed_jobs">_dequeue_and_feed_jobs() (shepherd.shepherd.Shepherd method)</a>
+</li>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._download_object">_download_object() (shepherd.storage.MinioStorage method)</a>
+</li>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._ensure_auth_headers">_ensure_auth_headers() (shepherd.storage.MinioStorage method)</a>
+</li>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._ensure_user_agent_header">_ensure_user_agent_header() (shepherd.storage.MinioStorage static method)</a>
+</li>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._get_object">_get_object() (shepherd.storage.MinioStorage method)</a>
+</li>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._get_sheep">_get_sheep() (shepherd.shepherd.Shepherd method)</a>
+</li>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._health_check">_health_check() (shepherd.shepherd.Shepherd method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._list_bucket">_list_bucket() (shepherd.storage.MinioStorage method)</a>
+</li>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._listen">_listen() (shepherd.shepherd.Shepherd method)</a>
+</li>
       <li><a href="shepherd/shepherd.runner.html#shepherd.runner.BaseRunner._load_config">_load_config() (shepherd.runner.BaseRunner method)</a>
 </li>
       <li><a href="shepherd/shepherd.runner.html#shepherd.runner.BaseRunner._load_dataset">_load_dataset() (shepherd.runner.BaseRunner method)</a>
@@ -160,12 +183,28 @@
       </ul></li>
       <li><a href="shepherd/shepherd.docker.html#shepherd.docker.DockerImage._login">_login() (shepherd.docker.DockerImage method)</a>
 </li>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._object_exists">_object_exists() (shepherd.storage.MinioStorage method)</a>
+</li>
       <li><a href="shepherd/shepherd.runner.html#shepherd.runner.BaseRunner._process_job">_process_job() (shepherd.runner.BaseRunner method)</a>
 
       <ul>
         <li><a href="shepherd/shepherd.runner.html#shepherd.runner.JSONRunner._process_job">(shepherd.runner.JSONRunner method)</a>
 </li>
       </ul></li>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._put_object">_put_object() (shepherd.storage.MinioStorage method)</a>
+</li>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._report_job_failed">_report_job_failed() (shepherd.shepherd.Shepherd method)</a>
+</li>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._shepherd_health_check">_shepherd_health_check() (shepherd.shepherd.Shepherd method)</a>
+</li>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._slaughter_all">_slaughter_all() (shepherd.shepherd.Shepherd method)</a>
+</li>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._slaughter_sheep">_slaughter_sheep() (shepherd.shepherd.Shepherd method)</a>
+</li>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd._start_sheep">_start_sheep() (shepherd.shepherd.Shepherd method)</a>
+</li>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._upload_object">_upload_object() (shepherd.storage.MinioStorage method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -202,6 +241,16 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.close">close() (shepherd.shepherd.Shepherd method)</a>
+
+      <ul>
+        <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.close">(shepherd.storage.MinioStorage method)</a>
+</li>
+        <li><a href="shepherd/shepherd.storage.html#shepherd.storage.Storage.close">(shepherd.storage.Storage method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="shepherd/shepherd.utils.html#shepherd.utils.create_clean_dir">create_clean_dir() (in module shepherd.utils)</a>
 </li>
   </ul></td>
@@ -230,6 +279,8 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.enqueue_job">enqueue_job() (shepherd.shepherd.Shepherd method)</a>
+</li>
       <li><a href="shepherd/shepherd.comm.html#shepherd.comm.ErrorMessage">ErrorMessage (class in shepherd.comm)</a>
 </li>
   </ul></td>
@@ -244,7 +295,31 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="shepherd/shepherd.docker.html#shepherd.docker.DockerImage.full_name">full_name (shepherd.docker.DockerImage attribute)</a>
+      <li><a href="shepherd/shepherd.docker.html#shepherd.docker.DockerImage.full_name">full_name() (shepherd.docker.DockerImage property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.get_file">get_file() (shepherd.storage.MinioStorage method)</a>
+
+      <ul>
+        <li><a href="shepherd/shepherd.storage.html#shepherd.storage.Storage.get_file">(shepherd.storage.Storage method)</a>
+</li>
+      </ul></li>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.get_job_status">get_job_status() (shepherd.shepherd.Shepherd method)</a>
+
+      <ul>
+        <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.get_job_status">(shepherd.storage.MinioStorage method)</a>
+</li>
+        <li><a href="shepherd/shepherd.storage.html#shepherd.storage.Storage.get_job_status">(shepherd.storage.Storage method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.get_status">get_status() (shepherd.shepherd.Shepherd method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -254,11 +329,25 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="shepherd/shepherd.comm.html#shepherd.comm.Message.identity">identity (shepherd.comm.Message attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.init_job">init_job() (shepherd.storage.MinioStorage method)</a>
+
+      <ul>
+        <li><a href="shepherd/shepherd.storage.html#shepherd.storage.Storage.init_job">(shepherd.storage.Storage method)</a>
+</li>
+      </ul></li>
       <li><a href="shepherd/shepherd.comm.html#shepherd.comm.InputMessage">InputMessage (class in shepherd.comm)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="shepherd/shepherd.comm.html#shepherd.comm.InputMessage.io_data_root">io_data_root (shepherd.comm.InputMessage attribute)</a>
+</li>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.is_accessible">is_accessible() (shepherd.storage.MinioStorage method)</a>
+
+      <ul>
+        <li><a href="shepherd/shepherd.storage.html#shepherd.storage.Storage.is_accessible">(shepherd.storage.Storage method)</a>
+</li>
+      </ul></li>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.is_job_done">is_job_done() (shepherd.shepherd.Shepherd method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -266,10 +355,16 @@
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="shepherd/shepherd.comm.html#shepherd.comm.Message.job_id">job_id (shepherd.comm.Message attribute)</a>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.job_dir_exists">job_dir_exists() (shepherd.storage.MinioStorage method)</a>
+
+      <ul>
+        <li><a href="shepherd/shepherd.storage.html#shepherd.storage.Storage.job_dir_exists">(shepherd.storage.Storage method)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="shepherd/shepherd.comm.html#shepherd.comm.Message.job_id">job_id (shepherd.comm.Message attribute)</a>
+</li>
       <li><a href="shepherd/shepherd.runner.html#shepherd.runner.JSONRunner">JSONRunner (class in shepherd.runner)</a>
 </li>
   </ul></td>
@@ -300,6 +395,8 @@
 </li>
       <li><a href="shepherd/shepherd.utils.html#shepherd.utils.minio_object_exists">minio_object_exists() (in module shepherd.utils)</a>
 </li>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage">MinioStorage (class in shepherd.storage)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -320,10 +417,28 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="shepherd/shepherd.runner.html#shepherd.runner.BaseRunner.process_all">process_all() (shepherd.runner.BaseRunner method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="shepherd/shepherd.docker.html#shepherd.docker.DockerImage.pull">pull() (shepherd.docker.DockerImage method)</a>
 </li>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.pull_job_data">pull_job_data() (shepherd.storage.MinioStorage method)</a>
+
+      <ul>
+        <li><a href="shepherd/shepherd.storage.html#shepherd.storage.Storage.pull_job_data">(shepherd.storage.Storage method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.push_job_data">push_job_data() (shepherd.storage.MinioStorage method)</a>
+
+      <ul>
+        <li><a href="shepherd/shepherd.storage.html#shepherd.storage.Storage.push_job_data">(shepherd.storage.Storage method)</a>
+</li>
+      </ul></li>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.put_file">put_file() (shepherd.storage.MinioStorage method)</a>
+
+      <ul>
+        <li><a href="shepherd/shepherd.storage.html#shepherd.storage.Storage.put_file">(shepherd.storage.Storage method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -334,14 +449,14 @@
 </li>
       <li><a href="shepherd/shepherd.runner.html#shepherd.runner.run">run() (in module shepherd.runner)</a>
 </li>
-      <li><a href="shepherd/shepherd.docker.html#shepherd.docker.DockerContainer.running">running (shepherd.docker.DockerContainer attribute)</a>
+      <li><a href="shepherd/shepherd.docker.html#shepherd.docker.DockerContainer.running">running() (shepherd.docker.DockerContainer property)</a>
 
       <ul>
-        <li><a href="shepherd/shepherd.sheep.html#shepherd.sheep.BareSheep.running">(shepherd.sheep.BareSheep attribute)</a>
+        <li><a href="shepherd/shepherd.sheep.html#shepherd.sheep.BareSheep.running">(shepherd.sheep.BareSheep property)</a>
 </li>
-        <li><a href="shepherd/shepherd.sheep.html#shepherd.sheep.BaseSheep.running">(shepherd.sheep.BaseSheep attribute)</a>
+        <li><a href="shepherd/shepherd.sheep.html#shepherd.sheep.BaseSheep.running">(shepherd.sheep.BaseSheep property)</a>
 </li>
-        <li><a href="shepherd/shepherd.sheep.html#shepherd.sheep.DockerSheep.running">(shepherd.sheep.DockerSheep attribute)</a>
+        <li><a href="shepherd/shepherd.sheep.html#shepherd.sheep.DockerSheep.running">(shepherd.sheep.DockerSheep property)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -352,9 +467,17 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="shepherd/shepherd.comm.html#shepherd.comm.Messenger.send">send() (shepherd.comm.Messenger static method)</a>
 </li>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.set_job_status">set_job_status() (shepherd.storage.MinioStorage method)</a>
+
+      <ul>
+        <li><a href="shepherd/shepherd.storage.html#shepherd.storage.Storage.set_job_status">(shepherd.storage.Storage method)</a>
+</li>
+      </ul></li>
       <li><a href="shepherd/shepherd.errors.sheep.html#shepherd.errors.sheep.SheepConfigurationError">SheepConfigurationError (class in shepherd.errors.sheep)</a>
 </li>
       <li><a href="shepherd/shepherd.errors.sheep.html#shepherd.errors.sheep.SheepError">SheepError (class in shepherd.errors.sheep)</a>
+</li>
+      <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd">Shepherd (class in shepherd.shepherd)</a>
 </li>
       <li><a href="shepherd/shepherd.html#module-shepherd">shepherd (module)</a>
 </li>
@@ -372,13 +495,17 @@
 </li>
       <li><a href="shepherd/shepherd.errors.sheep.html#module-shepherd.errors.sheep">shepherd.errors.sheep (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="shepherd/shepherd.runner.html#module-shepherd.runner">shepherd.runner (module)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="shepherd/shepherd.runner.runner_entry_point.html#module-shepherd.runner.runner_entry_point">shepherd.runner.runner_entry_point (module)</a>
 </li>
       <li><a href="shepherd/shepherd.sheep.html#module-shepherd.sheep">shepherd.sheep (module)</a>
+</li>
+      <li><a href="shepherd/shepherd.shepherd.html#module-shepherd.shepherd">shepherd.shepherd (module)</a>
+</li>
+      <li><a href="shepherd/shepherd.storage.html#module-shepherd.storage">shepherd.storage (module)</a>
 </li>
       <li><a href="shepherd/shepherd.utils.html#module-shepherd.utils">shepherd.utils (module)</a>
 </li>
@@ -397,7 +524,11 @@
 </li>
         <li><a href="shepherd/shepherd.sheep.html#shepherd.sheep.DockerSheep.start">(shepherd.sheep.DockerSheep method)</a>
 </li>
+        <li><a href="shepherd/shepherd.shepherd.html#shepherd.shepherd.Shepherd.start">(shepherd.shepherd.Shepherd method)</a>
+</li>
       </ul></li>
+      <li><a href="shepherd/shepherd.storage.html#shepherd.storage.Storage">Storage (class in shepherd.storage)</a>
+</li>
       <li><a href="shepherd/shepherd.errors.api.html#shepherd.errors.api.StorageError">StorageError</a>
 </li>
       <li><a href="shepherd/shepherd.errors.api.html#shepherd.errors.api.StorageInaccessibleError">StorageInaccessibleError</a>
@@ -442,7 +573,7 @@
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.<br/>
     </p>
   </div>
 </footer>

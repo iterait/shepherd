@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>shepherd.storage.minio_storage &#8212; shepherd 0.5.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/highlight.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/swagger-ui.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-worker navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          shepherd</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../tutorial.html">Introduction</a></li>
+                <li><a href="../../../bare_sheep.html">Bare Sheep</a></li>
+                <li><a href="../../../docker_sheep.html">Docker Sheep</a></li>
+                <li><a href="../../../runners.html">Runners</a></li>
+                <li><a href="../../../api.html">API</a></li>
+                <li><a href="../../../shepherd/index.html">Package Reference</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Pages <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<form action="../../../search.html" method="get" class="searchbox">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form><div class="side_nav">
+	<h4>Related projects</h4>
+</div>
+<ul class="nav nav-list">
+	<li><a href="https://emloop.org">emloop</a></li>
+	<li><a href="https://tensorflow.emloop.org">emloop-tensorflow</a></li>
+	<li><a href="https://hipipe.org">hipipe (c++)</a></li>
+</ul>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <h1>Source code for shepherd.storage.minio_storage</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">path</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">BytesIO</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">AsyncIterable</span>
+<span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
+
+<span class="kn">from</span> <span class="nn">aiohttp.typedefs</span> <span class="k">import</span> <span class="n">LooseHeaders</span>
+<span class="kn">import</span> <span class="nn">aiohttp</span>
+<span class="kn">from</span> <span class="nn">aiohttp.client_exceptions</span> <span class="k">import</span> <span class="n">ClientError</span> <span class="k">as</span> <span class="n">AioHTTPClientError</span>
+<span class="kn">from</span> <span class="nn">minio.helpers</span> <span class="k">import</span> <span class="n">get_target_url</span><span class="p">,</span> <span class="n">get_md5_base64digest</span><span class="p">,</span> <span class="n">get_sha256_hexdigest</span>
+<span class="kn">from</span> <span class="nn">minio.signer</span> <span class="k">import</span> <span class="n">sign_v4</span>
+
+<span class="kn">from</span> <span class="nn">.storage</span> <span class="k">import</span> <span class="n">Storage</span>
+<span class="kn">from</span> <span class="nn">..config</span> <span class="k">import</span> <span class="n">StorageConfig</span>
+<span class="kn">from</span> <span class="nn">..errors.api</span> <span class="k">import</span> <span class="n">StorageError</span><span class="p">,</span> <span class="n">StorageInaccessibleError</span><span class="p">,</span> <span class="n">NameConflictError</span><span class="p">,</span> <span class="n">UnknownJobError</span>
+<span class="kn">from</span> <span class="nn">..constants</span> <span class="k">import</span> <span class="n">JOB_STATUS_FILE</span><span class="p">,</span> <span class="n">INPUT_DIR</span><span class="p">,</span> <span class="n">OUTPUT_DIR</span>
+<span class="kn">from</span> <span class="nn">..api.models</span> <span class="k">import</span> <span class="n">JobStatusModel</span>
+
+
+<span class="n">_MINIO_FOLDER_DELIMITER</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
+<span class="sd">&quot;&quot;&quot;Minio folder delimiter.&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="MinioStorage"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage">[docs]</a><span class="k">class</span> <span class="nc">MinioStorage</span><span class="p">(</span><span class="n">Storage</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A remote storage adapter that uses the aiobotocore S3 client to access Minio.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_NS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;s3&quot;</span><span class="p">:</span> <span class="s2">&quot;http://s3.amazonaws.com/doc/2006-03-01/&quot;</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="MinioStorage.__init__"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_config</span><span class="p">:</span> <span class="n">StorageConfig</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the storage according to the configuration.</span>
+
+<span class="sd">        :param storage_config: storage configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">storage_config</span></div>
+
+<div class="viewcode-block" id="MinioStorage._ensure_user_agent_header"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._ensure_user_agent_header">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_ensure_user_agent_header</span><span class="p">(</span><span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LooseHeaders</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LooseHeaders</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add User-Agent header if not specified yet.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">headers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">headers</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">,</span> <span class="s2">&quot;Shepherd&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">headers</span></div>
+
+<div class="viewcode-block" id="MinioStorage._ensure_auth_headers"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._ensure_auth_headers">[docs]</a>    <span class="k">def</span> <span class="nf">_ensure_auth_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LooseHeaders</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">content_sha256</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LooseHeaders</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure that given header set contains all headers required for a successful authentication.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_user_agent_header</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">sign_v4</span><span class="p">(</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">url</span><span class="p">,</span> <span class="s2">&quot;us-east-1&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">access_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">secret_key</span><span class="p">,</span>
+                       <span class="n">content_sha256</span><span class="o">=</span><span class="n">content_sha256</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MinioStorage.init_job"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.init_job">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">init_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implementation of :py:meth:`shepherd.storage.Storage.init_job`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_target_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">job_id</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_auth_headers</span><span class="p">(</span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">AioHTTPClientError</span> <span class="k">as</span> <span class="n">he</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">()</span> <span class="kn">from</span> <span class="nn">he</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">409</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NameConflictError</span><span class="p">(</span><span class="s2">&quot;A job with this ID was already submitted&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to create minio bucket `</span><span class="si">{job_id}</span><span class="s2">`&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MinioStorage.is_accessible"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.is_accessible">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_accessible</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implementation of :py:meth:`shepherd.storage.Storage.is_accessible`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_target_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;does-not-matter&quot;</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_auth_headers</span><span class="p">(</span><span class="s1">&#39;HEAD&#39;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="n">AioHTTPClientError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="MinioStorage.job_dir_exists"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.job_dir_exists">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">job_dir_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implementation of :py:meth:`shepherd.storage.Storage.job_data_exists`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_target_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_auth_headers</span><span class="p">(</span><span class="s1">&#39;HEAD&#39;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">AioHTTPClientError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to check minio bucket `</span><span class="si">{job_id}</span><span class="s2">`&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
+
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">200</span></div>
+
+<div class="viewcode-block" id="MinioStorage._list_bucket"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._list_bucket">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_list_bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List the names of all files in a bucket.</span>
+
+<span class="sd">        :param bucket: the bucket to list</span>
+<span class="sd">        :return: a generator of file names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">continuation_token</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">truncated</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">while</span> <span class="n">truncated</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="n">continuation_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">query</span><span class="p">[</span><span class="s2">&quot;continuation-token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">continuation_token</span>
+
+            <span class="n">url</span> <span class="o">=</span> <span class="n">get_target_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_auth_headers</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">AioHTTPClientError</span> <span class="k">as</span> <span class="n">ce</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">()</span> <span class="kn">from</span> <span class="nn">ce</span>
+
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Listing minio bucket `</span><span class="si">{bucket}</span><span class="s2">` failed&quot;</span><span class="p">)</span>
+
+            <span class="n">tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="n">el</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;.//s3:Key&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_NS</span><span class="p">)):</span>
+                <span class="k">yield</span> <span class="n">key</span>
+
+            <span class="n">truncated</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;s3:IsTruncated&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_NS</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">!=</span> <span class="s2">&quot;false&quot;</span>
+            <span class="n">continuation_token</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;s3:NextContinuationToken&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_NS</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MinioStorage._get_object"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._get_object">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">object_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">destination</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch a remote object into a binary file/stream.</span>
+
+<span class="sd">        :param bucket: the bucket where the object is stored</span>
+<span class="sd">        :param object_name: the path to the object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_target_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">object_name</span><span class="o">=</span><span class="n">object_name</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_auth_headers</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Could not fetch `</span><span class="si">{bucket}</span><span class="s2">/</span><span class="si">{object_name}</span><span class="s2">` from minio&quot;</span><span class="p">)</span>
+
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">chunk</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">128</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+                    <span class="n">destination</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">AioHTTPClientError</span> <span class="k">as</span> <span class="n">ce</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">()</span> <span class="kn">from</span> <span class="nn">ce</span></div>
+
+<div class="viewcode-block" id="MinioStorage._download_object"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._download_object">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_download_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">object_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">destination_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Download a remote object into a file identified by a path.</span>
+
+<span class="sd">        :param bucket: the bucket where the object is stored</span>
+<span class="sd">        :param object_name: the path to the object</span>
+<span class="sd">        :param destination_path: where the object should be stored</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">destination_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">destination</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_object</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MinioStorage.pull_job_data"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.pull_job_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">pull_job_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implementation of :py:meth:`shepherd.storage.Storage.pull_job_data`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Pulling minio bucket `</span><span class="si">%s</span><span class="s1">` to dir `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">target_directory</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_dir_exists</span><span class="p">(</span><span class="n">job_id</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Job directory for `</span><span class="si">{job_id}</span><span class="s2">` does not exist&quot;</span><span class="p">)</span>
+
+        <span class="n">pulled_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">async</span> <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_bucket</span><span class="p">(</span><span class="n">job_id</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">file_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">INPUT_DIR</span> <span class="o">+</span> <span class="n">_MINIO_FOLDER_DELIMITER</span><span class="p">):</span>
+                <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">file_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">_MINIO_FOLDER_DELIMITER</span><span class="p">))</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">target_directory</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filepath</span><span class="p">)),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_download_object</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">target_directory</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)))</span>
+                <span class="n">pulled_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pulled_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No input objects pulled from bucket `</span><span class="si">%s</span><span class="s1">`. Make sure they are in the `inputs/` folder.&#39;</span><span class="p">,</span>
+                            <span class="n">job_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MinioStorage._put_object"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._put_object">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_put_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">object_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Store data from a file/stream object as a remote object.</span>
+
+<span class="sd">        :param bucket: the bucket where the object should be stored</span>
+<span class="sd">        :param object_name: the name of the new object</span>
+<span class="sd">        :param content: a stream containing the object data</span>
+<span class="sd">        :param length: the length of the data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_target_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">object_name</span><span class="o">=</span><span class="n">object_name</span><span class="p">)</span>
+
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_user_agent_header</span><span class="p">({</span>
+            <span class="s2">&quot;Content-Length&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">length</span><span class="p">),</span>
+            <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/octet-stream&quot;</span>
+        <span class="p">})</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">content_sha256</span> <span class="o">=</span> <span class="n">get_sha256_hexdigest</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">secure</span><span class="p">:</span>
+            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Content-Md5&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_md5_base64digest</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">content_sha256</span> <span class="o">=</span> <span class="s2">&quot;UNSIGNED-PAYLOAD&quot;</span>
+
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_auth_headers</span><span class="p">(</span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">content_sha256</span><span class="o">=</span><span class="n">content_sha256</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">AioHTTPClientError</span> <span class="k">as</span> <span class="n">ce</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">()</span> <span class="kn">from</span> <span class="nn">ce</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to upload object `</span><span class="si">{bucket}</span><span class="s2">/</span><span class="si">{object_name}</span><span class="s2">`&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MinioStorage._upload_object"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._upload_object">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_upload_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">object_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">source_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Store the contents of a file identified by a path in a remote object.</span>
+
+<span class="sd">        :param bucket: the bucket where the object should stored</span>
+<span class="sd">        :param object_name: the name of the new object</span>
+<span class="sd">        :param source_path: the path of the source file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">source_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">source</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_put_object</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">source_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MinioStorage.push_job_data"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.push_job_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">push_job_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">source_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implementation of :py:meth:`shepherd.storage.Storage.push_job_data`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Pushing dir `</span><span class="si">%s</span><span class="s1">` to minio bucket `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="n">source_directory</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_dir_exists</span><span class="p">(</span><span class="n">job_id</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Job directory for `</span><span class="si">{job_id}</span><span class="s2">` does not exist&quot;</span><span class="p">)</span>
+
+        <span class="n">pushed_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">source_directory</span><span class="p">,</span> <span class="n">OUTPUT_DIR</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span> <span class="n">source_directory</span><span class="p">)</span>
+                <span class="n">object_name</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="n">_MINIO_FOLDER_DELIMITER</span><span class="p">)</span>
+                <span class="n">source_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">source_directory</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+                <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_upload_object</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">source_path</span><span class="p">))</span>
+                <span class="n">pushed_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pushed_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No output files pushed to bucket `</span><span class="si">%s</span><span class="s1">`. Make sure they are in the `outputs/` folder.&#39;</span><span class="p">,</span>
+                            <span class="n">job_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MinioStorage.put_file"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.put_file">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">put_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stream</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implementation of :py:meth:`shepherd.storage.Storage.put_file`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_put_object</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MinioStorage._object_exists"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._object_exists">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_object_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">object_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if an object exists in the remote storage.</span>
+
+<span class="sd">        :param bucket: the bucket to search for the object</span>
+<span class="sd">        :param object_name: name of the object</span>
+<span class="sd">        :return: True if the object exists, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_target_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">object_name</span><span class="o">=</span><span class="n">object_name</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_auth_headers</span><span class="p">(</span><span class="s2">&quot;HEAD&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">except</span> <span class="n">AioHTTPClientError</span> <span class="k">as</span> <span class="n">ce</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">()</span> <span class="kn">from</span> <span class="nn">ce</span></div>
+
+<div class="viewcode-block" id="MinioStorage.get_file"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.get_file">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BinaryIO</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implementation of :py:meth:`shepherd.storage.Storage.get_file`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_exists</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="c1"># TODO this should be redone without storing the file (when Apistrap implements async stream responses)</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_object</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+            <span class="n">content</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">content</span>
+        <span class="k">except</span> <span class="n">AioHTTPClientError</span> <span class="k">as</span> <span class="n">he</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">()</span> <span class="kn">from</span> <span class="nn">he</span></div>
+
+<div class="viewcode-block" id="MinioStorage.set_job_status"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.set_job_status">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">set_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">JobStatusModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implementation of :py:meth:`shepherd.storage.Storage.set_job_status`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">to_primitive</span><span class="p">())</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_put_object</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">JOB_STATUS_FILE</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">StorageError</span> <span class="k">as</span> <span class="n">ce</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to update status of job `</span><span class="si">{job_id}</span><span class="s2">`&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ce</span></div>
+
+<div class="viewcode-block" id="MinioStorage.get_job_status"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.get_job_status">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobStatusModel</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implementation of :py:meth:`shepherd.storage.Storage.get_job_status`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_dir_exists</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_exists</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">JOB_STATUS_FILE</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">UnknownJobError</span><span class="p">(</span><span class="s1">&#39;Data for job `</span><span class="si">{}</span><span class="s1">` does not exist&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">job_id</span><span class="p">))</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_object</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">JOB_STATUS_FILE</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">AioHTTPClientError</span> <span class="k">as</span> <span class="n">he</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">()</span> <span class="kn">from</span> <span class="nn">he</span>
+        <span class="k">except</span> <span class="n">StorageError</span> <span class="k">as</span> <span class="n">ce</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to get status of job `</span><span class="si">{job_id}</span><span class="s2">`&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ce</span>
+
+        <span class="n">data</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">JobStatusModel</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">data</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MinioStorage.close"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implementation of :py:meth:`shepherd.storage.Storage.close`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">AioHTTPClientError</span> <span class="k">as</span> <span class="n">he</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="s2">&quot;There was an error while closing the AioHTTP client session&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">he</span></div></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Iterait a.s..<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.<br/>
+    </p>
+  </div>
+</footer>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-108491604-2"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-108491604-2');
+</script>
+
+
+
+  </body>
+</html>

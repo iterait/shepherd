@@ -1,0 +1,30 @@
+=====================
+``shepherd.shepherd``
+=====================
+
+.. automodule:: shepherd.shepherd
+
+
+.. currentmodule:: shepherd.shepherd
+
+
+Classes
+=======
+
+- :py:class:`Shepherd`:
+  Manages creation and access to a configured set of sheep
+
+
+
+.. autoclass:: Shepherd
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: Shepherd
+      :parts: 1
+
+   |
+

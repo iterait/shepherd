@@ -1,0 +1,47 @@
+====================
+``shepherd.storage``
+====================
+
+.. automodule:: shepherd.storage
+
+
+.. currentmodule:: shepherd.storage
+
+
+Classes
+=======
+
+- :py:class:`Storage`:
+  An interface for services that provide access to job data in a remote storage.
+
+- :py:class:`MinioStorage`:
+  A remote storage adapter that uses the aiobotocore S3 client to access Minio.
+
+
+
+.. autoclass:: Storage
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: Storage
+      :parts: 1
+
+   |
+
+
+
+.. autoclass:: MinioStorage
+   :show-inheritance:
+   :members:
+   :private-members:
+   :special-members:
+   :exclude-members: __weakref__
+
+   .. inheritance-diagram:: MinioStorage
+      :parts: 1
+
+   |
+
