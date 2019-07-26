@@ -370,3 +370,4 @@ class Shepherd:
                 sheep_task.cancel()
 
         await self._job_status_update_queue.close()
+        await self._storage.close()
