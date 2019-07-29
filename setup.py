@@ -43,7 +43,7 @@ setup(name='shepherd',
         'aiohttp>=3.5',
         'aiohttp-cors>=0.7',
         'emloop>=0.2',
-        'apistrap>=0.5',
+        'apistrap>=0.6',
         'minio>=4.0',
         'urllib3==1.24.1'
       ],

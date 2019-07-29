@@ -151,7 +151,7 @@ def create_shepherd_routes(shepherd: Shepherd, storage: Storage) -> web.RouteTab
     async def get_status():
         """Get status of all the available sheep."""
         response = StatusResponse()
-        response.containers = dict(shepherd.get_status())
+        response.sheep = dict(shepherd.get_status())
         return response
 
     return api
