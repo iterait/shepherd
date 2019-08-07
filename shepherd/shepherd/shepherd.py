@@ -184,6 +184,11 @@ class Shepherd:
                         # clean-up the working directory
                         shutil.rmtree(path.join(self._get_sheep(sheep_id).sheep_data_root, job_id))
 
+                        # if necessary, cancel input downloads
+                        if job_id in self._prepare_job_dir_futures.keys():
+                            self._prepare_job_dir_futures[job_id].cancel()
+                            del self._prepare_job_dir_futures[job_id]
+
                         # save the error
                         error = ErrorModel({'message': 'Sheep container died without notice'})
                         logging.error('Sheep `%s` encountered error when processing job `%s`: %s',
@@ -392,5 +397,9 @@ class Shepherd:
             for sheep_task in sheep_tasks:
                 sheep_task.cancel()
 
+        for future in self._prepare_job_dir_futures.values():
+            future.cancel()
+
         await self._job_status_update_queue.close()
+        await self._prepare_job_dir_queue.close()
         await self._storage.close()
