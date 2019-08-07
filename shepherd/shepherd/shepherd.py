@@ -53,8 +53,12 @@ class Shepherd:
         self._sheep_tasks = {}
         self._listener = None
         self._health_checker = None
+
         self._job_status: Dict[str, JobStatusModel] = {}
         self._job_status_update_queue = None
+
+        self._prepare_job_dir_queue = None
+        self._prepare_job_dir_futures: Dict[str, asyncio.Future] = {}
 
         for sheep_id, config in sheep_config.items():
             socket = zmq.asyncio.Context.instance().socket(zmq.DEALER)
@@ -88,6 +92,7 @@ class Shepherd:
         self._listener = asyncio.create_task(self._listen())
         self._health_checker = asyncio.create_task(self._shepherd_health_check())
         self._job_status_update_queue = TaskQueue(worker_count=1)
+        self._prepare_job_dir_queue = TaskQueue(worker_count=8)
 
     def _get_sheep(self, sheep_id: str) -> BaseSheep:
         """
@@ -143,6 +148,10 @@ class Shepherd:
         status_future = await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status))
         await self._get_sheep(sheep_id).jobs_queue.put(job_id)
 
+        self._prepare_job_dir_futures[job_id] = await self._prepare_job_dir_queue.enqueue_task(
+            self._prepare_job_dir(self._get_sheep(sheep_id), job_id)
+        )
+
         # Wait for the status update to finish before returning (this way we can be sure the job was enqueued)
         await status_future
 
@@ -188,9 +197,20 @@ class Shepherd:
                 logging.warning('Failed to check sheep\'s health '  # pragma: no cover
                                 'due to the following exception: %s', str(se))
 
+    async def _prepare_job_dir(self, sheep, job_id) -> None:
+        """
+        Prepare the working directory for a job (clean it and download inputs).
+
+        :param sheep: The sheep assigned to the job
+        :param job_id: The job for which we are preparing the directory
+        """
+        working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
+        await self._storage.pull_job_data(job_id, working_directory)
+        create_clean_dir(path.join(working_directory, OUTPUT_DIR))
+
     async def _dequeue_and_feed_jobs(self, sheep_id: str) -> None:
         """
-        De-queue jobs, prepare working directories and send ``InputMessage`` to the specified sheep in an end-less
+        De-queue jobs, prepare working directories and send ``InputMessage`` to the specified sheep in an endless
         loop.
 
         :param sheep_id: sheep id to be fed
@@ -200,10 +220,13 @@ class Shepherd:
             job_id = await sheep.jobs_queue.get()
             logging.info('Preparing working directory for job `%s` on `%s`', job_id, sheep_id)
 
-            # prepare working directory
-            working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
-            await self._storage.pull_job_data(job_id, working_directory)
-            create_clean_dir(path.join(working_directory, OUTPUT_DIR))
+            # wait until working directory is prepared
+            try:
+                await self._prepare_job_dir_futures[job_id]
+                del self._prepare_job_dir_futures[job_id]
+            except KeyError:
+                logging.critical(f"Task that should have pulled data for job `{job_id}` mysteriously disappeared")
+                continue
 
             # update the job status
             status = self._job_status[job_id]
