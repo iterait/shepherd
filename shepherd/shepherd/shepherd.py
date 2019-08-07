@@ -5,7 +5,7 @@ import traceback
 import os.path as path
 from datetime import datetime
 from itertools import cycle
-from typing import Mapping, Generator, Tuple, Dict, Any, Optional
+from typing import Mapping, Generator, Tuple, Dict, Any, Optional, Union
 
 import zmq
 import zmq.asyncio
@@ -55,16 +55,18 @@ class Shepherd:
         self._health_checker = None
 
         self._job_status: Dict[str, JobStatusModel] = {}
-        self._job_status_update_queue = None
+        self._job_status_update_queue: TaskQueue = None
 
-        self._prepare_job_dir_queue = None
+        self._prepare_job_dir_queue: TaskQueue = None
         self._prepare_job_dir_futures: Dict[str, asyncio.Future] = {}
+
+        self._finalize_job_queue: TaskQueue = None
 
         for sheep_id, config in sheep_config.items():
             socket = zmq.asyncio.Context.instance().socket(zmq.DEALER)
             sheep_type = config["type"]
             sheep_data_root = create_clean_dir(path.join(data_root, sheep_id))
-            common_kwargs = {'socket': socket, 'sheep_data_root': sheep_data_root}
+            common_kwargs = {'socket': socket, 'sheep_id': sheep_id, 'sheep_data_root': sheep_data_root}
             if sheep_type == "docker":
                 sheep = DockerSheep(config=config, registry_config=registry_config, **common_kwargs)
             elif sheep_type == "bare":
@@ -93,6 +95,7 @@ class Shepherd:
         self._health_checker = asyncio.create_task(self._shepherd_health_check())
         self._job_status_update_queue = TaskQueue(worker_count=1)
         self._prepare_job_dir_queue = TaskQueue(worker_count=8)
+        self._finalize_job_queue = TaskQueue(worker_count=8)
 
     def _get_sheep(self, sheep_id: str) -> BaseSheep:
         """
@@ -294,6 +297,44 @@ class Shepherd:
         except Exception:
             logging.exception('Error when reporting job `%s` as failed', job_id)
 
+    async def _finalize_job(self, message: Union[DoneMessage, ErrorMessage], sheep: BaseSheep) -> None:
+        """
+        Finalize a finished job - upload the results and update the status.
+
+        :param message: Message from the sheep about the end of the job
+        :param sheep: The sheep that sent the message
+        """
+
+        job_id = message.job_id
+
+        # clean-up the working directory and upload the results
+        working_directory = path.join(self._get_sheep(sheep.id).sheep_data_root, job_id)
+        await self._storage.push_job_data(job_id, working_directory)
+        shutil.rmtree(working_directory)
+
+        # save the done/error file
+        if isinstance(message, DoneMessage):
+            status = self._job_status.pop(job_id)
+            status.status = JobStatus.DONE
+            status.finished_at = datetime.utcnow()
+            await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status.copy()))
+            logging.info('Job `%s` from sheep `%s` done', job_id, sheep.id)
+        elif isinstance(message, ErrorMessage):
+            error = ErrorModel({
+                "message": message.message,
+                "exception_type": message.exception_type,
+                "exception_traceback": message.exception_traceback
+            })
+            await self._report_job_failed(job_id, error, sheep)
+            self._job_status.pop(job_id)
+            logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep.id, message.short_error)
+
+        # notify about the finished job
+        sheep.in_progress.remove(job_id)
+
+        async with self.job_done_condition:
+            self.job_done_condition.notify_all()
+
     async def _listen(self) -> None:
         """
         Poll the sheep output sockets, process sheep outputs and clean-up working directories in an endless loop.
@@ -307,35 +348,7 @@ class Shepherd:
             for sheep_id in sheep_ids:
                 sheep = self._get_sheep(sheep_id)
                 message = await Messenger.recv(sheep.socket, [DoneMessage, ErrorMessage], noblock=True)
-                job_id = message.job_id
-
-                # clean-up the working directory and upload the results
-                working_directory = path.join(self._get_sheep(sheep_id).sheep_data_root, job_id)
-                await self._storage.push_job_data(job_id, working_directory)
-                shutil.rmtree(working_directory)
-
-                # save the done/error file
-                if isinstance(message, DoneMessage):
-                    status = self._job_status.pop(job_id)
-                    status.status = JobStatus.DONE
-                    status.finished_at = datetime.utcnow()
-                    await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status.copy()))
-                    logging.info('Job `%s` from sheep `%s` done', job_id, sheep_id)
-                elif isinstance(message, ErrorMessage):
-                    error = ErrorModel({
-                        "message": message.message,
-                        "exception_type": message.exception_type,
-                        "exception_traceback": message.exception_traceback
-                    })
-                    await self._report_job_failed(job_id, error, sheep)
-                    self._job_status.pop(job_id)
-                    logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep_id, message.short_error)
-
-                # notify about the finished job
-                sheep.in_progress.remove(job_id)
-
-                async with self.job_done_condition:
-                    self.job_done_condition.notify_all()
+                await self._finalize_job_queue.enqueue_task(self._finalize_job(message, sheep))
 
     def get_status(self) -> Generator[Tuple[str, SheepModel], None, None]:
         """
@@ -386,7 +399,7 @@ class Shepherd:
 
     async def close(self) -> None:
         """
-        Perform a clean exit by slaughtering all sheeps, stopping background tasks and waiting for status updates to be
+        Perform a clean exit by slaughtering all sheep, stopping background tasks and waiting for status updates to be
         sent.
         """
         self._slaughter_all()
@@ -402,4 +415,5 @@ class Shepherd:
 
         await self._job_status_update_queue.close()
         await self._prepare_job_dir_queue.close()
+        await self._finalize_job_queue.close()
         await self._storage.close()
