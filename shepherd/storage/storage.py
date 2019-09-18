@@ -1,4 +1,5 @@
 import abc
+from asyncio import StreamReader
 from typing import Optional, BinaryIO
 
 from ..api.models import JobStatusModel
@@ -69,7 +70,7 @@ class Storage(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    async def get_file(self, job_id: str, file_path: str) -> Optional[BinaryIO]:
+    async def get_file(self, job_id: str, file_path: str) -> Optional[StreamReader]:
         """
         Download given file.
 
