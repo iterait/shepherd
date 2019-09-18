@@ -1,13 +1,10 @@
 from typing import Dict
 
+from apistrap.schemas import ErrorResponse
 from schematics import Model
-from schematics.types import StringType, BooleanType, DictType, ModelType
+from schematics.types import BooleanType, DictType, ModelType
 
 from .models import SheepModel, JobStatusModel
-
-
-class ErrorResponse(Model):
-    message: str = StringType(required=True)
 
 
 class JobErrorResponse(ErrorResponse):

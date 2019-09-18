@@ -1,6 +1,5 @@
 import os
 import logging
-from functools import partial
 from aiohttp import web
 from aiohttp.web_exceptions import HTTPError
 from apistrap.errors import InvalidFieldsError
@@ -22,15 +21,14 @@ def internal_error_handler(error: Exception):
     return (ErrorResponse({"message": 'Internal server error ({})'.format(str(error))})), 500
 
 
-def error_handler(http_code, error: ApiServerError):
+def error_handler(error: ApiServerError):
     """
     Handles errors derived from apistrap ApiServerError
 
-    :param http_code: the HTTP status code to be returned when the error happens
     :param error: an exception object
     :return: a Flask response
     """
-    return (ErrorResponse({"message": str(error)})), http_code
+    return ErrorResponse({"message": str(error)})
 
 
 def http_error_handler(error: HTTPError):
@@ -54,15 +52,15 @@ def create_app(debug=None) -> web.Application:
 
     app = web.Application(debug=debug if debug is not None else os.getenv('DEBUG', False), client_max_size=10*1024**3)
 
-    oapi.error_middleware.add_handler(NameConflictError, partial(error_handler, 409))
-    oapi.error_middleware.add_handler(ApiClientError, partial(error_handler, 400))
-    oapi.error_middleware.add_handler(UnknownJobError, partial(error_handler, 404))
-    oapi.error_middleware.add_handler(UnknownSheepError, partial(error_handler, 404))
-    oapi.error_middleware.add_handler(InvalidFieldsError, partial(error_handler, 400))
-    oapi.error_middleware.add_handler(StorageInaccessibleError, partial(error_handler, 503))
-    oapi.error_middleware.add_handler(HTTPError, http_error_handler)
-    oapi.error_middleware.add_handler(ApiServerError, partial(error_handler, 500))
-    oapi.error_middleware.add_handler(Exception, internal_error_handler)
+    oapi.add_error_handler(NameConflictError, 409, error_handler)
+    oapi.add_error_handler(ApiClientError, 400, error_handler)
+    oapi.add_error_handler(UnknownJobError, 404, error_handler)
+    oapi.add_error_handler(UnknownSheepError, 404, error_handler)
+    oapi.add_error_handler(InvalidFieldsError, 400, error_handler)
+    oapi.add_error_handler(StorageInaccessibleError, 503, error_handler)
+    oapi.add_error_handler(HTTPError, None, http_error_handler)
+    oapi.add_error_handler(ApiServerError, 500, error_handler)
+    oapi.add_error_handler(Exception, None, internal_error_handler)
 
     oapi.init_app(app)
 
