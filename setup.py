@@ -45,7 +45,7 @@ setup(name='shepherd',
         'emloop>=0.2',
         'apistrap>=0.4',
         'minio>=4.0',
-        'urllib3==1.24.1'
+        'urllib3==1.24.2'
       ],
       extras_require={
           'docs': ['sphinx>=2.0', 'autoapi>=1.4', 'sphinx-argparse',
