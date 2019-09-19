@@ -2,6 +2,7 @@ import json
 import os
 import asyncio
 import logging
+from asyncio import StreamReader
 from os import path
 from io import BytesIO
 from typing import Optional, BinaryIO, AsyncIterable
@@ -306,21 +307,21 @@ class MinioStorage(Storage):
         except AioHTTPClientError as ce:
             raise StorageInaccessibleError() from ce
 
-    async def get_file(self, job_id: str, file_path: str) -> Optional[BinaryIO]:
+    async def get_file(self, job_id: str, file_path: str) -> Optional[StreamReader]:
         """
         Implementation of :py:meth:`shepherd.storage.Storage.get_file`.
         """
+
+        url = get_target_url(self._config.url, bucket_name=job_id, object_name=file_path)
+        headers = self._ensure_auth_headers("GET", url)
+
         try:
             if not await self._object_exists(job_id, file_path):
                 return None
 
-            # TODO this should be redone without storing the file (when Apistrap implements async stream responses)
-            content = BytesIO()
+            response = await self._session.get(url, headers=headers)
 
-            await self._get_object(job_id, file_path, content)
-            content.seek(0)
-
-            return content
+            return response.content
         except AioHTTPClientError as he:
             raise StorageInaccessibleError() from he
 

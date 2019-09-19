@@ -12,7 +12,7 @@ async def test_get_status(aiohttp_client, app):
     response = await client.get('/status')
     assert response.status == 200
     data = await response.json()
-    assert data['containers'] == {'bare_sheep': {'running': False,
+    assert data['sheep'] == {'bare_sheep': {'running': False,
                                                  'request': None,
                                                  'model': {'name': 'model_1',
                                                            'version': 'latest'}}}

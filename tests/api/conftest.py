@@ -37,8 +37,9 @@ def mock_shepherd():
 
 @pytest.fixture(scope="function")
 def app(storage_config, mock_shepherd, minio):
+    oapi.app = None  # HACK
+
     app = create_app(debug=True)
     app.add_routes(create_shepherd_routes(mock_shepherd, MinioStorage(storage_config)))
-    oapi.init_app(app)
 
     yield app
