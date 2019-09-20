@@ -8,7 +8,7 @@ tests_require = [
 ]
 
 setup(name='shepherd',
-      version='0.5.2',
+      version='0.5.3',
       description='Shepherd',
       long_description='Asynchronous worker',
       classifiers=[
