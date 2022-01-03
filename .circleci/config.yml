@@ -38,6 +38,8 @@ references:
       no_output_timeout: 30m
       command: |
         PATH=/tmp/docker:$PATH
+        echo $PATH
+        ls /tmp/docker
         useradd -m -s /bin/bash test
         passwd -d test
         chown -R test /root
