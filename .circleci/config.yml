@@ -40,9 +40,11 @@ references:
         PATH=/tmp/docker:$PATH
         echo $PATH
         ls /tmp/docker
+        docker version
         useradd -m -s /bin/bash test
         passwd -d test
         chown -R test /root
+        sudo -E -u test docker version
         sudo -E -u test pytest -v
 
   doc: &doc
