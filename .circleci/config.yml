@@ -19,6 +19,7 @@ references:
         VER="17.11.0-ce"
         curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/test/x86_64/docker-$VER.tgz
         tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+        
         pacman --noconfirm --needed -Syu minio python-pip python-babel python-click python-matplotlib python-numpy python-requests python-ruamel-yaml python-testfixtures python-tabulate
         pip install --no-cache-dir git+https://github.com/iterait/emloop.git
         mkdir examples/docker/emloop_example/ssh
@@ -29,18 +30,13 @@ references:
     add_ssh_keys:
       fingerprints:
         - "bd:18:69:44:c4:97:94:f2:03:ba:db:dd:29:2e:cf:f2"
-        
-  mv_docker: &mv_docker
-    run:
-      name: Mv docker to /usr/bin
-      command: |
-        cp /tmp/docker/* /usr/bin
 
   # non-root user is added so that file-related permission denied can happen and be properly tested
   test: &test
     run:
       name: Run tests.
       command: |
+        PATH=$PATH:/tmp/docker/
         useradd -m -s /bin/bash test
         passwd -d test
         chown -R test /root
@@ -65,7 +61,6 @@ jobs:
           version: 17.11.0-ce
       - checkout
       - *install
-      - *mv_docker
       - *test
 
   generate_documentation:
