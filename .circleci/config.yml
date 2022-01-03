@@ -35,8 +35,9 @@ references:
   test: &test
     run:
       name: Run tests.
+      no_output_timeout: 30m
       command: |
-        PATH=$PATH:/tmp/docker
+        PATH=/tmp/docker:$PATH
         useradd -m -s /bin/bash test
         passwd -d test
         chown -R test /root
