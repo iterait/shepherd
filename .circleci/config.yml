@@ -19,12 +19,12 @@ references:
         VER="17.11.0-ce"
         curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/test/x86_64/docker-$VER.tgz
         tar -xz -C /tmp -f /tmp/docker-$VER.tgz
-        
         pacman --noconfirm --needed -Syu minio python-pip python-babel python-click python-matplotlib python-numpy python-requests python-ruamel-yaml python-testfixtures python-tabulate
         pip install --no-cache-dir git+https://github.com/iterait/emloop.git
         mkdir examples/docker/emloop_example/ssh
         pip install .
         pip install '.[tests]'
+        pip freeze
 
   add_rw_key: &add_rw_key
     add_ssh_keys:
