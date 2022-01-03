@@ -36,7 +36,7 @@ references:
     run:
       name: Run tests.
       command: |
-        PATH=$PATH:/tmp/docker/
+        PATH=$PATH:/tmp/docker
         useradd -m -s /bin/bash test
         passwd -d test
         chown -R test /root
