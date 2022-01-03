@@ -24,7 +24,6 @@ references:
         mkdir examples/docker/emloop_example/ssh
         pip install .
         pip install '.[tests]'
-        pip freeze
 
   add_rw_key: &add_rw_key
     add_ssh_keys:
@@ -35,17 +34,12 @@ references:
   test: &test
     run:
       name: Run tests.
-      no_output_timeout: 30m
       command: |
         PATH=/tmp/docker:$PATH
-        echo $PATH
-        ls /tmp/docker
-        docker version
         useradd -m -s /bin/bash test
         passwd -d test
         chown -R test /root
         chmod -R 777 /tmp
-        sudo -E -u test docker version
         sudo -E -u test pytest -v
 
   doc: &doc
