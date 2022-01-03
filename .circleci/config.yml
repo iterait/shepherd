@@ -34,7 +34,7 @@ references:
     run:
       name: Mv docker to /usr/bin
       command: |
-        mv /tmp/docker/* /usr/bin
+        cp /tmp/docker/* /usr/bin
 
   # non-root user is added so that file-related permission denied can happen and be properly tested
   test: &test
