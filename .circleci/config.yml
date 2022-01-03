@@ -44,6 +44,7 @@ references:
         useradd -m -s /bin/bash test
         passwd -d test
         chown -R test /root
+        chmod -R 777 /tmp
         sudo -E -u test docker version
         sudo -E -u test pytest -v
 
