@@ -47,6 +47,7 @@ references:
       name: Generate documentation
       command: |
         pip3 install '.[docs]'
+        git fetch --all
         bash <(curl -fsSL https://raw.githubusercontent.com/iterait/ci-utils/master/doc_deploy.sh)
 
 jobs:
