@@ -84,9 +84,6 @@ workflows:
               ignore:
                 - gh-pages
       - generate_documentation:
-          filters:
-            branches:
-              only: dev
           requires:
             - test_archlinux
 
