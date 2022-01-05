@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>shepherd.storage.minio_storage &#8212; shepherd 0.5.2 documentation</title>
-    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>shepherd.storage.minio_storage &#8212; shepherd 0.5.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/highlight.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/swagger-ui.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -100,22 +100,23 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">path</span>
-<span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">BytesIO</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">AsyncIterable</span>
-<span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">StreamReader</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">AsyncIterable</span>
+<span class="kn">from</span> <span class="nn">xml.etree</span> <span class="kn">import</span> <span class="n">ElementTree</span>
 
-<span class="kn">from</span> <span class="nn">aiohttp.typedefs</span> <span class="k">import</span> <span class="n">LooseHeaders</span>
+<span class="kn">from</span> <span class="nn">aiohttp.typedefs</span> <span class="kn">import</span> <span class="n">LooseHeaders</span>
 <span class="kn">import</span> <span class="nn">aiohttp</span>
-<span class="kn">from</span> <span class="nn">aiohttp.client_exceptions</span> <span class="k">import</span> <span class="n">ClientError</span> <span class="k">as</span> <span class="n">AioHTTPClientError</span>
-<span class="kn">from</span> <span class="nn">minio.helpers</span> <span class="k">import</span> <span class="n">get_target_url</span><span class="p">,</span> <span class="n">get_md5_base64digest</span><span class="p">,</span> <span class="n">get_sha256_hexdigest</span>
-<span class="kn">from</span> <span class="nn">minio.signer</span> <span class="k">import</span> <span class="n">sign_v4</span>
+<span class="kn">from</span> <span class="nn">aiohttp.client_exceptions</span> <span class="kn">import</span> <span class="n">ClientError</span> <span class="k">as</span> <span class="n">AioHTTPClientError</span>
+<span class="kn">from</span> <span class="nn">minio.helpers</span> <span class="kn">import</span> <span class="n">get_target_url</span><span class="p">,</span> <span class="n">get_md5_base64digest</span><span class="p">,</span> <span class="n">get_sha256_hexdigest</span>
+<span class="kn">from</span> <span class="nn">minio.signer</span> <span class="kn">import</span> <span class="n">sign_v4</span>
 
-<span class="kn">from</span> <span class="nn">.storage</span> <span class="k">import</span> <span class="n">Storage</span>
-<span class="kn">from</span> <span class="nn">..config</span> <span class="k">import</span> <span class="n">StorageConfig</span>
-<span class="kn">from</span> <span class="nn">..errors.api</span> <span class="k">import</span> <span class="n">StorageError</span><span class="p">,</span> <span class="n">StorageInaccessibleError</span><span class="p">,</span> <span class="n">NameConflictError</span><span class="p">,</span> <span class="n">UnknownJobError</span>
-<span class="kn">from</span> <span class="nn">..constants</span> <span class="k">import</span> <span class="n">JOB_STATUS_FILE</span><span class="p">,</span> <span class="n">INPUT_DIR</span><span class="p">,</span> <span class="n">OUTPUT_DIR</span>
-<span class="kn">from</span> <span class="nn">..api.models</span> <span class="k">import</span> <span class="n">JobStatusModel</span>
+<span class="kn">from</span> <span class="nn">.storage</span> <span class="kn">import</span> <span class="n">Storage</span>
+<span class="kn">from</span> <span class="nn">..config</span> <span class="kn">import</span> <span class="n">StorageConfig</span>
+<span class="kn">from</span> <span class="nn">..errors.api</span> <span class="kn">import</span> <span class="n">StorageError</span><span class="p">,</span> <span class="n">StorageInaccessibleError</span><span class="p">,</span> <span class="n">NameConflictError</span><span class="p">,</span> <span class="n">UnknownJobError</span>
+<span class="kn">from</span> <span class="nn">..constants</span> <span class="kn">import</span> <span class="n">JOB_STATUS_FILE</span><span class="p">,</span> <span class="n">INPUT_DIR</span><span class="p">,</span> <span class="n">OUTPUT_DIR</span>
+<span class="kn">from</span> <span class="nn">..api.models</span> <span class="kn">import</span> <span class="n">JobStatusModel</span>
 
 
 <span class="n">_MINIO_FOLDER_DELIMITER</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
@@ -131,7 +132,7 @@
         <span class="s2">&quot;s3&quot;</span><span class="p">:</span> <span class="s2">&quot;http://s3.amazonaws.com/doc/2006-03-01/&quot;</span>
     <span class="p">}</span>
 
-<div class="viewcode-block" id="MinioStorage.__init__"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_config</span><span class="p">:</span> <span class="n">StorageConfig</span><span class="p">):</span>
+<div class="viewcode-block" id="MinioStorage.__init__"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_config</span><span class="p">:</span> <span class="n">StorageConfig</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the storage according to the configuration.</span>
 
@@ -179,7 +180,7 @@
             <span class="k">raise</span> <span class="n">NameConflictError</span><span class="p">(</span><span class="s2">&quot;A job with this ID was already submitted&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to create minio bucket `</span><span class="si">{job_id}</span><span class="s2">`&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create minio bucket `</span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MinioStorage.is_accessible"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.is_accessible">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_accessible</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -206,7 +207,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">AioHTTPClientError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to check minio bucket `</span><span class="si">{job_id}</span><span class="s2">`&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
+            <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to check minio bucket `</span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
 
         <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">200</span></div>
 
@@ -235,7 +236,7 @@
                 <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">()</span> <span class="kn">from</span> <span class="nn">ce</span>
 
             <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Listing minio bucket `</span><span class="si">{bucket}</span><span class="s2">` failed&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listing minio bucket `</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">` failed&quot;</span><span class="p">)</span>
 
             <span class="n">tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
 
@@ -259,7 +260,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Could not fetch `</span><span class="si">{bucket}</span><span class="s2">/</span><span class="si">{object_name}</span><span class="s2">` from minio&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not fetch `</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">object_name</span><span class="si">}</span><span class="s2">` from minio&quot;</span><span class="p">)</span>
 
                 <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                     <span class="n">chunk</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">128</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
@@ -290,7 +291,7 @@
         <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Pulling minio bucket `</span><span class="si">%s</span><span class="s1">` to dir `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">target_directory</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_dir_exists</span><span class="p">(</span><span class="n">job_id</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Job directory for `</span><span class="si">{job_id}</span><span class="s2">` does not exist&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job directory for `</span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2">` does not exist&quot;</span><span class="p">)</span>
 
         <span class="n">pulled_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
@@ -340,7 +341,7 @@
             <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">()</span> <span class="kn">from</span> <span class="nn">ce</span>
 
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to upload object `</span><span class="si">{bucket}</span><span class="s2">/</span><span class="si">{object_name}</span><span class="s2">`&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to upload object `</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">object_name</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MinioStorage._upload_object"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage._upload_object">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_upload_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">object_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">source_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -360,7 +361,7 @@
         <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Pushing dir `</span><span class="si">%s</span><span class="s1">` to minio bucket `</span><span class="si">%s</span><span class="s1">`&#39;</span><span class="p">,</span> <span class="n">source_directory</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_dir_exists</span><span class="p">(</span><span class="n">job_id</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Job directory for `</span><span class="si">{job_id}</span><span class="s2">` does not exist&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job directory for `</span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2">` does not exist&quot;</span><span class="p">)</span>
 
         <span class="n">pushed_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
@@ -404,21 +405,21 @@
         <span class="k">except</span> <span class="n">AioHTTPClientError</span> <span class="k">as</span> <span class="n">ce</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">()</span> <span class="kn">from</span> <span class="nn">ce</span></div>
 
-<div class="viewcode-block" id="MinioStorage.get_file"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.get_file">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BinaryIO</span><span class="p">]:</span>
+<div class="viewcode-block" id="MinioStorage.get_file"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.get_file">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">StreamReader</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of :py:meth:`shepherd.storage.Storage.get_file`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_target_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span> <span class="n">object_name</span><span class="o">=</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_auth_headers</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_exists</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
                 <span class="k">return</span> <span class="kc">None</span>
 
-            <span class="c1"># TODO this should be redone without storing the file (when Apistrap implements async stream responses)</span>
-            <span class="n">content</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 
-            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_object</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
-            <span class="n">content</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">content</span>
+            <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span>
         <span class="k">except</span> <span class="n">AioHTTPClientError</span> <span class="k">as</span> <span class="n">he</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">()</span> <span class="kn">from</span> <span class="nn">he</span></div>
 
@@ -434,7 +435,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_put_object</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">JOB_STATUS_FILE</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">StorageError</span> <span class="k">as</span> <span class="n">ce</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to update status of job `</span><span class="si">{job_id}</span><span class="s2">`&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ce</span></div>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to update status of job `</span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ce</span></div>
 
 <div class="viewcode-block" id="MinioStorage.get_job_status"><a class="viewcode-back" href="../../../shepherd/shepherd.storage.html#shepherd.storage.MinioStorage.get_job_status">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobStatusModel</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -449,7 +450,7 @@
         <span class="k">except</span> <span class="n">AioHTTPClientError</span> <span class="k">as</span> <span class="n">he</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">StorageInaccessibleError</span><span class="p">()</span> <span class="kn">from</span> <span class="nn">he</span>
         <span class="k">except</span> <span class="n">StorageError</span> <span class="k">as</span> <span class="n">ce</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to get status of job `</span><span class="si">{job_id}</span><span class="s2">`&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ce</span>
+            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to get status of job `</span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ce</span>
 
         <span class="n">data</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">JobStatusModel</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">data</span><span class="p">))</span></div>
@@ -478,7 +479,7 @@
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br/>
     </p>
   </div>
 </footer>

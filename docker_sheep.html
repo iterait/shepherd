@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Docker Sheep &#8212; shepherd 0.5.2 documentation</title>
-    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Docker Sheep &#8212; shepherd 0.5.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/highlight.css" />
     <link rel="stylesheet" type="text/css" href="_static/swagger-ui.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Runners" href="runners.html" />
@@ -22,9 +23,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -112,24 +113,24 @@
       </div>
     <div class="body col-md-9 content" role="main">
       
-  <div class="section" id="docker-sheep">
+  <section id="docker-sheep">
 <h1>Docker Sheep<a class="headerlink" href="#docker-sheep" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference internal" href="shepherd/shepherd.sheep.html#shepherd.sheep.DockerSheep" title="shepherd.sheep.DockerSheep"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.sheep.DockerSheep</span></code></a> does exactly the same as <a class="reference external" href="bare_sheep.html">bare sheep</a> except it
 runs the <em>runner</em> in a docker. Similarly to the bare sheep’s runner, docker runner is expected to listen for
 incoming jobs at a socket bind to port <strong>9999</strong>.</p>
-<div class="section" id="configuration">
+<section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
 <p>Docker sheep’s config is even simpler than in the bare sheep case:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">cpu_sheep_1</span><span class="p">:</span>
-  <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">9001</span>
-  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker</span>
-  <span class="nt">devices</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/dev/nvidia0</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">cpu_sheep_1</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9001</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker</span><span class="w"></span>
+<span class="w">  </span><span class="nt">devices</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/nvidia0</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This simple configuration even enables GPU for your container if you have properly installed nvidia docker 2.</p>
-</div>
-<div class="section" id="model-name-and-version">
+</section>
+<section id="model-name-and-version">
 <h2>Model Name and Version<a class="headerlink" href="#model-name-and-version" title="Permalink to this headline">¶</a></h2>
 <p>When new model name and version is encountered, docker sheep pulls the docker image from the configured docker registry.</p>
 <p>Example Dockerfile follows:</p>
@@ -157,8 +158,8 @@ incoming jobs at a socket bind to port <strong>9999</strong>.</p>
 <span class="n">CMD</span> <span class="n">shepherd</span><span class="o">-</span><span class="n">runner</span> <span class="o">/</span><span class="n">project</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -174,7 +175,7 @@ incoming jobs at a socket bind to port <strong>9999</strong>.</p>
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br/>
     </p>
   </div>
 </footer>

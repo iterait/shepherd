@@ -1,0 +1,6 @@
+<map id="inheritance4beafa1407" name="inheritance4beafa1407">
+<area shape="rect" id="node1" href="#shepherd.comm.DoneMessage" target="_top" title="Message informing :py:class:`shepherd.shepherd.Shepherd` about a finished job." alt="" coords="488,29,603,55"/>
+<area shape="rect" id="node2" href="#shepherd.comm.Message" target="_top" title="Base zmq socket message." alt="" coords="360,29,440,55"/>
+<area shape="rect" id="node3" title="Enclosure for fields and validation. Same pattern deployed by Django" alt="" coords="240,29,312,55"/>
+<area shape="rect" id="node4" title="Compatibility layer for previous deprecated Schematics Model API." alt="" coords="5,29,192,55"/>
+</map>

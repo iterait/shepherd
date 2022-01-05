@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>shepherd.docker &#8212; shepherd 0.5.2 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>shepherd.docker &#8212; shepherd 0.5.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/highlight.css" />
     <link rel="stylesheet" type="text/css" href="../_static/swagger-ui.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="shepherd.errors" href="shepherd.errors.html" />
@@ -22,9 +23,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -111,9 +112,9 @@
       </div>
     <div class="body col-md-9 content" role="main">
       
-  <div class="section" id="module-shepherd.docker">
+  <section id="module-shepherd.docker">
 <span id="shepherd-docker"></span><h1><code class="docutils literal notranslate"><span class="pre">shepherd.docker</span></code><a class="headerlink" href="#module-shepherd.docker" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="classes">
+<section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#shepherd.docker.DockerContainer" title="shepherd.docker.DockerContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DockerContainer</span></code></a>:
@@ -121,41 +122,43 @@ Helper class for running and managing docker containers.</p></li>
 <li><p><a class="reference internal" href="#shepherd.docker.DockerImage" title="shepherd.docker.DockerImage"><code class="xref py py-class docutils literal notranslate"><span class="pre">DockerImage</span></code></a>:
 Helper class for running and managing docker images.</p></li>
 </ul>
-<dl class="class">
-<dt id="shepherd.docker.DockerContainer">
-<em class="property">class </em><code class="sig-prename descclassname">shepherd.docker.</code><code class="sig-name descname">DockerContainer</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">autoremove=True</em>, <em class="sig-param">runtime=None</em>, <em class="sig-param">env=None</em>, <em class="sig-param">bind_mounts=None</em>, <em class="sig-param">ports=None</em>, <em class="sig-param">command=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.docker.DockerContainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.docker.</span></span><span class="sig-name descname"><span class="pre">DockerContainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoremove</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bind_mounts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.docker.DockerContainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Helper class for running and managing docker containers.</p>
-<div class="graphviz"><img src="../_images/inheritance-8024c778df1d78de311ae5a5227278ef9e8b28c9.png" alt="Inheritance diagram of DockerContainer" class="inheritance graphviz" /></div>
-<div class="line-block">
+<div class="graphviz"><img src="../_images/inheritance-006a83e783bd9c7a8b7542c0b0d5e6adb8e7a349.png" alt="Inheritance diagram of DockerContainer" usemap="#inheritance04f7a6d5f1" class="inheritance graphviz" /></div>
+<map id="inheritance04f7a6d5f1" name="inheritance04f7a6d5f1">
+<area shape="rect" id="node1" href="#shepherd.docker.DockerContainer" target="_top" title="Helper class for running and managing docker containers." alt="" coords="5,5,136,31"/>
+</map><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<dl class="method">
-<dt id="shepherd.docker.DockerContainer.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">autoremove=True</em>, <em class="sig-param">runtime=None</em>, <em class="sig-param">env=None</em>, <em class="sig-param">bind_mounts=None</em>, <em class="sig-param">ports=None</em>, <em class="sig-param">command=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer.__init__" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.docker.DockerContainer.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoremove</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bind_mounts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.docker.DockerContainer.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize <a class="reference internal" href="#shepherd.docker.DockerContainer" title="shepherd.docker.DockerContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DockerContainer</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>image</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DockerImage</span></code>) – container <a class="reference internal" href="#shepherd.docker.DockerImage" title="shepherd.docker.DockerImage"><code class="xref py py-class docutils literal notranslate"><span class="pre">DockerImage</span></code></a></p></li>
-<li><p><strong>autoremove</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – remove the container after it is stopped</p></li>
-<li><p><strong>runtime</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – docker runtime flag (e.g. <code class="docutils literal notranslate"><span class="pre">nvidia</span></code>)</p></li>
-<li><p><strong>env</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – additional environment variables</p></li>
-<li><p><strong>bind_mounts</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – optional host-&gt;container bind mounts mapping</p></li>
-<li><p><strong>ports</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]]) – optional host-&gt;container port mapping</p></li>
-<li><p><strong>command</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – optional docker container run command</p></li>
+<li><p><strong>image</strong> (<a class="reference internal" href="#shepherd.docker.DockerImage" title="shepherd.docker.image.DockerImage"><code class="xref py py-class docutils literal notranslate"><span class="pre">DockerImage</span></code></a>) – container <a class="reference internal" href="#shepherd.docker.DockerImage" title="shepherd.docker.DockerImage"><code class="xref py py-class docutils literal notranslate"><span class="pre">DockerImage</span></code></a></p></li>
+<li><p><strong>autoremove</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – remove the container after it is stopped</p></li>
+<li><p><strong>runtime</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – docker runtime flag (e.g. <code class="docutils literal notranslate"><span class="pre">nvidia</span></code>)</p></li>
+<li><p><strong>env</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – additional environment variables</p></li>
+<li><p><strong>bind_mounts</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – optional host-&gt;container bind mounts mapping</p></li>
+<li><p><strong>ports</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]]) – optional host-&gt;container port mapping</p></li>
+<li><p><strong>command</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – optional docker container run command</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.docker.DockerContainer._build_run_command">
-<code class="sig-name descname">_build_run_command</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer._build_run_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer._build_run_command" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.docker.DockerContainer._build_run_command">
+<span class="sig-name descname"><span class="pre">_build_run_command</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer._build_run_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.docker.DockerContainer._build_run_command" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build docker container run command.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>built command</p>
@@ -163,28 +166,28 @@ Helper class for running and managing docker images.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.docker.DockerContainer.kill">
-<code class="sig-name descname">kill</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer.kill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer.kill" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.docker.DockerContainer.kill">
+<span class="sig-name descname"><span class="pre">kill</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer.kill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.docker.DockerContainer.kill" title="Permalink to this definition">¶</a></dt>
 <dd><p>Kill the underlying docker container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><a class="reference internal" href="shepherd.errors.docker.html#shepherd.errors.docker.DockerError" title="shepherd.errors.docker.DockerError"><strong>DockerError</strong></a> – if the container was not started yet (i.e., its <code class="docutils literal notranslate"><span class="pre">container_id</span></code> is not known)</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.docker.DockerContainer.running">
-<em class="property">property </em><code class="sig-name descname">running</code><a class="headerlink" href="#shepherd.docker.DockerContainer.running" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="shepherd.docker.DockerContainer.running">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">running</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></em><a class="headerlink" href="#shepherd.docker.DockerContainer.running" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the underlying docker container is still up and running.
 Returns <code class="docutils literal notranslate"><span class="pre">False</span></code> if the container was not even started.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>docker container running flag</p>
@@ -192,80 +195,82 @@ Returns <code class="docutils literal notranslate"><span class="pre">False</span
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.docker.DockerContainer.start">
-<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerContainer.start" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.docker.DockerContainer.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/container.html#DockerContainer.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.docker.DockerContainer.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="shepherd.docker.DockerImage">
-<em class="property">class </em><code class="sig-prename descclassname">shepherd.docker.</code><code class="sig-name descname">DockerImage</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">tag</em>, <em class="sig-param">registry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerImage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.docker.DockerImage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.docker.</span></span><span class="sig-name descname"><span class="pre">DockerImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">registry</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.docker.DockerImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Helper class for running and managing docker images.</p>
-<div class="graphviz"><img src="../_images/inheritance-ef32c40f64461c9776e3e79dcfcd783ba4a2f150.png" alt="Inheritance diagram of DockerImage" class="inheritance graphviz" /></div>
-<div class="line-block">
+<div class="graphviz"><img src="../_images/inheritance-ee991e914ad476ae23af049a939fa8d9d6e54221.png" alt="Inheritance diagram of DockerImage" usemap="#inheritance2591173c07" class="inheritance graphviz" /></div>
+<map id="inheritance2591173c07" name="inheritance2591173c07">
+<area shape="rect" id="node1" href="#shepherd.docker.DockerImage" target="_top" title="Helper class for running and managing docker images." alt="" coords="5,5,113,31"/>
+</map><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<dl class="method">
-<dt id="shepherd.docker.DockerImage.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">tag</em>, <em class="sig-param">registry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerImage.__init__" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.docker.DockerImage.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">registry</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.docker.DockerImage.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize new <a class="reference internal" href="#shepherd.docker.DockerImage" title="shepherd.docker.DockerImage"><code class="xref py py-class docutils literal notranslate"><span class="pre">DockerImage</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – image name, e.g.: <code class="docutils literal notranslate"><span class="pre">library/alpine</span></code></p></li>
-<li><p><strong>tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – image tag, e.g.: <code class="docutils literal notranslate"><span class="pre">latest</span></code> or <code class="docutils literal notranslate"><span class="pre">stable</span></code></p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – image name, e.g.: <code class="docutils literal notranslate"><span class="pre">library/alpine</span></code></p></li>
+<li><p><strong>tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – image tag, e.g.: <code class="docutils literal notranslate"><span class="pre">latest</span></code> or <code class="docutils literal notranslate"><span class="pre">stable</span></code></p></li>
 <li><p><strong>registry</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">RegistryConfig</span></code>) – docker registry config</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.docker.DockerImage._login">
-<code class="sig-name descname">_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage._login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerImage._login" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.docker.DockerImage._login">
+<span class="sig-name descname"><span class="pre">_login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage._login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.docker.DockerImage._login" title="Permalink to this definition">¶</a></dt>
 <dd><p>If the registry configuration contains a username, log-in to the registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.docker.DockerImage.full_name">
-<em class="property">property </em><code class="sig-name descname">full_name</code><a class="headerlink" href="#shepherd.docker.DockerImage.full_name" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="shepherd.docker.DockerImage.full_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">full_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#shepherd.docker.DockerImage.full_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return docker image full name including registry url. E.g.: <code class="docutils literal notranslate"><span class="pre">docker.iterait.com/my-image:latest</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.docker.DockerImage.pull">
-<code class="sig-name descname">pull</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage.pull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.docker.DockerImage.pull" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.docker.DockerImage.pull">
+<span class="sig-name descname"><span class="pre">pull</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/docker/image.html#DockerImage.pull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.docker.DockerImage.pull" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pull the underlying docker image.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -281,7 +286,7 @@ Returns <code class="docutils literal notranslate"><span class="pre">False</span
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br/>
     </p>
   </div>
 </footer>

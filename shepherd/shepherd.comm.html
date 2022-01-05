@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>shepherd.comm &#8212; shepherd 0.5.2 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>shepherd.comm &#8212; shepherd 0.5.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/highlight.css" />
     <link rel="stylesheet" type="text/css" href="../_static/swagger-ui.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="shepherd.docker" href="shepherd.docker.html" />
@@ -22,9 +23,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -111,10 +112,10 @@
       </div>
     <div class="body col-md-9 content" role="main">
       
-  <div class="section" id="module-shepherd.comm">
+  <section id="module-shepherd.comm">
 <span id="shepherd-comm"></span><h1><code class="docutils literal notranslate"><span class="pre">shepherd.comm</span></code><a class="headerlink" href="#module-shepherd.comm" title="Permalink to this headline">¶</a></h1>
 <p>Package with sockets/greenlets communication helpers.</p>
-<div class="section" id="classes">
+<section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#shepherd.comm.Message" title="shepherd.comm.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>:
@@ -128,105 +129,118 @@ Message informing <a class="reference internal" href="shepherd.shepherd.html#she
 <li><p><a class="reference internal" href="#shepherd.comm.Messenger" title="shepherd.comm.Messenger"><code class="xref py py-class docutils literal notranslate"><span class="pre">Messenger</span></code></a>:
 Static helper class for sending and receiving messages through zmq sockets.</p></li>
 </ul>
-<dl class="class">
-<dt id="shepherd.comm.Message">
-<em class="property">class </em><code class="sig-prename descclassname">shepherd.comm.</code><code class="sig-name descname">Message</code><span class="sig-paren">(</span><em class="sig-param">raw_data=None</em>, <em class="sig-param">trusted_data=None</em>, <em class="sig-param">deserialize_mapping=None</em>, <em class="sig-param">init=True</em>, <em class="sig-param">partial=True</em>, <em class="sig-param">strict=True</em>, <em class="sig-param">validate=False</em>, <em class="sig-param">app_data=None</em>, <em class="sig-param">lazy=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messages.html#Message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.Message" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">schematics.deprecated.Model</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.comm.Message">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.comm.</span></span><span class="sig-name descname"><span class="pre">Message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trusted_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deserialize_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lazy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messages.html#Message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.comm.Message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">schematics.deprecated.patch_models.&lt;locals&gt;.Model</span></code></p>
 <p>Base zmq socket message.</p>
-<div class="graphviz"><img src="../_images/inheritance-253537a0a418f07a22470f85215b343f7c1d9ec4.png" alt="Inheritance diagram of Message" class="inheritance graphviz" /></div>
-<div class="line-block">
+<div class="graphviz"><img src="../_images/inheritance-1c1f02c879eae07487e9fb6ec1b8647d065dfd77.png" alt="Inheritance diagram of Message" usemap="#inheritancefd417ed936" class="inheritance graphviz" /></div>
+<map id="inheritancefd417ed936" name="inheritancefd417ed936">
+<area shape="rect" id="node1" href="#shepherd.comm.Message" target="_top" title="Base zmq socket message." alt="" coords="360,29,440,55"/>
+</map><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<dl class="attribute">
-<dt id="shepherd.comm.Message.identity">
-<code class="sig-name descname">identity</code><em class="property"> = &lt;StringType() instance on Message as 'identity'&gt;</em><a class="headerlink" href="#shepherd.comm.Message.identity" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="shepherd.comm.Message.identity">
+<span class="sig-name descname"><span class="pre">identity</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;StringType()</span> <span class="pre">instance</span> <span class="pre">on</span> <span class="pre">Message</span> <span class="pre">as</span> <span class="pre">'identity'&gt;</span></em><a class="headerlink" href="#shepherd.comm.Message.identity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optional identity (for zmq ROUTER sockets).</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="shepherd.comm.Message.job_id">
-<code class="sig-name descname">job_id</code><em class="property"> = &lt;StringType() instance on Message as 'job_id'&gt;</em><a class="headerlink" href="#shepherd.comm.Message.job_id" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="shepherd.comm.Message.job_id">
+<span class="sig-name descname"><span class="pre">job_id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;StringType()</span> <span class="pre">instance</span> <span class="pre">on</span> <span class="pre">Message</span> <span class="pre">as</span> <span class="pre">'job_id'&gt;</span></em><a class="headerlink" href="#shepherd.comm.Message.job_id" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>shepherd</strong> job id.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="shepherd.comm.InputMessage">
-<em class="property">class </em><code class="sig-prename descclassname">shepherd.comm.</code><code class="sig-name descname">InputMessage</code><span class="sig-paren">(</span><em class="sig-param">raw_data=None</em>, <em class="sig-param">trusted_data=None</em>, <em class="sig-param">deserialize_mapping=None</em>, <em class="sig-param">init=True</em>, <em class="sig-param">partial=True</em>, <em class="sig-param">strict=True</em>, <em class="sig-param">validate=False</em>, <em class="sig-param">app_data=None</em>, <em class="sig-param">lazy=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messages.html#InputMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.InputMessage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.comm.messages.Message</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.comm.InputMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.comm.</span></span><span class="sig-name descname"><span class="pre">InputMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trusted_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deserialize_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lazy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messages.html#InputMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.comm.InputMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#shepherd.comm.Message" title="shepherd.comm.messages.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.comm.messages.Message</span></code></a></p>
 <p>Message informing the runner about a job being ready to be processed.</p>
-<div class="graphviz"><img src="../_images/inheritance-d533c1cae892c9e9eb6a4128eda201ef96b0ba2e.png" alt="Inheritance diagram of InputMessage" class="inheritance graphviz" /></div>
-<div class="line-block">
+<div class="graphviz"><img src="../_images/inheritance-08ba2e2271bfaf9315d1804b8757b09b29a6f945.png" alt="Inheritance diagram of InputMessage" usemap="#inheritance9ee517a85c" class="inheritance graphviz" /></div>
+<map id="inheritance9ee517a85c" name="inheritance9ee517a85c">
+<area shape="rect" id="node1" href="#shepherd.comm.InputMessage" target="_top" title="Message informing the runner about a job being ready to be processed." alt="" coords="488,29,601,55"/>
+<area shape="rect" id="node2" href="#shepherd.comm.Message" target="_top" title="Base zmq socket message." alt="" coords="360,29,440,55"/>
+</map><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<dl class="attribute">
-<dt id="shepherd.comm.InputMessage.io_data_root">
-<code class="sig-name descname">io_data_root</code><em class="property"> = &lt;StringType() instance on InputMessage as 'io_data_root'&gt;</em><a class="headerlink" href="#shepherd.comm.InputMessage.io_data_root" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="shepherd.comm.InputMessage.io_data_root">
+<span class="sig-name descname"><span class="pre">io_data_root</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;StringType()</span> <span class="pre">instance</span> <span class="pre">on</span> <span class="pre">InputMessage</span> <span class="pre">as</span> <span class="pre">'io_data_root'&gt;</span></em><a class="headerlink" href="#shepherd.comm.InputMessage.io_data_root" title="Permalink to this definition">¶</a></dt>
 <dd><p>Job data root (with <code class="docutils literal notranslate"><span class="pre">inputs</span></code> and <code class="docutils literal notranslate"><span class="pre">outputs</span></code> folders).</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="shepherd.comm.DoneMessage">
-<em class="property">class </em><code class="sig-prename descclassname">shepherd.comm.</code><code class="sig-name descname">DoneMessage</code><span class="sig-paren">(</span><em class="sig-param">raw_data=None</em>, <em class="sig-param">trusted_data=None</em>, <em class="sig-param">deserialize_mapping=None</em>, <em class="sig-param">init=True</em>, <em class="sig-param">partial=True</em>, <em class="sig-param">strict=True</em>, <em class="sig-param">validate=False</em>, <em class="sig-param">app_data=None</em>, <em class="sig-param">lazy=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messages.html#DoneMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.DoneMessage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.comm.messages.Message</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.comm.DoneMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.comm.</span></span><span class="sig-name descname"><span class="pre">DoneMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trusted_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deserialize_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lazy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messages.html#DoneMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.comm.DoneMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#shepherd.comm.Message" title="shepherd.comm.messages.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.comm.messages.Message</span></code></a></p>
 <p>Message informing <a class="reference internal" href="shepherd.shepherd.html#shepherd.shepherd.Shepherd" title="shepherd.shepherd.Shepherd"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.shepherd.Shepherd</span></code></a> about a finished job.</p>
-<div class="graphviz"><img src="../_images/inheritance-e99819286326bcf65c93b7fb02506a034d588ed2.png" alt="Inheritance diagram of DoneMessage" class="inheritance graphviz" /></div>
-<div class="line-block">
+<div class="graphviz"><img src="../_images/inheritance-76fa21952f16f52cc5d8648e11b15718eb290862.png" alt="Inheritance diagram of DoneMessage" usemap="#inheritance4beafa1407" class="inheritance graphviz" /></div>
+<map id="inheritance4beafa1407" name="inheritance4beafa1407">
+<area shape="rect" id="node1" href="#shepherd.comm.DoneMessage" target="_top" title="Message informing :py:class:`shepherd.shepherd.Shepherd` about a finished job." alt="" coords="488,29,603,55"/>
+<area shape="rect" id="node2" href="#shepherd.comm.Message" target="_top" title="Base zmq socket message." alt="" coords="360,29,440,55"/>
+</map><div class="line-block">
 <div class="line"><br /></div>
 </div>
 </dd></dl>
 
-<dl class="class">
-<dt id="shepherd.comm.ErrorMessage">
-<em class="property">class </em><code class="sig-prename descclassname">shepherd.comm.</code><code class="sig-name descname">ErrorMessage</code><span class="sig-paren">(</span><em class="sig-param">raw_data=None</em>, <em class="sig-param">trusted_data=None</em>, <em class="sig-param">deserialize_mapping=None</em>, <em class="sig-param">init=True</em>, <em class="sig-param">partial=True</em>, <em class="sig-param">strict=True</em>, <em class="sig-param">validate=False</em>, <em class="sig-param">app_data=None</em>, <em class="sig-param">lazy=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messages.html#ErrorMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.ErrorMessage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.comm.messages.Message</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.comm.ErrorMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.comm.</span></span><span class="sig-name descname"><span class="pre">ErrorMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trusted_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deserialize_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lazy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messages.html#ErrorMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.comm.ErrorMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#shepherd.comm.Message" title="shepherd.comm.messages.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.comm.messages.Message</span></code></a></p>
 <p>Message informing <a class="reference internal" href="shepherd.shepherd.html#shepherd.shepherd.Shepherd" title="shepherd.shepherd.Shepherd"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.shepherd.Shepherd</span></code></a> about an encountered error.</p>
-<div class="graphviz"><img src="../_images/inheritance-efddec35adb30e365cc3af8f1e24ae63b225b065.png" alt="Inheritance diagram of ErrorMessage" class="inheritance graphviz" /></div>
-<div class="line-block">
+<div class="graphviz"><img src="../_images/inheritance-f049af00edc8dfc328fbe74fcca0da76130cfc49.png" alt="Inheritance diagram of ErrorMessage" usemap="#inheritance4bb15a4e8a" class="inheritance graphviz" /></div>
+<map id="inheritance4bb15a4e8a" name="inheritance4bb15a4e8a">
+<area shape="rect" id="node1" href="#shepherd.comm.ErrorMessage" target="_top" title="Message informing :py:class:`shepherd.shepherd.Shepherd` about an encountered error." alt="" coords="488,29,599,55"/>
+<area shape="rect" id="node2" href="#shepherd.comm.Message" target="_top" title="Base zmq socket message." alt="" coords="360,29,440,55"/>
+</map><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<dl class="attribute">
-<dt id="shepherd.comm.ErrorMessage.exception_traceback">
-<code class="sig-name descname">exception_traceback</code><em class="property"> = &lt;StringType() instance on ErrorMessage as 'exception_traceback'&gt;</em><a class="headerlink" href="#shepherd.comm.ErrorMessage.exception_traceback" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="shepherd.comm.ErrorMessage.exception_traceback">
+<span class="sig-name descname"><span class="pre">exception_traceback</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;StringType()</span> <span class="pre">instance</span> <span class="pre">on</span> <span class="pre">ErrorMessage</span> <span class="pre">as</span> <span class="pre">'exception_traceback'&gt;</span></em><a class="headerlink" href="#shepherd.comm.ErrorMessage.exception_traceback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception traceback (where applicable).</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="shepherd.comm.ErrorMessage.exception_type">
-<code class="sig-name descname">exception_type</code><em class="property"> = &lt;StringType() instance on ErrorMessage as 'exception_type'&gt;</em><a class="headerlink" href="#shepherd.comm.ErrorMessage.exception_type" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="shepherd.comm.ErrorMessage.exception_type">
+<span class="sig-name descname"><span class="pre">exception_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;StringType()</span> <span class="pre">instance</span> <span class="pre">on</span> <span class="pre">ErrorMessage</span> <span class="pre">as</span> <span class="pre">'exception_type'&gt;</span></em><a class="headerlink" href="#shepherd.comm.ErrorMessage.exception_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Type of the error (e.g. ValueError).</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="shepherd.comm.ErrorMessage.message">
-<code class="sig-name descname">message</code><em class="property"> = &lt;StringType() instance on ErrorMessage as 'message'&gt;</em><a class="headerlink" href="#shepherd.comm.ErrorMessage.message" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="shepherd.comm.ErrorMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;StringType()</span> <span class="pre">instance</span> <span class="pre">on</span> <span class="pre">ErrorMessage</span> <span class="pre">as</span> <span class="pre">'message'&gt;</span></em><a class="headerlink" href="#shepherd.comm.ErrorMessage.message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Human-readable short error message.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="shepherd.comm.Messenger">
-<em class="property">class </em><code class="sig-prename descclassname">shepherd.comm.</code><code class="sig-name descname">Messenger</code><a class="reference internal" href="../_modules/shepherd/comm/messenger.html#Messenger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.Messenger" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.comm.Messenger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.comm.</span></span><span class="sig-name descname"><span class="pre">Messenger</span></span><a class="reference internal" href="../_modules/shepherd/comm/messenger.html#Messenger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.comm.Messenger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Static helper class for sending and receiving messages through zmq sockets.</p>
-<div class="graphviz"><img src="../_images/inheritance-41eba691f44e33ae7e390b3c27448b81d4a714ef.png" alt="Inheritance diagram of Messenger" class="inheritance graphviz" /></div>
-<div class="line-block">
+<div class="graphviz"><img src="../_images/inheritance-673165624de47ef4a1321c890a2973232e53b7b1.png" alt="Inheritance diagram of Messenger" usemap="#inheritance0b0a3c9f7b" class="inheritance graphviz" /></div>
+<map id="inheritance0b0a3c9f7b" name="inheritance0b0a3c9f7b">
+<area shape="rect" id="node1" href="#shepherd.comm.Messenger" target="_top" title="Static helper class for sending and receiving messages through zmq sockets." alt="" coords="5,5,99,31"/>
+</map><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<dl class="method">
-<dt id="shepherd.comm.Messenger.recv">
-<em class="property">static </em><code class="sig-name descname">recv</code><span class="sig-paren">(</span><em class="sig-param">socket</em>, <em class="sig-param">expected_message_types=None</em>, <em class="sig-param">noblock=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messenger.html#Messenger.recv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.Messenger.recv" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.comm.Messenger.recv">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">recv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">socket</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_message_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noblock</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messenger.html#Messenger.recv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.comm.Messenger.recv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receive, decode and return a message from the given socket.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>socket</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code>) – socket to receive the message from</p></li>
-<li><p><strong>expected_message_types</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>]]) – a sequence of expected message types (optional)</p></li>
-<li><p><strong>noblock</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – do not block on <code class="docutils literal notranslate"><span class="pre">recv</span></code> call and throw if there is no message</p></li>
+<li><p><strong>expected_message_types</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>]]) – a sequence of expected message types (optional)</p></li>
+<li><p><strong>noblock</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – do not block on <code class="docutils literal notranslate"><span class="pre">recv</span></code> call and throw if there is no message</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
@@ -237,21 +251,21 @@ Static helper class for sending and receiving messages through zmq sockets.</p><
 </ul>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">InputMessage</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DoneMessage</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorMessage</span></code>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference internal" href="#shepherd.comm.InputMessage" title="shepherd.comm.messages.InputMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">InputMessage</span></code></a>, <a class="reference internal" href="#shepherd.comm.DoneMessage" title="shepherd.comm.messages.DoneMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoneMessage</span></code></a>, <a class="reference internal" href="#shepherd.comm.ErrorMessage" title="shepherd.comm.messages.ErrorMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorMessage</span></code></a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.comm.Messenger.send">
-<em class="property">static </em><code class="sig-name descname">send</code><span class="sig-paren">(</span><em class="sig-param">socket</em>, <em class="sig-param">message</em>, <em class="sig-param">response_to=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messenger.html#Messenger.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.comm.Messenger.send" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.comm.Messenger.send">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">socket</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/comm/messenger.html#Messenger.send"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.comm.Messenger.send" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encode given message and send it to the given socket.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>socket</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code>) – socket to send the message to</p></li>
-<li><p><strong>message</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code>) – message to be send</p></li>
-<li><p><strong>response_to</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code>]) – optional message to respond to</p></li>
+<li><p><strong>message</strong> (<a class="reference internal" href="#shepherd.comm.Message" title="shepherd.comm.messages.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – message to be send</p></li>
+<li><p><strong>response_to</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#shepherd.comm.Message" title="shepherd.comm.messages.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>]) – optional message to respond to</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
@@ -261,15 +275,15 @@ Static helper class for sending and receiving messages through zmq sockets.</p><
 </ul>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -285,7 +299,7 @@ Static helper class for sending and receiving messages through zmq sockets.</p><
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br/>
     </p>
   </div>
 </footer>

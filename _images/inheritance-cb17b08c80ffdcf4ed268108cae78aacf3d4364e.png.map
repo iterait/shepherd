@@ -1,0 +1,4 @@
+<map id="inheritance44afa4f917" name="inheritance44afa4f917">
+<area shape="rect" id="node1" href="#shepherd.errors.api.ApiClientError" target="_top" title="An exception raised when the user of the API makes an invalid request" alt="" coords="5,5,117,31"/>
+<area shape="rect" id="node2" href="#shepherd.errors.api.NameConflictError" target="_top" title="Exception raised when a client chooses a job ID that was already used" alt="" coords="165,5,307,31"/>
+</map>

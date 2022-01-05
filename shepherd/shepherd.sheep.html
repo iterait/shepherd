@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>shepherd.sheep &#8212; shepherd 0.5.2 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>shepherd.sheep &#8212; shepherd 0.5.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/highlight.css" />
     <link rel="stylesheet" type="text/css" href="../_static/swagger-ui.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="shepherd.shepherd" href="shepherd.shepherd.html" />
@@ -22,9 +23,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -111,9 +112,9 @@
       </div>
     <div class="body col-md-9 content" role="main">
       
-  <div class="section" id="module-shepherd.sheep">
+  <section id="module-shepherd.sheep">
 <span id="shepherd-sheep"></span><h1><code class="docutils literal notranslate"><span class="pre">shepherd.sheep</span></code><a class="headerlink" href="#module-shepherd.sheep" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="classes">
+<section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#shepherd.sheep.BaseSheep" title="shepherd.sheep.BaseSheep"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSheep</span></code></a>:
@@ -123,268 +124,276 @@ Sheep running its jobs in docker containers.</p></li>
 <li><p><a class="reference internal" href="#shepherd.sheep.BareSheep" title="shepherd.sheep.BareSheep"><code class="xref py py-class docutils literal notranslate"><span class="pre">BareSheep</span></code></a>:
 An adapter that running models on bare metal with <code class="docutils literal notranslate"><span class="pre">shepherd-runner</span></code>.</p></li>
 </ul>
-<dl class="class">
-<dt id="shepherd.sheep.BaseSheep">
-<em class="property">class </em><code class="sig-prename descclassname">shepherd.sheep.</code><code class="sig-name descname">BaseSheep</code><span class="sig-paren">(</span><em class="sig-param">socket</em>, <em class="sig-param">sheep_data_root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/base_sheep.html#BaseSheep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.BaseSheep" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.sheep.BaseSheep">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.sheep.</span></span><span class="sig-name descname"><span class="pre">BaseSheep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">socket</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheep_data_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/base_sheep.html#BaseSheep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.BaseSheep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A base class for container adapters - classes that allow launching different kinds of containers.</p>
-<div class="graphviz"><img src="../_images/inheritance-ccd781b3fa8b930a3be6b89f7e4f064bed5cc517.png" alt="Inheritance diagram of BaseSheep" class="inheritance graphviz" /></div>
-<div class="line-block">
+<div class="graphviz"><img src="../_images/inheritance-2fe1da4bbb27dd5bddc9a85f3b6345e41a075b63.png" alt="Inheritance diagram of BaseSheep" usemap="#inheritancef9d1465e0a" class="inheritance graphviz" /></div>
+<map id="inheritancef9d1465e0a" name="inheritancef9d1465e0a">
+<area shape="rect" id="node1" href="#shepherd.sheep.BaseSheep" target="_top" title="A base class for container adapters &#45; classes that allow launching different kinds of containers." alt="" coords="5,5,100,31"/>
+</map><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<dl class="class">
-<dt id="shepherd.sheep.BaseSheep.Config">
-<em class="property">class </em><code class="sig-name descname">Config</code><span class="sig-paren">(</span><em class="sig-param">raw_data=None</em>, <em class="sig-param">trusted_data=None</em>, <em class="sig-param">deserialize_mapping=None</em>, <em class="sig-param">init=True</em>, <em class="sig-param">partial=True</em>, <em class="sig-param">strict=True</em>, <em class="sig-param">validate=False</em>, <em class="sig-param">app_data=None</em>, <em class="sig-param">lazy=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/base_sheep.html#BaseSheep.Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.BaseSheep.Config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">schematics.deprecated.Model</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.sheep.BaseSheep.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trusted_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deserialize_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lazy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/base_sheep.html#BaseSheep.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.BaseSheep.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">schematics.deprecated.patch_models.&lt;locals&gt;.Model</span></code></p>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.BaseSheep.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">socket</em>, <em class="sig-param">sheep_data_root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/base_sheep.html#BaseSheep.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.BaseSheep.__init__" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.sheep.BaseSheep.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">socket</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheep_data_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/base_sheep.html#BaseSheep.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.BaseSheep.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create new <a class="reference internal" href="#shepherd.sheep.BaseSheep" title="shepherd.sheep.BaseSheep"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSheep</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>socket</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code>) – socket for feeding sheep’s runner with InputMessages</p></li>
-<li><p><strong>sheep_data_root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – sheep data root with job working directories</p></li>
+<li><p><strong>sheep_data_root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – sheep data root with job working directories</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.BaseSheep._load_model">
-<code class="sig-name descname">_load_model</code><span class="sig-paren">(</span><em class="sig-param">model_name</em>, <em class="sig-param">model_version</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/base_sheep.html#BaseSheep._load_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.BaseSheep._load_model" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.sheep.BaseSheep._load_model">
+<span class="sig-name descname"><span class="pre">_load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/base_sheep.html#BaseSheep._load_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.BaseSheep._load_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tell the sheep to prepare a new model (without restarting).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.BaseSheep.running">
-<em class="property">abstract property </em><code class="sig-name descname">running</code><a class="headerlink" href="#shepherd.sheep.BaseSheep.running" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="shepherd.sheep.BaseSheep.running">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">running</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></em><a class="headerlink" href="#shepherd.sheep.BaseSheep.running" title="Permalink to this definition">¶</a></dt>
 <dd><p>Is the sheep running, i.e. capable of accepting computation requests?</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.BaseSheep.start">
-<code class="sig-name descname">start</code><span class="sig-paren">(</span><em class="sig-param">model_name</em>, <em class="sig-param">model_version</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/base_sheep.html#BaseSheep.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.BaseSheep.start" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.sheep.BaseSheep.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/base_sheep.html#BaseSheep.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.BaseSheep.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>(Re)start the sheep with the given model name and version.
 Any unfinished jobs will be lost, socket connection will be reset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model name</p></li>
-<li><p><strong>model_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model version</p></li>
+<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model name</p></li>
+<li><p><strong>model_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model version</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="shepherd.sheep.DockerSheep">
-<em class="property">class </em><code class="sig-prename descclassname">shepherd.sheep.</code><code class="sig-name descname">DockerSheep</code><span class="sig-paren">(</span><em class="sig-param">config</em>, <em class="sig-param">registry_config</em>, <em class="sig-param">command=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/docker_sheep.html#DockerSheep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.DockerSheep" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.sheep.base_sheep.BaseSheep</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.sheep.DockerSheep">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.sheep.</span></span><span class="sig-name descname"><span class="pre">DockerSheep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">registry_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/docker_sheep.html#DockerSheep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.DockerSheep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#shepherd.sheep.BaseSheep" title="shepherd.sheep.base_sheep.BaseSheep"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.sheep.base_sheep.BaseSheep</span></code></a></p>
 <p>Sheep running its jobs in docker containers.
 To enable GPU computation, specify the gpu devices in the configuration and sheep will attempt to
 use <code class="docutils literal notranslate"><span class="pre">nvidia</span> <span class="pre">docker</span> <span class="pre">2</span></code>.</p>
-<div class="graphviz"><img src="../_images/inheritance-ed33ab579d08df4e1fea1b99ca00199ba47c9310.png" alt="Inheritance diagram of DockerSheep" class="inheritance graphviz" /></div>
-<div class="line-block">
+<div class="graphviz"><img src="../_images/inheritance-990cad5a9217399b63d9d17be3abc016938c8641.png" alt="Inheritance diagram of DockerSheep" usemap="#inheritance812713e663" class="inheritance graphviz" /></div>
+<map id="inheritance812713e663" name="inheritance812713e663">
+<area shape="rect" id="node1" href="#shepherd.sheep.BaseSheep" target="_top" title="A base class for container adapters &#45; classes that allow launching different kinds of containers." alt="" coords="5,5,100,31"/>
+<area shape="rect" id="node2" href="#shepherd.sheep.DockerSheep" target="_top" title="Sheep running its jobs in docker containers." alt="" coords="148,5,255,31"/>
+</map><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<dl class="class">
-<dt id="shepherd.sheep.DockerSheep.Config">
-<em class="property">class </em><code class="sig-name descname">Config</code><span class="sig-paren">(</span><em class="sig-param">raw_data=None</em>, <em class="sig-param">trusted_data=None</em>, <em class="sig-param">deserialize_mapping=None</em>, <em class="sig-param">init=True</em>, <em class="sig-param">partial=True</em>, <em class="sig-param">strict=True</em>, <em class="sig-param">validate=False</em>, <em class="sig-param">app_data=None</em>, <em class="sig-param">lazy=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/docker_sheep.html#DockerSheep.Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.DockerSheep.Config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.sheep.base_sheep.Config</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.sheep.DockerSheep.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trusted_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deserialize_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lazy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/docker_sheep.html#DockerSheep.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.DockerSheep.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#shepherd.sheep.BaseSheep.Config" title="shepherd.sheep.base_sheep.BaseSheep.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.sheep.base_sheep.BaseSheep.Config</span></code></a></p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="shepherd.sheep.DockerSheep._CONTAINER_POINT">
-<code class="sig-name descname">_CONTAINER_POINT</code><em class="property"> = 9999</em><a class="headerlink" href="#shepherd.sheep.DockerSheep._CONTAINER_POINT" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="shepherd.sheep.DockerSheep._CONTAINER_POINT">
+<span class="sig-name descname"><span class="pre">_CONTAINER_POINT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9999</span></em><a class="headerlink" href="#shepherd.sheep.DockerSheep._CONTAINER_POINT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Container port to bind the socket to.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.DockerSheep.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">config</em>, <em class="sig-param">registry_config</em>, <em class="sig-param">command=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/docker_sheep.html#DockerSheep.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.DockerSheep.__init__" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.sheep.DockerSheep.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">registry_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/docker_sheep.html#DockerSheep.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.DockerSheep.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create new <a class="reference internal" href="#shepherd.sheep.DockerSheep" title="shepherd.sheep.DockerSheep"><code class="xref py py-class docutils literal notranslate"><span class="pre">DockerSheep</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]) – docker sheep configuration</p></li>
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]) – docker sheep configuration</p></li>
 <li><p><strong>registry_config</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">RegistryConfig</span></code>) – docker registry configuration</p></li>
-<li><p><strong>command</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – optional docker container run command</p></li>
+<li><p><strong>command</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – optional docker container run command</p></li>
 <li><p><strong>kwargs</strong> – <a class="reference internal" href="#shepherd.sheep.BaseSheep" title="shepherd.sheep.BaseSheep"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSheep</span></code></a>’s kwargs</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.DockerSheep._load_model">
-<code class="sig-name descname">_load_model</code><span class="sig-paren">(</span><em class="sig-param">model_name</em>, <em class="sig-param">model_version</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/docker_sheep.html#DockerSheep._load_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.DockerSheep._load_model" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.sheep.DockerSheep._load_model">
+<span class="sig-name descname"><span class="pre">_load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/docker_sheep.html#DockerSheep._load_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.DockerSheep._load_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pull docker image of the given name and version from the previously configured docker registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – docker image name</p></li>
-<li><p><strong>model_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – docker image version</p></li>
+<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – docker image name</p></li>
+<li><p><strong>model_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – docker image version</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.DockerSheep.running">
-<em class="property">property </em><code class="sig-name descname">running</code><a class="headerlink" href="#shepherd.sheep.DockerSheep.running" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="shepherd.sheep.DockerSheep.running">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">running</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></em><a class="headerlink" href="#shepherd.sheep.DockerSheep.running" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the underlying docker container is running.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.DockerSheep.slaughter">
-<code class="sig-name descname">slaughter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/docker_sheep.html#DockerSheep.slaughter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.DockerSheep.slaughter" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.sheep.DockerSheep.slaughter">
+<span class="sig-name descname"><span class="pre">slaughter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/docker_sheep.html#DockerSheep.slaughter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.DockerSheep.slaughter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Kill the underlying docker container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.DockerSheep.start">
-<code class="sig-name descname">start</code><span class="sig-paren">(</span><em class="sig-param">model_name</em>, <em class="sig-param">model_version</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/docker_sheep.html#DockerSheep.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.DockerSheep.start" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.sheep.DockerSheep.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/docker_sheep.html#DockerSheep.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.DockerSheep.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run a docker command starting the docker runner.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – docker image name</p></li>
-<li><p><strong>model_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – docker image version</p></li>
+<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – docker image name</p></li>
+<li><p><strong>model_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – docker image version</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="shepherd.sheep.BareSheep">
-<em class="property">class </em><code class="sig-prename descclassname">shepherd.sheep.</code><code class="sig-name descname">BareSheep</code><span class="sig-paren">(</span><em class="sig-param">config</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/bare_sheep.html#BareSheep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.BareSheep" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.sheep.base_sheep.BaseSheep</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.sheep.BareSheep">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.sheep.</span></span><span class="sig-name descname"><span class="pre">BareSheep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/bare_sheep.html#BareSheep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.BareSheep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#shepherd.sheep.BaseSheep" title="shepherd.sheep.base_sheep.BaseSheep"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.sheep.base_sheep.BaseSheep</span></code></a></p>
 <p>An adapter that running models on bare metal with <code class="docutils literal notranslate"><span class="pre">shepherd-runner</span></code>.
 This might be useful when Docker isolation is impossible or not necessary, for example in deployments with just a
 few models.</p>
-<div class="graphviz"><img src="../_images/inheritance-9f68f29f19f39abbf55900c4058465a8f33cd934.png" alt="Inheritance diagram of BareSheep" class="inheritance graphviz" /></div>
-<div class="line-block">
+<div class="graphviz"><img src="../_images/inheritance-b6a36bc5789dc68dc2662ad128e73effe33bc602.png" alt="Inheritance diagram of BareSheep" usemap="#inheritancedf2c599566" class="inheritance graphviz" /></div>
+<map id="inheritancedf2c599566" name="inheritancedf2c599566">
+<area shape="rect" id="node1" href="#shepherd.sheep.BareSheep" target="_top" title="An adapter that running models on bare metal with ``shepherd&#45;runner``." alt="" coords="148,5,240,31"/>
+<area shape="rect" id="node2" href="#shepherd.sheep.BaseSheep" target="_top" title="A base class for container adapters &#45; classes that allow launching different kinds of containers." alt="" coords="5,5,100,31"/>
+</map><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<dl class="class">
-<dt id="shepherd.sheep.BareSheep.Config">
-<em class="property">class </em><code class="sig-name descname">Config</code><span class="sig-paren">(</span><em class="sig-param">raw_data=None</em>, <em class="sig-param">trusted_data=None</em>, <em class="sig-param">deserialize_mapping=None</em>, <em class="sig-param">init=True</em>, <em class="sig-param">partial=True</em>, <em class="sig-param">strict=True</em>, <em class="sig-param">validate=False</em>, <em class="sig-param">app_data=None</em>, <em class="sig-param">lazy=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/bare_sheep.html#BareSheep.Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.BareSheep.Config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.sheep.base_sheep.Config</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.sheep.BareSheep.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trusted_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deserialize_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lazy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/bare_sheep.html#BareSheep.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.BareSheep.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#shepherd.sheep.BaseSheep.Config" title="shepherd.sheep.base_sheep.BaseSheep.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.sheep.base_sheep.BaseSheep.Config</span></code></a></p>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.BareSheep.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">config</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/bare_sheep.html#BareSheep.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.BareSheep.__init__" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.sheep.BareSheep.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/bare_sheep.html#BareSheep.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.BareSheep.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create new <a class="reference internal" href="#shepherd.sheep.BareSheep" title="shepherd.sheep.BareSheep"><code class="xref py py-class docutils literal notranslate"><span class="pre">BareSheep</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]) – bare sheep configuration (<a class="reference internal" href="#shepherd.sheep.BareSheep.Config" title="shepherd.sheep.BareSheep.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">BareSheep.Config</span></code></a>)</p></li>
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]) – bare sheep configuration (<a class="reference internal" href="#shepherd.sheep.BareSheep.Config" title="shepherd.sheep.BareSheep.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">BareSheep.Config</span></code></a>)</p></li>
 <li><p><strong>kwargs</strong> – parent’s kwargs</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.BareSheep._load_model">
-<code class="sig-name descname">_load_model</code><span class="sig-paren">(</span><em class="sig-param">model_name</em>, <em class="sig-param">model_version</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/bare_sheep.html#BareSheep._load_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.BareSheep._load_model" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.sheep.BareSheep._load_model">
+<span class="sig-name descname"><span class="pre">_load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/bare_sheep.html#BareSheep._load_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.BareSheep._load_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up runner config path to <code class="docutils literal notranslate"><span class="pre">working_directory</span></code> / <code class="docutils literal notranslate"><span class="pre">model_name</span></code> / <code class="docutils literal notranslate"><span class="pre">model_version</span></code> / <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model name</p></li>
-<li><p><strong>model_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model version</p></li>
+<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model name</p></li>
+<li><p><strong>model_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model version</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><a class="reference internal" href="shepherd.errors.sheep.html#shepherd.errors.sheep.SheepConfigurationError" title="shepherd.errors.sheep.SheepConfigurationError"><strong>SheepConfigurationError</strong></a> – if the runner config path does not exist</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.BareSheep.running">
-<em class="property">property </em><code class="sig-name descname">running</code><a class="headerlink" href="#shepherd.sheep.BareSheep.running" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="shepherd.sheep.BareSheep.running">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">running</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></em><a class="headerlink" href="#shepherd.sheep.BareSheep.running" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the underlying runner (subprocess) is running.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.BareSheep.slaughter">
-<code class="sig-name descname">slaughter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/bare_sheep.html#BareSheep.slaughter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.BareSheep.slaughter" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.sheep.BareSheep.slaughter">
+<span class="sig-name descname"><span class="pre">slaughter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/bare_sheep.html#BareSheep.slaughter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.BareSheep.slaughter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Kill the underlying runner (subprocess).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.sheep.BareSheep.start">
-<code class="sig-name descname">start</code><span class="sig-paren">(</span><em class="sig-param">model_name</em>, <em class="sig-param">model_version</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/bare_sheep.html#BareSheep.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.sheep.BareSheep.start" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.sheep.BareSheep.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/sheep/bare_sheep.html#BareSheep.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.sheep.BareSheep.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start a subprocess with the sheep runner.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model name</p></li>
-<li><p><strong>model_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model version</p></li>
+<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model name</p></li>
+<li><p><strong>model_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model version</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -400,7 +409,7 @@ few models.</p>
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br/>
     </p>
   </div>
 </footer>

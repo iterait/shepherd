@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>shepherd.errors.api &#8212; shepherd 0.5.2 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>shepherd.errors.api &#8212; shepherd 0.5.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/highlight.css" />
     <link rel="stylesheet" type="text/css" href="../_static/swagger-ui.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="shepherd.errors.comm" href="shepherd.errors.comm.html" />
@@ -22,9 +23,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -111,9 +112,9 @@
       </div>
     <div class="body col-md-9 content" role="main">
       
-  <div class="section" id="module-shepherd.errors.api">
+  <section id="module-shepherd.errors.api">
 <span id="shepherd-errors-api"></span><h1><code class="docutils literal notranslate"><span class="pre">shepherd.errors.api</span></code><a class="headerlink" href="#module-shepherd.errors.api" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="exceptions">
+<section id="exceptions">
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#shepherd.errors.api.ApiServerError" title="shepherd.errors.api.ApiServerError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ApiServerError</span></code></a>:
@@ -131,74 +132,83 @@ Exception raised when the remote storage is not accessible at the moment</p></li
 <li><p><a class="reference internal" href="#shepherd.errors.api.NameConflictError" title="shepherd.errors.api.NameConflictError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NameConflictError</span></code></a>:
 Exception raised when a client chooses a job ID that was already used</p></li>
 </ul>
-<dl class="exception">
-<dt id="shepherd.errors.api.ApiServerError">
-<em class="property">exception </em><code class="sig-prename descclassname">shepherd.errors.api.</code><code class="sig-name descname">ApiServerError</code><a class="reference internal" href="../_modules/apistrap/errors.html#ApiServerError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.errors.api.ApiServerError" title="Permalink to this definition">¶</a></dt>
+<dl class="py exception">
+<dt class="sig sig-object py" id="shepherd.errors.api.ApiServerError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.errors.api.</span></span><span class="sig-name descname"><span class="pre">ApiServerError</span></span><a class="reference internal" href="../_modules/apistrap/errors.html#ApiServerError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.errors.api.ApiServerError" title="Permalink to this definition">¶</a></dt>
 <dd><p>An exception raised when the server encounters an error</p>
 <p class="rubric">Inheritance</p>
-<div class="graphviz"><img src="../_images/inheritance-95bccb6791926769e6ea592f211d7df81321e888.png" alt="Inheritance diagram of ApiServerError" class="inheritance graphviz" /></div>
-</dd></dl>
+<div class="graphviz"><img src="../_images/inheritance-09222ed74976a152548ff92d256e67cd70ffe4d0.png" alt="Inheritance diagram of ApiServerError" usemap="#inheritancee04c367e91" class="inheritance graphviz" /></div>
+<map id="inheritancee04c367e91" name="inheritancee04c367e91">
+<area shape="rect" id="node1" href="#shepherd.errors.api.ApiServerError" target="_top" title="An exception raised when the server encounters an error" alt="" coords="5,5,121,31"/>
+</map></dd></dl>
 
-<dl class="exception">
-<dt id="shepherd.errors.api.ApiClientError">
-<em class="property">exception </em><code class="sig-prename descclassname">shepherd.errors.api.</code><code class="sig-name descname">ApiClientError</code><a class="reference internal" href="../_modules/apistrap/errors.html#ApiClientError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.errors.api.ApiClientError" title="Permalink to this definition">¶</a></dt>
+<dl class="py exception">
+<dt class="sig sig-object py" id="shepherd.errors.api.ApiClientError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.errors.api.</span></span><span class="sig-name descname"><span class="pre">ApiClientError</span></span><a class="reference internal" href="../_modules/apistrap/errors.html#ApiClientError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.errors.api.ApiClientError" title="Permalink to this definition">¶</a></dt>
 <dd><p>An exception raised when the user of the API makes an invalid request</p>
 <p class="rubric">Inheritance</p>
-<div class="graphviz"><img src="../_images/inheritance-c997a600e3bd1c92d0821ded72b3320a6f499b39.png" alt="Inheritance diagram of ApiClientError" class="inheritance graphviz" /></div>
-</dd></dl>
+<div class="graphviz"><img src="../_images/inheritance-40596cd4af78369cd1938825ff06f666b498d396.png" alt="Inheritance diagram of ApiClientError" usemap="#inheritance82fb74a067" class="inheritance graphviz" /></div>
+<map id="inheritance82fb74a067" name="inheritance82fb74a067">
+<area shape="rect" id="node1" href="#shepherd.errors.api.ApiClientError" target="_top" title="An exception raised when the user of the API makes an invalid request" alt="" coords="5,5,117,31"/>
+</map></dd></dl>
 
-<dl class="exception">
-<dt id="shepherd.errors.api.UnknownSheepError">
-<em class="property">exception </em><code class="sig-prename descclassname">shepherd.errors.api.</code><code class="sig-name descname">UnknownSheepError</code><a class="reference internal" href="../_modules/shepherd/errors/api.html#UnknownSheepError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.errors.api.UnknownSheepError" title="Permalink to this definition">¶</a></dt>
+<dl class="py exception">
+<dt class="sig sig-object py" id="shepherd.errors.api.UnknownSheepError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.errors.api.</span></span><span class="sig-name descname"><span class="pre">UnknownSheepError</span></span><a class="reference internal" href="../_modules/shepherd/errors/api.html#UnknownSheepError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.errors.api.UnknownSheepError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception raised when application attempts to use a sheep with an unknown id.</p>
 <p class="rubric">Inheritance</p>
-<div class="graphviz"><img src="../_images/inheritance-3da205075100f244d4fd9d09984ebca3f6d628a4.png" alt="Inheritance diagram of UnknownSheepError" usemap="#inheritance6908808260" class="inheritance graphviz" /></div>
+<div class="graphviz"><img src="../_images/inheritance-de2b76a323c19b48821056daffb8b3aa655ef58a.png" alt="Inheritance diagram of UnknownSheepError" usemap="#inheritance6908808260" class="inheritance graphviz" /></div>
 <map id="inheritance6908808260" name="inheritance6908808260">
+<area shape="rect" id="node1" href="#shepherd.errors.api.ApiClientError" target="_top" title="An exception raised when the user of the API makes an invalid request" alt="" coords="5,5,117,31"/>
 <area shape="rect" id="node2" href="#shepherd.errors.api.UnknownSheepError" target="_top" title="Exception raised when application attempts to use a sheep with an unknown id." alt="" coords="165,5,320,31"/>
 </map></dd></dl>
 
-<dl class="exception">
-<dt id="shepherd.errors.api.UnknownJobError">
-<em class="property">exception </em><code class="sig-prename descclassname">shepherd.errors.api.</code><code class="sig-name descname">UnknownJobError</code><a class="reference internal" href="../_modules/shepherd/errors/api.html#UnknownJobError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.errors.api.UnknownJobError" title="Permalink to this definition">¶</a></dt>
+<dl class="py exception">
+<dt class="sig sig-object py" id="shepherd.errors.api.UnknownJobError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.errors.api.</span></span><span class="sig-name descname"><span class="pre">UnknownJobError</span></span><a class="reference internal" href="../_modules/shepherd/errors/api.html#UnknownJobError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.errors.api.UnknownJobError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception raised when a client asks about a job that is not assigned to this shepherd.</p>
 <p class="rubric">Inheritance</p>
-<div class="graphviz"><img src="../_images/inheritance-1a9851fe55bad32176e08775df15ab19f5c67fec.png" alt="Inheritance diagram of UnknownJobError" usemap="#inheritancef87f0fb876" class="inheritance graphviz" /></div>
+<div class="graphviz"><img src="../_images/inheritance-11c54d7028152175300a0a6954e387221c094b63.png" alt="Inheritance diagram of UnknownJobError" usemap="#inheritancef87f0fb876" class="inheritance graphviz" /></div>
 <map id="inheritancef87f0fb876" name="inheritancef87f0fb876">
+<area shape="rect" id="node1" href="#shepherd.errors.api.ApiClientError" target="_top" title="An exception raised when the user of the API makes an invalid request" alt="" coords="5,5,117,31"/>
 <area shape="rect" id="node2" href="#shepherd.errors.api.UnknownJobError" target="_top" title="Exception raised when a client asks about a job that is not assigned to this shepherd." alt="" coords="165,5,300,31"/>
 </map></dd></dl>
 
-<dl class="exception">
-<dt id="shepherd.errors.api.StorageError">
-<em class="property">exception </em><code class="sig-prename descclassname">shepherd.errors.api.</code><code class="sig-name descname">StorageError</code><a class="reference internal" href="../_modules/shepherd/errors/api.html#StorageError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.errors.api.StorageError" title="Permalink to this definition">¶</a></dt>
+<dl class="py exception">
+<dt class="sig sig-object py" id="shepherd.errors.api.StorageError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.errors.api.</span></span><span class="sig-name descname"><span class="pre">StorageError</span></span><a class="reference internal" href="../_modules/shepherd/errors/api.html#StorageError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.errors.api.StorageError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception raised when application encounters some issue with the minio storage.</p>
 <p class="rubric">Inheritance</p>
-<div class="graphviz"><img src="../_images/inheritance-375eafc83989d6f4c5f0a629b2e6b35728be6705.png" alt="Inheritance diagram of StorageError" usemap="#inheritanceb00460d4ad" class="inheritance graphviz" /></div>
+<div class="graphviz"><img src="../_images/inheritance-f0393c339f0b563b171cde855d849bd0fdd3b752.png" alt="Inheritance diagram of StorageError" usemap="#inheritanceb00460d4ad" class="inheritance graphviz" /></div>
 <map id="inheritanceb00460d4ad" name="inheritanceb00460d4ad">
+<area shape="rect" id="node1" href="#shepherd.errors.api.ApiServerError" target="_top" title="An exception raised when the server encounters an error" alt="" coords="5,5,121,31"/>
 <area shape="rect" id="node2" href="#shepherd.errors.api.StorageError" target="_top" title="Exception raised when application encounters some issue with the minio storage." alt="" coords="169,5,272,31"/>
 </map></dd></dl>
 
-<dl class="exception">
-<dt id="shepherd.errors.api.StorageInaccessibleError">
-<em class="property">exception </em><code class="sig-prename descclassname">shepherd.errors.api.</code><code class="sig-name descname">StorageInaccessibleError</code><a class="reference internal" href="../_modules/shepherd/errors/api.html#StorageInaccessibleError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.errors.api.StorageInaccessibleError" title="Permalink to this definition">¶</a></dt>
+<dl class="py exception">
+<dt class="sig sig-object py" id="shepherd.errors.api.StorageInaccessibleError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.errors.api.</span></span><span class="sig-name descname"><span class="pre">StorageInaccessibleError</span></span><a class="reference internal" href="../_modules/shepherd/errors/api.html#StorageInaccessibleError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.errors.api.StorageInaccessibleError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception raised when the remote storage is not accessible at the moment</p>
 <p class="rubric">Inheritance</p>
-<div class="graphviz"><img src="../_images/inheritance-209f52675b5bbbd47f1620c62d788ee6bc8b3b13.png" alt="Inheritance diagram of StorageInaccessibleError" usemap="#inheritancedf64ca55ac" class="inheritance graphviz" /></div>
+<div class="graphviz"><img src="../_images/inheritance-d5d48ba7cec908c451053cfc35ace51c5a99591a.png" alt="Inheritance diagram of StorageInaccessibleError" usemap="#inheritancedf64ca55ac" class="inheritance graphviz" /></div>
 <map id="inheritancedf64ca55ac" name="inheritancedf64ca55ac">
+<area shape="rect" id="node1" href="#shepherd.errors.api.ApiServerError" target="_top" title="An exception raised when the server encounters an error" alt="" coords="5,5,121,31"/>
 <area shape="rect" id="node2" href="#shepherd.errors.api.StorageInaccessibleError" target="_top" title="Exception raised when the remote storage is not accessible at the moment" alt="" coords="169,5,352,31"/>
 </map></dd></dl>
 
-<dl class="exception">
-<dt id="shepherd.errors.api.NameConflictError">
-<em class="property">exception </em><code class="sig-prename descclassname">shepherd.errors.api.</code><code class="sig-name descname">NameConflictError</code><a class="reference internal" href="../_modules/shepherd/errors/api.html#NameConflictError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.errors.api.NameConflictError" title="Permalink to this definition">¶</a></dt>
+<dl class="py exception">
+<dt class="sig sig-object py" id="shepherd.errors.api.NameConflictError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.errors.api.</span></span><span class="sig-name descname"><span class="pre">NameConflictError</span></span><a class="reference internal" href="../_modules/shepherd/errors/api.html#NameConflictError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.errors.api.NameConflictError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception raised when a client chooses a job ID that was already used</p>
 <p class="rubric">Inheritance</p>
-<div class="graphviz"><img src="../_images/inheritance-28f6dfea848d9d643abda6bdff9af07ee807c141.png" alt="Inheritance diagram of NameConflictError" usemap="#inheritance44afa4f917" class="inheritance graphviz" /></div>
+<div class="graphviz"><img src="../_images/inheritance-cb17b08c80ffdcf4ed268108cae78aacf3d4364e.png" alt="Inheritance diagram of NameConflictError" usemap="#inheritance44afa4f917" class="inheritance graphviz" /></div>
 <map id="inheritance44afa4f917" name="inheritance44afa4f917">
+<area shape="rect" id="node1" href="#shepherd.errors.api.ApiClientError" target="_top" title="An exception raised when the user of the API makes an invalid request" alt="" coords="5,5,117,31"/>
 <area shape="rect" id="node2" href="#shepherd.errors.api.NameConflictError" target="_top" title="Exception raised when a client chooses a job ID that was already used" alt="" coords="165,5,307,31"/>
 </map></dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -214,7 +224,7 @@ Exception raised when a client chooses a job ID that was already used</p></li>
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br/>
     </p>
   </div>
 </footer>

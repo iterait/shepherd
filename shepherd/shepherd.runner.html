@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>shepherd.runner &#8212; shepherd 0.5.2 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>shepherd.runner &#8212; shepherd 0.5.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/highlight.css" />
     <link rel="stylesheet" type="text/css" href="../_static/swagger-ui.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="shepherd.runner.runner_entry_point" href="shepherd.runner.runner_entry_point.html" />
@@ -22,9 +23,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -113,17 +114,17 @@
       </div>
     <div class="body col-md-9 content" role="main">
       
-  <div class="section" id="module-shepherd.runner">
+  <section id="module-shepherd.runner">
 <span id="shepherd-runner"></span><h1><code class="docutils literal notranslate"><span class="pre">shepherd.runner</span></code><a class="headerlink" href="#module-shepherd.runner" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
+<section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="shepherd.runner.runner_entry_point.html"><code class="docutils literal notranslate"><span class="pre">shepherd.runner.runner_entry_point</span></code></a></li>
 </ul>
 </div>
-</div>
-<div class="section" id="functions">
+</section>
+<section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#shepherd.runner.to_json_serializable" title="shepherd.runner.to_json_serializable"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_json_serializable()</span></code></a>:
@@ -133,15 +134,15 @@ Get the specified data stream from the given dataset, apply the given model on i
 <li><p><a class="reference internal" href="#shepherd.runner.n_available_gpus" title="shepherd.runner.n_available_gpus"><code class="xref py py-func docutils literal notranslate"><span class="pre">n_available_gpus()</span></code></a>:
 Return the number of NVIDIA GPU devices available to this process.</p></li>
 </ul>
-<dl class="function">
-<dt id="shepherd.runner.to_json_serializable">
-<code class="sig-prename descclassname">shepherd.runner.</code><code class="sig-name descname">to_json_serializable</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#to_json_serializable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.to_json_serializable" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="shepherd.runner.to_json_serializable">
+<span class="sig-prename descclassname"><span class="pre">shepherd.runner.</span></span><span class="sig-name descname"><span class="pre">to_json_serializable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#to_json_serializable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.runner.to_json_serializable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make an object containing numpy arrays/scalars JSON serializable.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="shepherd.runner.run">
-<code class="sig-prename descclassname">shepherd.runner.</code><code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">dataset</em>, <em class="sig-param">stream_name</em>, <em class="sig-param">payload</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.run" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="shepherd.runner.run">
+<span class="sig-prename descclassname"><span class="pre">shepherd.runner.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.runner.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the specified data stream from the given dataset, apply the given model on its batches and return the results.</p>
 <dl class="simple">
 <dt>The components have to be <strong>emloop</strong> compatible with:</dt><dd><ul class="simple">
@@ -159,12 +160,12 @@ Return the number of NVIDIA GPU devices available to this process.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractModel</span></code>) – emloop model to be run</p></li>
 <li><p><strong>dataset</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataset</span></code>) – emloop dataset to get the stream from</p></li>
-<li><p><strong>stream_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – stream name</p></li>
-<li><p><strong>payload</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – payload passed to the method creating the stream</p></li>
+<li><p><strong>stream_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – stream name</p></li>
+<li><p><strong>payload</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – payload passed to the method creating the stream</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>result batch (if the stream produces multiple batches its the concatenation of all the results)</p>
@@ -172,9 +173,9 @@ Return the number of NVIDIA GPU devices available to this process.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="shepherd.runner.n_available_gpus">
-<code class="sig-prename descclassname">shepherd.runner.</code><code class="sig-name descname">n_available_gpus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#n_available_gpus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.n_available_gpus" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="shepherd.runner.n_available_gpus">
+<span class="sig-prename descclassname"><span class="pre">shepherd.runner.</span></span><span class="sig-name descname"><span class="pre">n_available_gpus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#n_available_gpus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.runner.n_available_gpus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the number of NVIDIA GPU devices available to this process.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -184,7 +185,7 @@ If none of these variables is available, it lists GPU devices in <code class="do
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the number of available GPU devices</p>
@@ -192,8 +193,8 @@ If none of these variables is available, it lists GPU devices in <code class="do
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="classes">
+</section>
+<section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#shepherd.runner.BaseRunner" title="shepherd.runner.BaseRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRunner</span></code></a>:
@@ -201,99 +202,104 @@ Base <strong>emloop</strong> runner class suitable for inheritance when implemen
 <li><p><a class="reference internal" href="#shepherd.runner.JSONRunner" title="shepherd.runner.JSONRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONRunner</span></code></a>:
 Fully functional emloop runner which loads a JSON from <code class="docutils literal notranslate"><span class="pre">input_path</span></code>/<code class="docutils literal notranslate"><span class="pre">input.json</span></code>, passes the loaded object</p></li>
 </ul>
-<dl class="class">
-<dt id="shepherd.runner.BaseRunner">
-<em class="property">class </em><code class="sig-prename descclassname">shepherd.runner.</code><code class="sig-name descname">BaseRunner</code><span class="sig-paren">(</span><em class="sig-param">config_path</em>, <em class="sig-param">port</em>, <em class="sig-param">stream_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.runner.BaseRunner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.runner.</span></span><span class="sig-name descname"><span class="pre">BaseRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.runner.BaseRunner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base <strong>emloop</strong> runner class suitable for inheritance when implementing a runner with custom behavior.
 <a class="reference internal" href="#shepherd.runner.BaseRunner" title="shepherd.runner.BaseRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRunner</span></code></a> manages the socket, messages and many more. See <a class="reference internal" href="#shepherd.runner.BaseRunner._process_job" title="shepherd.runner.BaseRunner._process_job"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_process_job()</span></code></a> for more info.</p>
-<div class="graphviz"><img src="../_images/inheritance-69ad81bd797aa672490afa8c7228e64a3838952d.png" alt="Inheritance diagram of BaseRunner" class="inheritance graphviz" /></div>
-<div class="line-block">
+<div class="graphviz"><img src="../_images/inheritance-9d56b310c3f8219b3b18c649ea21d3bf81dc63d6.png" alt="Inheritance diagram of BaseRunner" usemap="#inheritance591ca66d7e" class="inheritance graphviz" /></div>
+<map id="inheritance591ca66d7e" name="inheritance591ca66d7e">
+<area shape="rect" id="node1" href="#shepherd.runner.BaseRunner" target="_top" title="Base **emloop** runner class suitable for inheritance when implementing a runner with custom behavior." alt="" coords="5,5,105,31"/>
+</map><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<dl class="method">
-<dt id="shepherd.runner.BaseRunner.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">config_path</em>, <em class="sig-param">port</em>, <em class="sig-param">stream_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner.__init__" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.runner.BaseRunner.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.runner.BaseRunner.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create new <code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code>.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.runner.BaseRunner._load_config">
-<code class="sig-name descname">_load_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._load_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._load_config" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.runner.BaseRunner._load_config">
+<span class="sig-name descname"><span class="pre">_load_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._load_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._load_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maybe load the <strong>emloop</strong> configuration from previously specified file and apply updates
 from <code class="docutils literal notranslate"><span class="pre">eval.&lt;stream_name&gt;</span></code> section.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.runner.BaseRunner._load_dataset">
-<code class="sig-name descname">_load_dataset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._load_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._load_dataset" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.runner.BaseRunner._load_dataset">
+<span class="sig-name descname"><span class="pre">_load_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._load_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._load_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maybe load dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.runner.BaseRunner._load_model">
-<code class="sig-name descname">_load_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._load_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._load_model" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.runner.BaseRunner._load_model">
+<span class="sig-name descname"><span class="pre">_load_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._load_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._load_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maybe load model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.runner.BaseRunner._process_job">
-<em class="property">abstract </em><code class="sig-name descname">_process_job</code><span class="sig-paren">(</span><em class="sig-param">input_path</em>, <em class="sig-param">output_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._process_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._process_job" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.runner.BaseRunner._process_job">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_process_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner._process_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.runner.BaseRunner._process_job" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process a job with having inputs in the <code class="docutils literal notranslate"><span class="pre">input_path</span></code> and save the outputs to the <code class="docutils literal notranslate"><span class="pre">output_path</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – input directory path</p></li>
-<li><p><strong>output_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – output directory path</p></li>
+<li><p><strong>input_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – input directory path</p></li>
+<li><p><strong>output_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – output directory path</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.runner.BaseRunner.process_all">
-<em class="property">async </em><code class="sig-name descname">process_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner.process_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.BaseRunner.process_all" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.runner.BaseRunner.process_all">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/base_runner.html#BaseRunner.process_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.runner.BaseRunner.process_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Listen on the <code class="docutils literal notranslate"><span class="pre">self._socket</span></code> and process the incoming jobs in an endless loop.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="shepherd.runner.JSONRunner">
-<em class="property">class </em><code class="sig-prename descclassname">shepherd.runner.</code><code class="sig-name descname">JSONRunner</code><span class="sig-paren">(</span><em class="sig-param">config_path</em>, <em class="sig-param">port</em>, <em class="sig-param">stream_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#JSONRunner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.JSONRunner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.runner.base_runner.BaseRunner</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.runner.JSONRunner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.runner.</span></span><span class="sig-name descname"><span class="pre">JSONRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#JSONRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.runner.JSONRunner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#shepherd.runner.BaseRunner" title="shepherd.runner.base_runner.BaseRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.runner.base_runner.BaseRunner</span></code></a></p>
 <p>Fully functional emloop runner which loads a JSON from <code class="docutils literal notranslate"><span class="pre">input_path</span></code>/<code class="docutils literal notranslate"><span class="pre">input.json</span></code>, passes the loaded object
 to the desired dataset stream, runs the model and saves the output batch to <code class="docutils literal notranslate"><span class="pre">output_path</span></code>/<code class="docutils literal notranslate"><span class="pre">output.json</span></code>.</p>
-<div class="graphviz"><img src="../_images/inheritance-942f78e8e88f5f6c4136f7da5d62dbef96b9e319.png" alt="Inheritance diagram of JSONRunner" class="inheritance graphviz" /></div>
-<div class="line-block">
+<div class="graphviz"><img src="../_images/inheritance-e2f10043e4dd4e4fb0d7b278bf5121dfe0d5d835.png" alt="Inheritance diagram of JSONRunner" usemap="#inheritance4088cad43d" class="inheritance graphviz" /></div>
+<map id="inheritance4088cad43d" name="inheritance4088cad43d">
+<area shape="rect" id="node1" href="#shepherd.runner.BaseRunner" target="_top" title="Base **emloop** runner class suitable for inheritance when implementing a runner with custom behavior." alt="" coords="5,5,105,31"/>
+<area shape="rect" id="node2" href="#shepherd.runner.JSONRunner" target="_top" title="Fully functional emloop runner which loads a JSON from ``input_path``/``input.json``, passes the loaded object" alt="" coords="153,5,253,31"/>
+</map><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<dl class="method">
-<dt id="shepherd.runner.JSONRunner._process_job">
-<code class="sig-name descname">_process_job</code><span class="sig-paren">(</span><em class="sig-param">input_path</em>, <em class="sig-param">output_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#JSONRunner._process_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.runner.JSONRunner._process_job" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.runner.JSONRunner._process_job">
+<span class="sig-name descname"><span class="pre">_process_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/runner/json_runner.html#JSONRunner._process_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.runner.JSONRunner._process_job" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Process a JSON job</dt><dd><ul class="simple">
 <li><p>load <code class="docutils literal notranslate"><span class="pre">input_path</span></code>/<code class="docutils literal notranslate"><span class="pre">input</span></code></p></li>
@@ -306,20 +312,20 @@ to the desired dataset stream, runs the model and saves the output batch to <cod
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – input data directory</p></li>
-<li><p><strong>output_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – output data directory</p></li>
+<li><p><strong>input_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – input data directory</p></li>
+<li><p><strong>output_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – output data directory</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -335,7 +341,7 @@ to the desired dataset stream, runs the model and saves the output batch to <cod
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br/>
     </p>
   </div>
 </footer>

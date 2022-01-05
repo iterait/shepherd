@@ -1,4 +1,0 @@
-<map id="inheritancedf2c599566" name="inheritancedf2c599566">
-<area shape="rect" id="node1" title="An adapter that running models on bare metal with ``shepherd&#45;runner``." alt="" coords="148,5,240,31"/>
-<area shape="rect" id="node2" title="A base class for container adapters &#45; classes that allow launching different kinds of containers." alt="" coords="5,5,100,31"/>
-</map>

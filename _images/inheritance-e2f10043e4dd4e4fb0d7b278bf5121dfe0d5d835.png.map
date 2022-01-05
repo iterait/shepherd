@@ -1,0 +1,4 @@
+<map id="inheritance4088cad43d" name="inheritance4088cad43d">
+<area shape="rect" id="node1" href="#shepherd.runner.BaseRunner" target="_top" title="Base **emloop** runner class suitable for inheritance when implementing a runner with custom behavior." alt="" coords="5,5,105,31"/>
+<area shape="rect" id="node2" href="#shepherd.runner.JSONRunner" target="_top" title="Fully functional emloop runner which loads a JSON from ``input_path``/``input.json``, passes the loaded object" alt="" coords="153,5,253,31"/>
+</map>

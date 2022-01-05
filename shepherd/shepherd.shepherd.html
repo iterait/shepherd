@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>shepherd.shepherd &#8212; shepherd 0.5.2 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>shepherd.shepherd &#8212; shepherd 0.5.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/highlight.css" />
     <link rel="stylesheet" type="text/css" href="../_static/swagger-ui.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="shepherd.storage" href="shepherd.storage.html" />
@@ -22,9 +23,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -111,64 +112,66 @@
       </div>
     <div class="body col-md-9 content" role="main">
       
-  <div class="section" id="module-shepherd.shepherd">
+  <section id="module-shepherd.shepherd">
 <span id="shepherd-shepherd"></span><h1><code class="docutils literal notranslate"><span class="pre">shepherd.shepherd</span></code><a class="headerlink" href="#module-shepherd.shepherd" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="classes">
+<section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#shepherd.shepherd.Shepherd" title="shepherd.shepherd.Shepherd"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shepherd</span></code></a>:
 Manages creation and access to a configured set of sheep</p></li>
 </ul>
-<dl class="class">
-<dt id="shepherd.shepherd.Shepherd">
-<em class="property">class </em><code class="sig-prename descclassname">shepherd.shepherd.</code><code class="sig-name descname">Shepherd</code><span class="sig-paren">(</span><em class="sig-param">sheep_config</em>, <em class="sig-param">data_root</em>, <em class="sig-param">storage</em>, <em class="sig-param">registry_config=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shepherd.shepherd.</span></span><span class="sig-name descname"><span class="pre">Shepherd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sheep_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">registry_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Manages creation and access to a configured set of sheep</p>
-<div class="graphviz"><img src="../_images/inheritance-e4860969e97820ad6f5fdf205dd87c9306c22eb9.png" alt="Inheritance diagram of Shepherd" class="inheritance graphviz" /></div>
-<div class="line-block">
+<div class="graphviz"><img src="../_images/inheritance-777d4a968e50299c5043090bb56b1267f06b4643.png" alt="Inheritance diagram of Shepherd" usemap="#inheritance4ae4b0010d" class="inheritance graphviz" /></div>
+<map id="inheritance4ae4b0010d" name="inheritance4ae4b0010d">
+<area shape="rect" id="node1" href="#shepherd.shepherd.Shepherd" target="_top" title="Manages creation and access to a configured set of sheep" alt="" coords="5,5,88,31"/>
+</map><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">sheep_config</em>, <em class="sig-param">data_root</em>, <em class="sig-param">storage</em>, <em class="sig-param">registry_config=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.__init__" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sheep_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">registry_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create the mighty Shepherd.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>registry_config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">RegistryConfig</span></code>]) – optional docker registry config</p></li>
-<li><p><strong>sheep_config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]]) – sheep config</p></li>
-<li><p><strong>data_root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – directory where the task/sheep directories will be managed</p></li>
-<li><p><strong>storage</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Storage</span></code>) – remote storage adapter</p></li>
+<li><p><strong>registry_config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">RegistryConfig</span></code>]) – optional docker registry config</p></li>
+<li><p><strong>sheep_config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]]) – sheep config</p></li>
+<li><p><strong>data_root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – directory where the task/sheep directories will be managed</p></li>
+<li><p><strong>storage</strong> (<a class="reference internal" href="shepherd.storage.html#shepherd.storage.Storage" title="shepherd.storage.storage.Storage"><code class="xref py py-class docutils literal notranslate"><span class="pre">Storage</span></code></a>) – remote storage adapter</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd._dequeue_and_feed_jobs">
-<em class="property">async </em><code class="sig-name descname">_dequeue_and_feed_jobs</code><span class="sig-paren">(</span><em class="sig-param">sheep_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._dequeue_and_feed_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._dequeue_and_feed_jobs" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd._dequeue_and_feed_jobs">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_dequeue_and_feed_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sheep_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._dequeue_and_feed_jobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._dequeue_and_feed_jobs" title="Permalink to this definition">¶</a></dt>
 <dd><p>De-queue jobs, prepare working directories and send <code class="docutils literal notranslate"><span class="pre">InputMessage</span></code> to the specified sheep in an end-less
 loop.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>sheep_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – sheep id to be fed</p>
+<dd class="field-odd"><p><strong>sheep_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – sheep id to be fed</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd._get_sheep">
-<code class="sig-name descname">_get_sheep</code><span class="sig-paren">(</span><em class="sig-param">sheep_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._get_sheep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._get_sheep" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd._get_sheep">
+<span class="sig-name descname"><span class="pre">_get_sheep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sheep_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._get_sheep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._get_sheep" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the sheep with the given <code class="docutils literal notranslate"><span class="pre">sheep_id</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>sheep_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – sheep id</p>
+<dd class="field-odd"><p><strong>sheep_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – sheep id</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSheep</span></code></p>
+<dd class="field-even"><p><a class="reference internal" href="shepherd.sheep.html#shepherd.sheep.BaseSheep" title="shepherd.sheep.base_sheep.BaseSheep"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSheep</span></code></a></p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>sheep with the given <code class="docutils literal notranslate"><span class="pre">sheep_id</span></code></p>
@@ -179,74 +182,74 @@ loop.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd._health_check">
-<em class="property">async </em><code class="sig-name descname">_health_check</code><span class="sig-paren">(</span><em class="sig-param">sheep_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._health_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._health_check" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd._health_check">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_health_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sheep_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._health_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._health_check" title="Permalink to this definition">¶</a></dt>
 <dd><p>Periodically check if the specified sheep is running and resolve its in-progress jobs if not.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>sheep_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – id of the sheep to be checked</p>
+<dd class="field-odd"><p><strong>sheep_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – id of the sheep to be checked</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd._listen">
-<em class="property">async </em><code class="sig-name descname">_listen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._listen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._listen" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd._listen">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_listen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._listen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._listen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Poll the sheep output sockets, process sheep outputs and clean-up working directories in an endless loop.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd._report_job_failed">
-<em class="property">async </em><code class="sig-name descname">_report_job_failed</code><span class="sig-paren">(</span><em class="sig-param">job_id</em>, <em class="sig-param">error</em>, <em class="sig-param">sheep</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._report_job_failed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._report_job_failed" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd._report_job_failed">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_report_job_failed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheep</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._report_job_failed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._report_job_failed" title="Permalink to this definition">¶</a></dt>
 <dd><p>A job has failed - remove the local copy of its data and mark it as failed in the remote storage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd._shepherd_health_check">
-<em class="property">async </em><code class="sig-name descname">_shepherd_health_check</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._shepherd_health_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._shepherd_health_check" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd._shepherd_health_check">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_shepherd_health_check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._shepherd_health_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._shepherd_health_check" title="Permalink to this definition">¶</a></dt>
 <dd><p>Periodically check if the shepherd and all of its dependencies work properly (and logs warnings if they do not).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd._slaughter_all">
-<code class="sig-name descname">_slaughter_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._slaughter_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._slaughter_all" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd._slaughter_all">
+<span class="sig-name descname"><span class="pre">_slaughter_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._slaughter_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._slaughter_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Slaughter all sheep.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd._slaughter_sheep">
-<code class="sig-name descname">_slaughter_sheep</code><span class="sig-paren">(</span><em class="sig-param">sheep_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._slaughter_sheep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._slaughter_sheep" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd._slaughter_sheep">
+<span class="sig-name descname"><span class="pre">_slaughter_sheep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sheep_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._slaughter_sheep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._slaughter_sheep" title="Permalink to this definition">¶</a></dt>
 <dd><p>Slaughter (kill) the specified sheep. In particular, its container and socket are going to be terminated,</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>sheep_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – </p>
+<dd class="field-odd"><p><strong>sheep_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – </p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p></p>
@@ -254,64 +257,64 @@ loop.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd._start_sheep">
-<code class="sig-name descname">_start_sheep</code><span class="sig-paren">(</span><em class="sig-param">sheep_id</em>, <em class="sig-param">model</em>, <em class="sig-param">version</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._start_sheep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._start_sheep" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd._start_sheep">
+<span class="sig-name descname"><span class="pre">_start_sheep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sheep_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd._start_sheep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd._start_sheep" title="Permalink to this definition">¶</a></dt>
 <dd><p>(Re)Start the sheep with the given <code class="docutils literal notranslate"><span class="pre">sheep_id</span></code> and configure it to run the specified <code class="docutils literal notranslate"><span class="pre">model</span></code>:<code class="docutils literal notranslate"><span class="pre">version</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sheep_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – sheep id to be (re)started</p></li>
-<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model name to be loaded</p></li>
-<li><p><strong>version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – mode version to be loaded</p></li>
+<li><p><strong>sheep_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – sheep id to be (re)started</p></li>
+<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – model name to be loaded</p></li>
+<li><p><strong>version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – mode version to be loaded</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd.close">
-<em class="property">async </em><code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.close" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd.close">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform a clean exit by slaughtering all sheeps, stopping background tasks and waiting for status updates to be
 sent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd.enqueue_job">
-<em class="property">async </em><code class="sig-name descname">enqueue_job</code><span class="sig-paren">(</span><em class="sig-param">job_id</em>, <em class="sig-param">job_meta</em>, <em class="sig-param">sheep_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.enqueue_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.enqueue_job" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd.enqueue_job">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enqueue_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheep_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.enqueue_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.enqueue_job" title="Permalink to this definition">¶</a></dt>
 <dd><p>En-queue the given job for execution. If specified, use a certain sheep.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – job id</p></li>
+<li><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – job id</p></li>
 <li><p><strong>job_meta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ModelModel</span></code>) – job meta data (model name and version)</p></li>
-<li><p><strong>sheep_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – optional sheep id, if not specified use first sheep available</p></li>
+<li><p><strong>sheep_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – optional sheep id, if not specified use first sheep available</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd.get_job_status">
-<code class="sig-name descname">get_job_status</code><span class="sig-paren">(</span><em class="sig-param">job_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.get_job_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.get_job_status" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd.get_job_status">
+<span class="sig-name descname"><span class="pre">get_job_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.get_job_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.get_job_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get status information for a job. Only the local state is checked, without querying the remote storage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – id of the queried job</p>
+<dd class="field-odd"><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – id of the queried job</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatusModel</span></code>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatusModel</span></code>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>status information or None if the job is not in the local state</p>
@@ -319,13 +322,13 @@ sent.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd.get_status">
-<code class="sig-name descname">get_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.get_status" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd.get_status">
+<span class="sig-name descname"><span class="pre">get_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.get_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.get_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get status information for all sheep</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SheepModel</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SheepModel</span></code>], <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>a generator of status information</p>
@@ -333,21 +336,21 @@ sent.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd.is_job_done">
-<em class="property">async </em><code class="sig-name descname">is_job_done</code><span class="sig-paren">(</span><em class="sig-param">job_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.is_job_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.is_job_done" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd.is_job_done">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_job_done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.is_job_done"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.is_job_done" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the specified job is already done.
 The behavior of this method is undefined when <cite>enqueue_job</cite> is called in the middle of its execution
 (with the same job_id).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – id of the job to be checked</p>
+<dd class="field-odd"><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – id of the job to be checked</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><a class="reference internal" href="shepherd.errors.api.html#shepherd.errors.api.UnknownJobError" title="shepherd.errors.api.UnknownJobError"><strong>UnknownJobError</strong></a> – if the job is not ready nor it is known to this shepherd</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>job ready flag</p>
@@ -355,21 +358,21 @@ The behavior of this method is undefined when <cite>enqueue_job</cite> is called
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="shepherd.shepherd.Shepherd.start">
-<em class="property">async </em><code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.start" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="shepherd.shepherd.Shepherd.start">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/shepherd/shepherd.html#Shepherd.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.shepherd.Shepherd.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start background tasks for the shepherd.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -385,7 +388,7 @@ The behavior of this method is undefined when <cite>enqueue_job</cite> is called
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br/>
     </p>
   </div>
 </footer>

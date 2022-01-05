@@ -1,0 +1,6 @@
+<map id="inheritance4bb15a4e8a" name="inheritance4bb15a4e8a">
+<area shape="rect" id="node1" href="#shepherd.comm.ErrorMessage" target="_top" title="Message informing :py:class:`shepherd.shepherd.Shepherd` about an encountered error." alt="" coords="488,29,599,55"/>
+<area shape="rect" id="node2" href="#shepherd.comm.Message" target="_top" title="Base zmq socket message." alt="" coords="360,29,440,55"/>
+<area shape="rect" id="node3" title="Enclosure for fields and validation. Same pattern deployed by Django" alt="" coords="240,29,312,55"/>
+<area shape="rect" id="node4" title="Compatibility layer for previous deprecated Schematics Model API." alt="" coords="5,29,192,55"/>
+</map>

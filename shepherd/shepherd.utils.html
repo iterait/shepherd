@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>shepherd.utils &#8212; shepherd 0.5.2 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>shepherd.utils &#8212; shepherd 0.5.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/highlight.css" />
     <link rel="stylesheet" type="text/css" href="../_static/swagger-ui.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="shepherd.storage" href="shepherd.storage.html" />
@@ -21,9 +22,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -106,9 +107,9 @@
       </div>
     <div class="body col-md-9 content" role="main">
       
-  <div class="section" id="module-shepherd.utils">
+  <section id="module-shepherd.utils">
 <span id="shepherd-utils"></span><h1><code class="docutils literal notranslate"><span class="pre">shepherd.utils</span></code><a class="headerlink" href="#module-shepherd.utils" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="functions">
+<section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#shepherd.utils.create_clean_dir" title="shepherd.utils.create_clean_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_clean_dir()</span></code></a>:
@@ -116,16 +117,16 @@ Create new directory (delete its contents if it exists).</p></li>
 <li><p><a class="reference internal" href="#shepherd.utils.minio_object_exists" title="shepherd.utils.minio_object_exists"><code class="xref py py-func docutils literal notranslate"><span class="pre">minio_object_exists()</span></code></a>:
 Check if the specified minio object exists or not.</p></li>
 </ul>
-<dl class="function">
-<dt id="shepherd.utils.create_clean_dir">
-<code class="sig-prename descclassname">shepherd.utils.</code><code class="sig-name descname">create_clean_dir</code><span class="sig-paren">(</span><em class="sig-param">dir_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/utils/storage.html#create_clean_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.utils.create_clean_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="shepherd.utils.create_clean_dir">
+<span class="sig-prename descclassname"><span class="pre">shepherd.utils.</span></span><span class="sig-name descname"><span class="pre">create_clean_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/utils/storage.html#create_clean_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.utils.create_clean_dir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create new directory (delete its contents if it exists).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>dir_path</strong> – directory path</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>path of the created directory</p>
@@ -133,20 +134,20 @@ Check if the specified minio object exists or not.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="shepherd.utils.minio_object_exists">
-<code class="sig-prename descclassname">shepherd.utils.</code><code class="sig-name descname">minio_object_exists</code><span class="sig-paren">(</span><em class="sig-param">minio</em>, <em class="sig-param">bucket_name</em>, <em class="sig-param">object_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/utils/storage.html#minio_object_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shepherd.utils.minio_object_exists" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="shepherd.utils.minio_object_exists">
+<span class="sig-prename descclassname"><span class="pre">shepherd.utils.</span></span><span class="sig-name descname"><span class="pre">minio_object_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/shepherd/utils/storage.html#minio_object_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shepherd.utils.minio_object_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the specified minio object exists or not.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>minio</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Minio</span></code>) – minio handle</p></li>
-<li><p><strong>bucket_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – bucket name</p></li>
-<li><p><strong>object_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – object name</p></li>
+<li><p><strong>bucket_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – bucket name</p></li>
+<li><p><strong>object_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – object name</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>true if the specified minio object exists, false otherwise</p>
@@ -154,8 +155,8 @@ Check if the specified minio object exists or not.</p></li>
 </dl>
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -171,7 +172,7 @@ Check if the specified minio object exists or not.</p></li>
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br/>
     </p>
   </div>
 </footer>

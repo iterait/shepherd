@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Runners &#8212; shepherd 0.5.2 documentation</title>
-    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Runners &#8212; shepherd 0.5.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/highlight.css" />
     <link rel="stylesheet" type="text/css" href="_static/swagger-ui.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Shepherd API" href="api.html" />
@@ -22,9 +23,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -116,25 +117,30 @@
       </div>
     <div class="body col-md-9 content" role="main">
       
-  <div class="section" id="runners">
+  <section id="runners">
 <h1>Runners<a class="headerlink" href="#runners" title="Permalink to this headline">¶</a></h1>
 <p>Runners are rather small classes which only purpose is to process <em>jobs</em>, one by one.
 <strong>Shepherd</strong> provides a <a class="reference internal" href="shepherd/shepherd.runner.html#shepherd.runner.BaseRunner" title="shepherd.runner.BaseRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.runner.BaseRunner</span></code></a> to inherit your <em>runners</em> from.</p>
 <p>All the runners may be invoked with <code class="docutils literal notranslate"><span class="pre">shepherd-runner</span></code> command.</p>
-<div class="section" id="shepherd-runner">
+<section id="shepherd-runner">
 <h2>shepherd-runner<a class="headerlink" href="#shepherd-runner" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">shepherd</span><span class="o">-</span><span class="n">runner</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PORT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">STREAM</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">RUNNER</span><span class="p">]</span> <span class="n">config_path</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">shepherd</span><span class="o">-</span><span class="n">runner</span>
+       <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+       <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PORT</span><span class="p">]</span>
+       <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">STREAM</span><span class="p">]</span>
+       <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">RUNNER</span><span class="p">]</span>
+       <span class="n">config_path</span>
 </pre></div>
 </div>
-<div class="section" id="Positional Arguments">
+<section id="Positional Arguments">
 <h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>config_path</kbd></dt>
 <dd><p>emloop configuration file path</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="Named Arguments">
+</section>
+<section id="Named Arguments">
 <h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-p, --port</kbd></dt>
@@ -150,18 +156,18 @@
 <p>Default: “shepherd.runner.JSONRunner”</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="custom-runners">
+</section>
+<section id="custom-runners">
 <h3>Custom Runners<a class="headerlink" href="#custom-runners" title="Permalink to this headline">¶</a></h3>
 <p>In most cases, you can just inherit from <a class="reference internal" href="shepherd/shepherd.runner.html#shepherd.runner.BaseRunner" title="shepherd.runner.BaseRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.runner.BaseRunner</span></code></a> and override
 <a class="reference internal" href="shepherd/shepherd.runner.html#shepherd.runner.BaseRunner._process_job" title="shepherd.runner.BaseRunner._process_job"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shepherd.runner.BaseRunner._process_job()</span></code></a>.</p>
 <p>This is exactly what is done by the <a class="reference internal" href="shepherd/shepherd.runner.html#shepherd.runner.JSONRunner" title="shepherd.runner.JSONRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">shepherd.runner.JSONRunner</span></code></a> class.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_process_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>   <span class="c1"># simplified</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_process_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>   <span class="c1"># simplified</span>
     <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="s1">&#39;input&#39;</span><span class="p">)))</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">input_batch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_stream</span><span class="p">(</span><span class="n">payload</span><span class="p">):</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Another batch (</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_batch</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
-        <span class="n">output_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">input_batch</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+        <span class="n">output_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">input_batch</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">,</span> <span class="s1">&#39;postprocess_batch&#39;</span><span class="p">):</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Postprocessing&#39;</span><span class="p">)</span>
             <span class="n">result_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="o">.</span><span class="n">postprocess_batch</span><span class="p">(</span><span class="n">input_batch</span><span class="o">=</span><span class="n">input_batch</span><span class="p">,</span> <span class="n">output_batch</span><span class="o">=</span><span class="n">output_batch</span><span class="p">)</span>
@@ -180,9 +186,9 @@
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">JSONRunner</span></code> simply loads JSON from <code class="docutils literal notranslate"><span class="pre">inputs/input</span></code> file, creates a stream from it and writes the output
 batches to <code class="docutils literal notranslate"><span class="pre">outputs/output</span></code>.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
     </div>
@@ -198,7 +204,7 @@ batches to <code class="docutils literal notranslate"><span class="pre">outputs/
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br/>
     </p>
   </div>
 </footer>

@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Introduction &#8212; shepherd 0.5.2 documentation</title>
-    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Introduction &#8212; shepherd 0.5.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/highlight.css" />
     <link rel="stylesheet" type="text/css" href="_static/swagger-ui.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Bare Sheep" href="bare_sheep.html" />
@@ -22,9 +23,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -115,7 +116,7 @@
       </div>
     <div class="body col-md-9 content" role="main">
       
-  <div class="section" id="introduction">
+  <section id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p>Before diving into <strong>shepherd</strong>, please make you have installed and configured</p>
 <ul class="simple">
@@ -127,7 +128,7 @@
 <p>Note that with docker installed, most of the other dependencies can be run within it.</p>
 <p>We provide a docker-compose command to setup local minio storage and docker registry</p>
 <p>The docker-compose file can be found in the <strong>shepherd</strong> repository, so lets take a look how you can obtain it.</p>
-<div class="section" id="installation">
+<section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>The best way to start working with <strong>shepherd</strong> is to clone our github repository and use pip to install it:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:iterait/shepherd.git
@@ -147,8 +148,8 @@ shepherd -c examples/configs/shepherd-bare.yml  <span class="c1"># start up shep
 </pre></div>
 </div>
 <p>Note that the shepherd may be run in a debug mode by setting <strong>DEBUG</strong> environmental variable to 1.</p>
-</div>
-<div class="section" id="basics">
+</section>
+<section id="basics">
 <h2>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
 <p>With <strong>shepherd</strong> up and running, you can start computing your resource intensive <em>jobs</em> with it.
 An example of a job may be an inference of neural network which may take a while so better do it asynchronously, right?</p>
@@ -161,20 +162,20 @@ An example of a job may be an inference of neural network which may take a while
 </ol>
 <p><strong>Shepherd</strong> naturally tells you if your job is ready or not. Just ask him at <code class="docutils literal notranslate"><span class="pre">/jobs/&lt;job_id&gt;/ready</span></code> end-point.</p>
 <p>The initial <code class="docutils literal notranslate"><span class="pre">/start-job</span></code> end-point type is POST and a JSON similar to the following one is expected:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="nt">&quot;job_id&quot;</span><span class="p">:</span> <span class="s2">&quot;request_id&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;model&quot;</span><span class="p">:</span>
-        <span class="p">{</span>
-            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;emloop-test&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;latest&quot;</span>
-        <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;job_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;request_id&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;emloop-test&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latest&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Hopefully, you will find the contents self-explanatory.
 Detailed <strong>shepherd</strong> API is provided here (TODO).</p>
-</div>
-<div class="section" id="behind-the-scenes">
+</section>
+<section id="behind-the-scenes">
 <h2>Behind the scenes<a class="headerlink" href="#behind-the-scenes" title="Permalink to this headline">¶</a></h2>
 <p>So by who, when and how is your job computed? Well, <strong>shepherd</strong> delegates the actual work to his shepherd and sheep
 (poor things, right?).
@@ -184,26 +185,26 @@ A shepherd can hold multiple sheep, nonetheless, you need to address the jobs to
 them eventually</strong>.</p>
 <p>Every sheep manages its own <em>runner</em> (<a class="reference external" href="runners.html">more on runners</a>) and communicates with it via sockets. So in the
 end, <em>runners</em> do the heavy lifting.</p>
-</div>
-<div class="section" id="configuration">
+</section>
+<section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
 <p>You may have noticed that in the command above that the shepherd was configured with <code class="docutils literal notranslate"><span class="pre">examples/configs/shepherd-bare.yml</span></code>.
 Let’s see what is in there:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">data_root</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/tmp/shepherd-data</span>
-<span class="nt">registry</span><span class="p">:</span>
-  <span class="nt">url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://0.0.0.0:6000</span>
-<span class="nt">storage</span><span class="p">:</span>
-  <span class="nt">url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://0.0.0.0:7000</span>
-  <span class="nt">access_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">AKIAIOSFODNN7EXAMPLE</span>
-  <span class="nt">secret_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">data_root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/shepherd-data</span><span class="w"></span>
+<span class="nt">registry</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://0.0.0.0:6000</span><span class="w"></span>
+<span class="nt">storage</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://0.0.0.0:7000</span><span class="w"></span>
+<span class="w">  </span><span class="nt">access_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AKIAIOSFODNN7EXAMPLE</span><span class="w"></span>
+<span class="w">  </span><span class="nt">secret_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</span><span class="w"></span>
 
-<span class="nt">sheep</span><span class="p">:</span>
-  <span class="nt">bare_sheep</span><span class="p">:</span>
-    <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">9001</span>
-    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bare</span>
-    <span class="nt">working_directory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">examples/docker/emloop_example</span>
-    <span class="nt">stdout_file</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/tmp/bare-shepherd-runner-stdout.txt</span>
-    <span class="nt">stderr_file</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/tmp/bare-shepherd-runner-stderr.txt</span>
+<span class="nt">sheep</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">bare_sheep</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9001</span><span class="w"></span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bare</span><span class="w"></span>
+<span class="w">    </span><span class="nt">working_directory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examples/docker/emloop_example</span><span class="w"></span>
+<span class="w">    </span><span class="nt">stdout_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/bare-shepherd-runner-stdout.txt</span><span class="w"></span>
+<span class="w">    </span><span class="nt">stderr_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/bare-shepherd-runner-stderr.txt</span><span class="w"></span>
 </pre></div>
 </div>
 <p>You need to configure the minio <cite>storage</cite> and docker <cite>registry</cite> in their respective sections,
@@ -214,13 +215,13 @@ In the case it crashes or is restarted, this directory is cleaned-up anyways.</p
 <p>Finally, we can configure the sheep the <strong>shepherd</strong> has under its command.
 At the moment, we recognize <code class="docutils literal notranslate"><span class="pre">bare</span></code> and <code class="docutils literal notranslate"><span class="pre">docker</span></code> sheep.
 You can find more on how to configure them in their respective sections.</p>
-</div>
-<div class="section" id="further-reading">
+</section>
+<section id="further-reading">
 <h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
 <p>Now feel free to read about our sheep (<a class="reference external" href="bare_sheep.html">bare</a> and <a class="reference external" href="bare_sheep.html">docker</a>) or how sheep actually
 <a class="reference external" href="runners.html">run the jobs</a>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -236,7 +237,7 @@ You can find more on how to configure them in their respective sections.</p>
     </p>
     <p>
         &copy; Copyright 2018, Iterait a.s..<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br/>
     </p>
   </div>
 </footer>

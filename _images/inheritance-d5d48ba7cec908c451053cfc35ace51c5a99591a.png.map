@@ -1,0 +1,4 @@
+<map id="inheritancedf64ca55ac" name="inheritancedf64ca55ac">
+<area shape="rect" id="node1" href="#shepherd.errors.api.ApiServerError" target="_top" title="An exception raised when the server encounters an error" alt="" coords="5,5,121,31"/>
+<area shape="rect" id="node2" href="#shepherd.errors.api.StorageInaccessibleError" target="_top" title="Exception raised when the remote storage is not accessible at the moment" alt="" coords="169,5,352,31"/>
+</map>
