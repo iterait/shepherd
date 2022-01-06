@@ -72,7 +72,7 @@ def test_bare_sheep_stderr_file_permission_denied(sheep_socket, tmpdir: Path, ba
     os.chmod(str(stderr), 0o444)
 
     bare_sheep_config["stderr_file"] = str(stderr)
-    bare_sheep = BareSheep(bare_sheep_config, socket=sheep_socket, sheep_data_root=str(tmpdir))
+    bare_sheep = BareSheep(bare_sheep_config, socket=sheep_socket, sheep_data_root=str(tmpdir), sheep_id="sheep")
     
     with pytest.raises(SheepConfigurationError):
         bare_sheep.start('emloop-test', 'latest')
@@ -84,7 +84,7 @@ def test_bare_sheep_stdout_file_permission_denied(sheep_socket, tmpdir: Path, ba
     os.chmod(str(stdout), 0o444)
 
     bare_sheep_config["stdout_file"] = str(stdout)
-    bare_sheep = BareSheep(bare_sheep_config, socket=sheep_socket, sheep_data_root=str(tmpdir))
+    bare_sheep = BareSheep(bare_sheep_config, socket=sheep_socket, sheep_data_root=str(tmpdir), sheep_id="sheep")
 
     with pytest.raises(SheepConfigurationError):
         bare_sheep.start('emloop-test', 'latest')

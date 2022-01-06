@@ -5,7 +5,7 @@ import traceback
 import os.path as path
 from datetime import datetime
 from itertools import cycle
-from typing import Mapping, Generator, Tuple, Dict, Any, Optional
+from typing import Mapping, Generator, Tuple, Dict, Any, Optional, Union
 
 import zmq
 import zmq.asyncio
@@ -53,14 +53,20 @@ class Shepherd:
         self._sheep_tasks = {}
         self._listener = None
         self._health_checker = None
+
         self._job_status: Dict[str, JobStatusModel] = {}
-        self._job_status_update_queue = None
+        self._job_status_update_queue: TaskQueue = None
+
+        self._prepare_job_dir_queue: TaskQueue = None
+        self._prepare_job_dir_futures: Dict[str, asyncio.Future] = {}
+
+        self._finalize_job_queue: TaskQueue = None
 
         for sheep_id, config in sheep_config.items():
             socket = zmq.asyncio.Context.instance().socket(zmq.DEALER)
             sheep_type = config["type"]
             sheep_data_root = create_clean_dir(path.join(data_root, sheep_id))
-            common_kwargs = {'socket': socket, 'sheep_data_root': sheep_data_root}
+            common_kwargs = {'socket': socket, 'sheep_id': sheep_id, 'sheep_data_root': sheep_data_root}
             if sheep_type == "docker":
                 sheep = DockerSheep(config=config, registry_config=registry_config, **common_kwargs)
             elif sheep_type == "bare":
@@ -88,6 +94,8 @@ class Shepherd:
         self._listener = asyncio.create_task(self._listen())
         self._health_checker = asyncio.create_task(self._shepherd_health_check())
         self._job_status_update_queue = TaskQueue(worker_count=1)
+        self._prepare_job_dir_queue = TaskQueue(worker_count=8)
+        self._finalize_job_queue = TaskQueue(worker_count=8)
 
     def _get_sheep(self, sheep_id: str) -> BaseSheep:
         """
@@ -143,6 +151,10 @@ class Shepherd:
         status_future = await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status))
         await self._get_sheep(sheep_id).jobs_queue.put(job_id)
 
+        self._prepare_job_dir_futures[job_id] = await self._prepare_job_dir_queue.enqueue_task(
+            self._prepare_job_dir(self._get_sheep(sheep_id), job_id)
+        )
+
         # Wait for the status update to finish before returning (this way we can be sure the job was enqueued)
         await status_future
 
@@ -166,14 +178,20 @@ class Shepherd:
 
         :param sheep_id: id of the sheep to be checked
         """
+        sheep = self._get_sheep(sheep_id)
+
         while True:
             await asyncio.sleep(1)
-            sheep = self._get_sheep(sheep_id)
             try:
                 if not sheep.running:
                     for job_id in sheep.in_progress:
                         # clean-up the working directory
                         shutil.rmtree(path.join(self._get_sheep(sheep_id).sheep_data_root, job_id))
+
+                        # if necessary, cancel input downloads
+                        if job_id in self._prepare_job_dir_futures.keys():
+                            self._prepare_job_dir_futures[job_id].cancel()
+                            del self._prepare_job_dir_futures[job_id]
 
                         # save the error
                         error = ErrorModel({'message': 'Sheep container died without notice'})
@@ -188,65 +206,105 @@ class Shepherd:
                 logging.warning('Failed to check sheep\'s health '  # pragma: no cover
                                 'due to the following exception: %s', str(se))
 
+    async def _prepare_job_dir(self, sheep, job_id) -> None:
+        """
+        Prepare the working directory for a job (clean it and download inputs).
+
+        :param sheep: The sheep assigned to the job
+        :param job_id: The job for which we are preparing the directory
+        """
+        logging.info('Preparing working directory for job `%s` on `%s`', job_id, sheep.id)
+        working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
+        await self._storage.pull_job_data(job_id, working_directory)
+        create_clean_dir(path.join(working_directory, OUTPUT_DIR))
+
+    async def _reconfigure_sheep(self, sheep: BaseSheep, job_id: str, model: ModelModel) -> bool:
+        """
+        Slaughter a sheep and resurrect it with a different model.
+
+        :param sheep: the sheep to be reconfigured
+        :param job_id: ID of the job that prompted the reconfiguration
+        :param model: the new model
+        :return: whether or not the reconfiguration succeeded
+        """
+
+        # we need to wait for the in-progress jobs which might already be in the socket
+        async with self.job_done_condition:
+            await self.job_done_condition.wait_for(lambda: len(sheep.in_progress) == 0)
+
+        self._slaughter_sheep(sheep.id)
+
+        try:
+            self._start_sheep(sheep.id, model.name, model.version)
+            return True
+        except SheepConfigurationError as sce:
+            error = ErrorModel({
+                'message': 'Failed to start sheep for this job ({})'.format(str(sce))
+            })
+
+            logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep.id, job_id, error.message)
+            await self._report_job_failed(job_id, error, sheep)
+            return False
+        except Exception as ex:
+            error = ErrorModel({
+                'message': '`{}` thrown when starting sheep `{}` for job `{}`'.format(str(ex), sheep.id, job_id),
+                'exception_type': str(type(ex)),
+                'exception_traceback': str(traceback.format_tb(ex.__traceback__))
+            })
+
+            await self._report_job_failed(job_id, error, sheep)
+            logging.exception("Error encountered when starting sheep `%s` for job `%s`", sheep.id, job_id)
+            return False
+
     async def _dequeue_and_feed_jobs(self, sheep_id: str) -> None:
         """
-        De-queue jobs, prepare working directories and send ``InputMessage`` to the specified sheep in an end-less
+        De-queue jobs, prepare working directories and send ``InputMessage`` to the specified sheep in an endless
         loop.
 
         :param sheep_id: sheep id to be fed
         """
+        sheep = self._get_sheep(sheep_id)
+
         while True:
-            sheep = self._get_sheep(sheep_id)
             job_id = await sheep.jobs_queue.get()
-            logging.info('Preparing working directory for job `%s` on `%s`', job_id, sheep_id)
 
-            # prepare working directory
-            working_directory = create_clean_dir(path.join(sheep.sheep_data_root, job_id))
-            await self._storage.pull_job_data(job_id, working_directory)
-            create_clean_dir(path.join(working_directory, OUTPUT_DIR))
-
-            # update the job status
-            status = self._job_status[job_id]
-            status.status = JobStatus.PROCESSING
-            status.processing_started_at = datetime.utcnow()
-            await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status.copy()))
-
-            # (re)start the sheep if needed
-            model = status.model
-            if model.name != sheep.model_name or model.version != sheep.model_version or not sheep.running:
-                logging.info('Job `%s` requires model `%s:%s` on `%s`', job_id, model.name, model.version, sheep_id)
-                # we need to wait for the in-progress jobs which are already in the socket
-                async with self.job_done_condition:
-                    await self.job_done_condition.wait_for(lambda: len(sheep.in_progress) == 0)
-                self._slaughter_sheep(sheep_id)
+            try:
+                # wait until working directory is prepared
                 try:
-                    self._start_sheep(sheep_id, model.name, model.version)
-                except SheepConfigurationError as sce:
-                    error = ErrorModel({
-                        'message': 'Failed to start sheep for this job ({})'.format(str(sce))
-                    })
-
-                    logging.error('Sheep `%s` encountered error when processing job `%s`: %s', sheep_id, job_id, error.message)
-                    await self._report_job_failed(job_id, error, sheep)
-                    continue
-                except Exception as ex:
-                    error = ErrorModel({
-                        'message': '`{}` thrown when starting sheep `{}` for job `{}`'.format(str(ex), sheep_id, job_id),
-                        'exception_type': str(type(ex)),
-                        'exception_traceback': str(traceback.format_tb(ex.__traceback__))
-                    })
-
-                    await self._report_job_failed(job_id, error, sheep)
-                    logging.exception("Error encountered when starting sheep `%s` for job `%s`", sheep_id, job_id)
+                    await self._prepare_job_dir_futures[job_id]
+                    del self._prepare_job_dir_futures[job_id]
+                except KeyError:
+                    logging.critical(f"Task that should have pulled data for job `{job_id}` mysteriously disappeared")
                     continue
 
-            # send the InputMessage to the sheep
-            sheep.in_progress.add(job_id)
-            logging.info('Sending InputMessage for job `%s` on `%s`', job_id, sheep_id)
-            await Messenger.send(sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root)))
+                # update the job status
+                status = self._job_status[job_id]
+                status.status = JobStatus.PROCESSING
+                status.processing_started_at = datetime.utcnow()
+                await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status.copy()))
 
-            # notify the queue that the task is done
-            sheep.jobs_queue.task_done()
+                # (re)start the sheep if needed
+                model = status.model
+                if model.name != sheep.model_name or model.version != sheep.model_version or not sheep.running:
+                    logging.info('Job `%s` requires model `%s:%s` on `%s`', job_id, model.name, model.version, sheep_id)
+                    reconfiguration_successful = await self._reconfigure_sheep(sheep, job_id, model)
+
+                    if not reconfiguration_successful:
+                        continue
+
+                # send the InputMessage to the sheep
+                sheep.in_progress.add(job_id)
+                logging.info('Sending InputMessage for job `%s` on `%s`', job_id, sheep_id)
+                await Messenger.send(
+                    sheep.socket, InputMessage(dict(job_id=job_id, io_data_root=sheep.sheep_data_root))
+                )
+
+                # notify the queue that the task is done
+                sheep.jobs_queue.task_done()
+            except Exception:
+                logging.exception(
+                    "Unexpected exception encountered when feeding job `%s` to sheep `%s`", job_id, sheep.id
+                )
 
     async def _report_job_failed(self, job_id: str, error: ErrorModel, sheep: BaseSheep) -> None:
         """
@@ -266,6 +324,44 @@ class Shepherd:
         except Exception:
             logging.exception('Error when reporting job `%s` as failed', job_id)
 
+    async def _finalize_job(self, message: Union[DoneMessage, ErrorMessage], sheep: BaseSheep) -> None:
+        """
+        Finalize a finished job - upload the results and update the status.
+
+        :param message: Message from the sheep about the end of the job
+        :param sheep: The sheep that sent the message
+        """
+
+        job_id = message.job_id
+
+        # clean-up the working directory and upload the results
+        working_directory = path.join(self._get_sheep(sheep.id).sheep_data_root, job_id)
+        await self._storage.push_job_data(job_id, working_directory)
+        shutil.rmtree(working_directory)
+
+        # save the done/error file
+        if isinstance(message, DoneMessage):
+            status = self._job_status.pop(job_id)
+            status.status = JobStatus.DONE
+            status.finished_at = datetime.utcnow()
+            await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status.copy()))
+            logging.info('Job `%s` from sheep `%s` done', job_id, sheep.id)
+        elif isinstance(message, ErrorMessage):
+            error = ErrorModel({
+                "message": message.message,
+                "exception_type": message.exception_type,
+                "exception_traceback": message.exception_traceback
+            })
+            await self._report_job_failed(job_id, error, sheep)
+            self._job_status.pop(job_id)
+            logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep.id, message.short_error)
+
+        # notify about the finished job
+        sheep.in_progress.remove(job_id)
+
+        async with self.job_done_condition:
+            self.job_done_condition.notify_all()
+
     async def _listen(self) -> None:
         """
         Poll the sheep output sockets, process sheep outputs and clean-up working directories in an endless loop.
@@ -277,37 +373,14 @@ class Shepherd:
 
             # process the sheep with pending outputs
             for sheep_id in sheep_ids:
-                sheep = self._get_sheep(sheep_id)
-                message = await Messenger.recv(sheep.socket, [DoneMessage, ErrorMessage], noblock=True)
-                job_id = message.job_id
-
-                # clean-up the working directory and upload the results
-                working_directory = path.join(self._get_sheep(sheep_id).sheep_data_root, job_id)
-                await self._storage.push_job_data(job_id, working_directory)
-                shutil.rmtree(working_directory)
-
-                # save the done/error file
-                if isinstance(message, DoneMessage):
-                    status = self._job_status.pop(job_id)
-                    status.status = JobStatus.DONE
-                    status.finished_at = datetime.utcnow()
-                    await self._job_status_update_queue.enqueue_task(self._storage.set_job_status(job_id, status.copy()))
-                    logging.info('Job `%s` from sheep `%s` done', job_id, sheep_id)
-                elif isinstance(message, ErrorMessage):
-                    error = ErrorModel({
-                        "message": message.message,
-                        "exception_type": message.exception_type,
-                        "exception_traceback": message.exception_traceback
-                    })
-                    await self._report_job_failed(job_id, error, sheep)
-                    self._job_status.pop(job_id)
-                    logging.info('Job `%s` from sheep `%s` failed (%s)', job_id, sheep_id, message.short_error)
-
-                # notify about the finished job
-                sheep.in_progress.remove(job_id)
-
-                async with self.job_done_condition:
-                    self.job_done_condition.notify_all()
+                try:
+                    sheep = self._get_sheep(sheep_id)
+                    message = await Messenger.recv(sheep.socket, [DoneMessage, ErrorMessage], noblock=True)
+                    await self._finalize_job_queue.enqueue_task(self._finalize_job(message, sheep))
+                except Exception:
+                    logging.exception(
+                        "Unexpected exception encountered when handling a message from sheep `%s`", sheep_id
+                    )
 
     def get_status(self) -> Generator[Tuple[str, SheepModel], None, None]:
         """
@@ -358,7 +431,7 @@ class Shepherd:
 
     async def close(self) -> None:
         """
-        Perform a clean exit by slaughtering all sheeps, stopping background tasks and waiting for status updates to be
+        Perform a clean exit by slaughtering all sheep, stopping background tasks and waiting for status updates to be
         sent.
         """
         self._slaughter_all()
@@ -369,5 +442,10 @@ class Shepherd:
             for sheep_task in sheep_tasks:
                 sheep_task.cancel()
 
+        for future in self._prepare_job_dir_futures.values():
+            future.cancel()
+
         await self._job_status_update_queue.close()
+        await self._prepare_job_dir_queue.close()
+        await self._finalize_job_queue.close()
         await self._storage.close()

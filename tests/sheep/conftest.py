@@ -32,7 +32,7 @@ async def bare_sheep(sheep_socket, tmpdir, bare_sheep_config):
     sheep = BareSheep({'port': 9001, 'type': 'bare', 'working_directory': 'examples/docker/emloop_example',
                        'stdout_file': '/tmp/i-dont-exists/bare-shepherd-runner-stdout.txt',
                        'stderr_file': '/tmp/i-dont-exists/bare-shepherd-runner-stderr.txt'},
-                      socket=sheep_socket, sheep_data_root=str(tmpdir))
+                      socket=sheep_socket, sheep_data_root=str(tmpdir), sheep_id='sheep')
     yield sheep
     sheep.slaughter()
 
@@ -41,6 +41,6 @@ async def bare_sheep(sheep_socket, tmpdir, bare_sheep_config):
 async def docker_sheep(sheep_socket):
     registry_config = RegistryConfig(dict(url=''))
     sheep = DockerSheep({'port': 9001, 'type': 'docker'}, registry_config,
-                        socket=sheep_socket, sheep_data_root='/tmp', command=['sleep', '2'])
+                        socket=sheep_socket, sheep_data_root='/tmp', command=['sleep', '2'], sheep_id='sheep')
     yield sheep
     sheep.slaughter()

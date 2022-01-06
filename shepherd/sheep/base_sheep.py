@@ -21,13 +21,15 @@ class BaseSheep(metaclass=abc.ABCMeta):
 
     _config: Config
 
-    def __init__(self, socket: zmq.asyncio.Socket, sheep_data_root: str):
+    def __init__(self, socket: zmq.asyncio.Socket, sheep_id: str, sheep_data_root: str):
         """
         Create new :py:class:`BaseSheep`.
 
         :param socket: socket for feeding sheep's runner with InputMessages
+        :param sheep_id: an identifier of the sheep
         :param sheep_data_root: sheep data root with job working directories
         """
+        self.id = sheep_id
         self._config: Optional[self.Config] = None
         self.socket: zmq.asyncio.Socket = socket
         self.jobs_queue: Queue = Queue()  # queue of jobs to be processed
