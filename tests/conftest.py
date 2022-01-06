@@ -1,8 +1,11 @@
+import socket
+
 import pytest
 import subprocess
 import os
 import random
 import string
+from tempfile import TemporaryDirectory
 from typing import Tuple
 
 from minio import Minio
@@ -19,36 +22,40 @@ def registry_config():
 
 @pytest.fixture(scope='session')
 def storage_config():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(('127.0.0.1', 0))
+        port = s.getsockname()[1]
+
     yield StorageConfig({
-        'url': 'http://0.0.0.0:7000',
+        'url': f'http://0.0.0.0:{port}',
         'access_key': 'AKIAIOSFODNN7EXAMPLE',
         'secret_key': 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
     })
 
 
 @pytest.fixture(scope='session')
-def minio_connection(storage_config: StorageConfig, tmpdir_factory):
+def minio_connection(storage_config: StorageConfig):
     try:
-        if subprocess.call(['minio']) != 0:
+        if subprocess.call(['minio'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
             raise RuntimeError()
     except:
         pytest.skip("Minio is not installed")
 
-    data_dir = tmpdir_factory.mktemp('minio')
+    with TemporaryDirectory(prefix="shepherd-tests-minio-") as data_dir:
+        assert len(os.listdir(data_dir)) == 0
 
-    assert len(os.listdir(data_dir)) == 0
-
-    env = os.environ.copy()
-    env['MINIO_ACCESS_KEY'] = storage_config.access_key
-    env['MINIO_SECRET_KEY'] = storage_config.secret_key
-    proc = subprocess.Popen(['minio', 'server', '--address', storage_config.schemeless_url, data_dir], env=env)
-    yield Minio(
-        storage_config.schemeless_url,
-        access_key=storage_config.access_key,
-        secret_key=storage_config.secret_key,
-        secure=False
-    )
-    proc.kill()
+        env = os.environ.copy()
+        env['MINIO_ACCESS_KEY'] = storage_config.access_key
+        env['MINIO_SECRET_KEY'] = storage_config.secret_key
+        proc = subprocess.Popen(['minio', 'server', '--address', storage_config.schemeless_url, data_dir],
+                                env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        yield Minio(
+            storage_config.schemeless_url,
+            access_key=storage_config.access_key,
+            secret_key=storage_config.secret_key,
+            secure=False
+        )
+        proc.kill()
 
 
 @pytest.fixture(scope='function')
